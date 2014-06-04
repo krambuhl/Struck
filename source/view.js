@@ -14,7 +14,7 @@ Struck.View = (function () {
     this.options = _.extend({}, options);
 
     // add event api to view
-    _.extend(this.prototype, Struck.events);
+    // _.extend(this.vent, Struck.events);
 
     // assign UID to view object
     this.uid = _.uniqueId('view');
@@ -62,6 +62,10 @@ Struck.View = (function () {
   // a view to remove event listeners
   // or any possible memory leaks
   View.prototype.cleanup = _.noop;
+
+
+  View.prototype.bind = function () {
+  }
 
 
   // Private Functions

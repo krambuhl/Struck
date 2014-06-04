@@ -4,7 +4,7 @@ Struck.events = (function(jQuery) {
   var jq;
   function init(self) { jq = jQuery(self); }
 
-  return {
+  var events = {
     trigger: function(evt, data) {
       !jq && init(this);
       jq.trigger(evt, data);
@@ -25,4 +25,8 @@ Struck.events = (function(jQuery) {
       jq.unbind(evt, handler);
     }
   };
+
+  events.extend = Struck.extend;
+
+  return events;
 }(jQuery));

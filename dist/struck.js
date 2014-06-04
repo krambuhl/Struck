@@ -9,7 +9,7 @@ Struck.events = (function(jQuery) {
   var jq;
   function init(self) { jq = jQuery(self); }
 
-  return {
+  var events = {
     trigger: function(evt, data) {
       !jq && init(this);
       jq.trigger(evt, data);
@@ -30,6 +30,10 @@ Struck.events = (function(jQuery) {
       jq.unbind(evt, handler);
     }
   };
+
+  events.extend = Struck.extend;
+
+  return events;
 }(jQuery));
 
 
@@ -89,7 +93,7 @@ Struck.View = (function () {
     this.options = _.extend({}, options);
 
     // add event api to view
-    _.extend(this.prototype, Struck.events);
+    // _.extend(this.vent, Struck.events);
 
     // assign UID to view object
     this.uid = _.uniqueId('view');
@@ -137,6 +141,10 @@ Struck.View = (function () {
   // a view to remove event listeners
   // or any possible memory leaks
   View.prototype.cleanup = _.noop;
+
+
+  View.prototype.bind = function () {
+  }
 
 
   // Private Functions
