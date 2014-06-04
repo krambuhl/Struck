@@ -1,0 +1,3 @@
+window.Struck = (function() {
+  return {};
+})();

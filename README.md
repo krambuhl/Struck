@@ -1,4 +1,4 @@
 Struck
 ======
 
-simple application components.
+Simple application components.
