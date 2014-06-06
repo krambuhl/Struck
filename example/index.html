@@ -32,8 +32,10 @@ var AppView = Struck.View.extend({
     },
 
     setup: function () {
-
+        this.listenTo(this.ui.header, "click", onHeaderClick);
     },
+
+    onHeaderClick: function () { },
 
     cleanup: function () {
 

@@ -53,7 +53,8 @@
   "jshintConfig": {
     "quotmark": "single",
     "unused": "true",
-    "undef": "true",
-    "camelcase": "true"
+    "undef": "false",
+    "camelcase": "true",
+    "globals": "false"
   }
 }

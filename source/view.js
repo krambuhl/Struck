@@ -3,7 +3,6 @@ Struck.View = (function () {
   // to the view when initialized
   var viewOptions = ['el', 'ui', 'template', 'model'];
 
-
   // `View` constructor returns a View object
   // that contains methods for template/model
   // rendering, dom caching, and event listening.
@@ -23,14 +22,20 @@ Struck.View = (function () {
     _.extend(this, _.pick(this.options, viewOptions));
 
     // setup view elements
-    if (this.el) this.setElement(this.el);
+    if (this.el) {
+      this.setElement(this.el);
+    }
 
     // render template with model if defined
-    if (this.template) this.render();
+    if (this.template) {
+      this.render();
+    }
 
     _.defer(function () {
-      // cache elements using `dom` library
-      setupUI(self, self.ui);
+      // cache jquery elements
+      if (self.ui) {
+        setupUI(self, self.ui);
+      }
 
       // run setup function
       self.setup(self.options);
@@ -64,8 +69,7 @@ Struck.View = (function () {
   View.prototype.cleanup = _.noop;
 
 
-  View.prototype.bind = function () {
-  }
+  View.prototype.bind = function () { };
 
 
   // Private Functions
@@ -73,12 +77,10 @@ Struck.View = (function () {
 
   // cache dom objects from UI object
   function setupUI(view, ui) {
-    if (view.ui) {
-      view.ui = _.reduce(ui, function (result, selector, name) {
-        result[name] = view.$(ui[name]);
-        return result;
-      }, {});
-    }
+    view.ui _.reduce(ui, function (result, selector, name) {
+      result[name] = view.$(ui[name]);
+      return result;
+    }, {});
   }
 
   return View;
