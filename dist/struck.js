@@ -1,6 +1,10 @@
-window.Struck = (function() {
-  return {};
-})();
+(function(root, factory) {
+  if (typeof module === "object" && typeof module.exports === "object") {
+    root.Struck = factory(root, exports);
+  } else {
+    root.Struck = factory(root, {});
+  }
+}(this, function(root, Struck) {
 
 
 // mixin object for jquery event api
@@ -82,7 +86,6 @@ Struck.View = (function () {
   // to the view when initialized
   var viewOptions = ['el', 'ui', 'template', 'model'];
 
-
   // `View` constructor returns a View object
   // that contains methods for template/model
   // rendering, dom caching, and event listening.
@@ -98,18 +101,21 @@ Struck.View = (function () {
     // assign UID to view object
     this.uid = _.uniqueId('view');
 
+    // gets model
+    this.model = _.result(self, 'model');
+
     // extend selected instance opitions to object
     _.extend(this, _.pick(this.options, viewOptions));
 
     // setup view elements
-    if (this.el) this.setElement(this.el);
+    if (this.el) this.setElement(_.result(this, 'el'));
 
     // render template with model if defined
     if (this.template) this.render();
 
     _.defer(function () {
-      // cache elements using `dom` library
-      setupUI(self, self.ui);
+      // cache jquery elements
+      setupUI(self, _.result(self, 'ui'));
 
       // run setup function
       self.setup(self.options);
@@ -143,8 +149,7 @@ Struck.View = (function () {
   View.prototype.cleanup = _.noop;
 
 
-  View.prototype.bind = function () {
-  }
+  View.prototype.bind = function () { };
 
 
   // Private Functions
@@ -152,7 +157,7 @@ Struck.View = (function () {
 
   // cache dom objects from UI object
   function setupUI(view, ui) {
-    if (view.ui) {
+    if (self.ui) {
       view.ui = _.reduce(ui, function (result, selector, name) {
         result[name] = view.$(ui[name]);
         return result;
@@ -162,6 +167,10 @@ Struck.View = (function () {
 
   return View;
 })();
+
+
+	return Struck;
+});
 
 
 //# sourceMappingURL=struck.js.map

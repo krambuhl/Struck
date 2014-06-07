@@ -62,12 +62,17 @@ function dir() { return slice(arguments).join('/'); }
 //     + output: 'app-bundle.js'
 
 gulp.task('app', function() {
-  return gulp.src([
-    dir(sourceDir, 'struck.js'),
-    dir(sourceDir, 'events.js'),
-    dir(sourceDir, 'extend.js'),
-    dir(sourceDir, 'view.js')
-  ])
+  var files = [
+    '_export',
+    'events',
+    'extend',
+    'view',
+    '_after'
+  ].map(function (file) {
+    return dir(sourceDir, file + '.js');
+  });
+
+  return gulp.src(files)
     .pipe(concatMaps('struck.js', {
       sourcesContent: false,
       sourceRoot: '../'
@@ -92,7 +97,7 @@ gulp.task('docs', function() {
 // __watch__ task:
 gulp.task('watch', function () {
   // run `app` task on js file changes in './source/app'
-  gulp.watch(dir(sourceDir, '**/*.js'), ['app']);
+  return gulp.watch(dir(sourceDir, '**/*.js'), ['app']);
 
   // run `docs` task on any file changes
   gulp.watch([

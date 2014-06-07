@@ -18,24 +18,21 @@ Struck.View = (function () {
     // assign UID to view object
     this.uid = _.uniqueId('view');
 
+    // gets model
+    this.model = _.result(self, 'model');
+
     // extend selected instance opitions to object
     _.extend(this, _.pick(this.options, viewOptions));
 
     // setup view elements
-    if (this.el) {
-      this.setElement(this.el);
-    }
+    if (this.el) this.setElement(_.result(this, 'el'));
 
     // render template with model if defined
-    if (this.template) {
-      this.render();
-    }
+    if (this.template) this.render();
 
     _.defer(function () {
       // cache jquery elements
-      if (self.ui) {
-        setupUI(self, self.ui);
-      }
+      setupUI(self, _.result(self, 'ui'));
 
       // run setup function
       self.setup(self.options);
@@ -77,10 +74,12 @@ Struck.View = (function () {
 
   // cache dom objects from UI object
   function setupUI(view, ui) {
-    view.ui _.reduce(ui, function (result, selector, name) {
-      result[name] = view.$(ui[name]);
-      return result;
-    }, {});
+    if (self.ui) {
+      view.ui = _.reduce(ui, function (result, selector, name) {
+        result[name] = view.$(ui[name]);
+        return result;
+      }, {});
+    }
   }
 
   return View;

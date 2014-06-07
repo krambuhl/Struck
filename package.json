@@ -49,12 +49,5 @@
     "underscore": "~1.6.0",
     "vinyl-source-stream": "~0.1.1",
     "watchify": "~0.8.2"
-  },
-  "jshintConfig": {
-    "quotmark": "single",
-    "unused": "true",
-    "undef": "false",
-    "camelcase": "true",
-    "globals": "false"
   }
 }
