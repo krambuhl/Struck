@@ -1,6 +1,6 @@
 // mixin object for jquery event api
 // code from http://james.padolsey.com/javascript/jquery-eventemitter/
-Struck.events = (function(jQuery) {
+Struck.events = function(jQuery) {
   var jq;
   function init(self) { jq = jQuery(self); }
 
@@ -29,4 +29,4 @@ Struck.events = (function(jQuery) {
   events.extend = Struck.extend;
 
   return events;
-}(jQuery));
+}(jQuery);

@@ -7,41 +7,7 @@
 }(this, function(root, Struck) {
 
 
-// mixin object for jquery event api
-// code from http://james.padolsey.com/javascript/jquery-eventemitter/
-Struck.events = (function(jQuery) {
-  var jq;
-  function init(self) { jq = jQuery(self); }
-
-  var events = {
-    trigger: function(evt, data) {
-      !jq && init(this);
-      jq.trigger(evt, data);
-    },
-
-    once: function(evt, handler) {
-      !jq && init(this);
-      jq.one(evt, handler);
-    },
-
-    on: function(evt, handler) {
-      !jq && init(this);
-      jq.bind(evt, handler);
-    },
-
-    off: function(evt, handler) {
-      !jq && init(this);
-      jq.unbind(evt, handler);
-    }
-  };
-
-  events.extend = Struck.extend;
-
-  return events;
-}(jQuery));
-
-
-// Pulled from Backbone.js 1.1.2 source
+// _Pulled from Backbone.js 1.1.2 source_
 
 // Helper function to correctly set up the prototype chain,
 // for subclasses. Similar to goog.inherits, but uses a hash
@@ -81,7 +47,45 @@ Struck.extend = function(protoProps, staticProps) {
 };
 
 
-Struck.View = (function () {
+// mixin object for jquery event api
+// code from http://james.padolsey.com/javascript/jquery-eventemitter/
+Struck.events = function(jQuery) {
+  var jq;
+  function init(self) { jq = jQuery(self); }
+
+  var events = {
+    trigger: function(evt, data) {
+      !jq && init(this);
+      jq.trigger(evt, data);
+    },
+
+    once: function(evt, handler) {
+      !jq && init(this);
+      jq.one(evt, handler);
+    },
+
+    on: function(evt, handler) {
+      !jq && init(this);
+      jq.bind(evt, handler);
+    },
+
+    off: function(evt, handler) {
+      !jq && init(this);
+      jq.unbind(evt, handler);
+    }
+  };
+
+  events.extend = Struck.extend;
+
+  return events;
+}(jQuery);
+
+
+// View
+// ======
+
+
+Struck.View = function () {
   // array of options that will be extended
   // to the view when initialized
   var viewOptions = ['el', 'ui', 'template', 'model'];
@@ -148,12 +152,9 @@ Struck.View = (function () {
   // or any possible memory leaks
   View.prototype.cleanup = _.noop;
 
-
   View.prototype.bind = function () { };
 
-
-  // Private Functions
-  // ===================
+  // ###Private Functions
 
   // cache dom objects from UI object
   function setupUI(view, ui) {
@@ -166,11 +167,11 @@ Struck.View = (function () {
   }
 
   return View;
-})();
+}();
 
 
 	return Struck;
-});
+}));
 
 
 //# sourceMappingURL=struck.js.map

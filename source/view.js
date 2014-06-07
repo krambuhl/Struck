@@ -1,4 +1,8 @@
-Struck.View = (function () {
+// View
+// ======
+
+
+Struck.View = function () {
   // array of options that will be extended
   // to the view when initialized
   var viewOptions = ['el', 'ui', 'template', 'model'];
@@ -65,12 +69,9 @@ Struck.View = (function () {
   // or any possible memory leaks
   View.prototype.cleanup = _.noop;
 
-
   View.prototype.bind = function () { };
 
-
-  // Private Functions
-  // ===================
+  // ###Private Functions
 
   // cache dom objects from UI object
   function setupUI(view, ui) {
@@ -83,4 +84,4 @@ Struck.View = (function () {
   }
 
   return View;
-})();
+}();

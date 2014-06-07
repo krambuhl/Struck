@@ -64,8 +64,8 @@ function dir() { return slice(arguments).join('/'); }
 gulp.task('app', function() {
   var files = [
     '_export',
-    'events',
     'extend',
+    'events',
     'view',
     '_after'
   ].map(function (file) {
@@ -97,7 +97,7 @@ gulp.task('docs', function() {
 // __watch__ task:
 gulp.task('watch', function () {
   // run `app` task on js file changes in './source/app'
-  return gulp.watch(dir(sourceDir, '**/*.js'), ['app']);
+  gulp.watch(dir(sourceDir, '**/*.js'), ['app']);
 
   // run `docs` task on any file changes
   gulp.watch([

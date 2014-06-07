@@ -1,5 +1,5 @@
 {
-  "name": "il7.io",
+  "name": "stuck",
   "version": "0.1.0",
   "author": "Evan Krambuhl <thekrambuhl@gmail.com>",
   "keywords": [
@@ -7,6 +7,7 @@
     "extend",
     "model"
   ],
+  "main": "dist/struck.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:krambuhl/struct.git"
