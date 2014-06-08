@@ -17,7 +17,7 @@ Struck.View = function () {
     this.options = _.extend({}, options);
 
     // add event api to view
-    // _.extend(this.vent, Struck.events);
+    this.com = new Struck.Intercom();
 
     // assign UID to view object
     this.uid = _.uniqueId('view');

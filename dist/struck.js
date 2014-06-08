@@ -1,8 +1,12 @@
 (function(root, factory) {
-  if (typeof module === "object" && typeof module.exports === "object") {
-    root.Struck = factory(root, exports);
+  if (typeof define === 'function' && define.amd) {
+    define(['lodash', 'jquery', 'exports'], function(_, $, exports) {
+      root.Struck = factory(root, exports, _, $);
+    });
+  } else if (typeof exports !== 'undefined') {
+    factory(root, exports, require('lodash'), require('jquery'));
   } else {
-    root.Struck = factory(root, {});
+    root.Struck = factory(root, {}, root._, root.jQuery);
   }
 }(this, function(root, Struck) {
 
@@ -47,38 +51,37 @@ Struck.extend = function(protoProps, staticProps) {
 };
 
 
-// mixin object for jquery event api
-// code from http://james.padolsey.com/javascript/jquery-eventemitter/
-Struck.events = function(jQuery) {
-  var jq;
-  function init(self) { jq = jQuery(self); }
+Struck.Intercom = function () {
+	function Intercom() {
 
-  var events = {
-    trigger: function(evt, data) {
-      !jq && init(this);
-      jq.trigger(evt, data);
-    },
+	}
 
-    once: function(evt, handler) {
-      !jq && init(this);
-      jq.one(evt, handler);
-    },
+	Intercom.prototype.on = _.noop;
+	Intercom.prototype.once = _.noop;
+	Intercom.prototype.off = _.noop;
+	Intercom.prototype.emit = _.noop;
 
-    on: function(evt, handler) {
-      !jq && init(this);
-      jq.bind(evt, handler);
-    },
+	return Intercom;
+}();
 
-    off: function(evt, handler) {
-      !jq && init(this);
-      jq.unbind(evt, handler);
-    }
-  };
 
-  events.extend = Struck.extend;
+Struck.computed = function (func, property) {
 
-  return events;
-}(jQuery);
+	return {};
+};
+
+
+Struck.Model = function () {
+	function Model() {
+		_.extend(this, new Struck.Intercom());
+	}
+
+	Model.prototype.get = _.noop;
+	Model.prototype.set = _.noop;
+	Model.prototype.data = _.noop;
+
+	return Model;
+}();
 
 
 // View
@@ -100,7 +103,7 @@ Struck.View = function () {
     this.options = _.extend({}, options);
 
     // add event api to view
-    // _.extend(this.vent, Struck.events);
+    this.com = new Struck.Intercom();
 
     // assign UID to view object
     this.uid = _.uniqueId('view');

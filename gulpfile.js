@@ -57,17 +57,16 @@ function dir() { return slice(arguments).join('/'); }
 
 // __build__ task:
 // - concat files
-
 gulp.task('build', function() {
   var files = [
-    '_export',
+    'build/_export',
     'extend',
-    'events',
+    'intercom',
+    'computed',
+    'model',
     'view',
-    '_after'
-  ].map(function (file) {
-    return dir(sourceDir, file + '.js');
-  });
+    'build/_after'
+  ].map(function (file) { return dir(sourceDir, file + '.js'); });
 
   return gulp.src(files)
     .pipe(concatMaps('struck.js', {
