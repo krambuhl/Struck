@@ -55,13 +55,10 @@ function dir() { return slice(arguments).join('/'); }
 
 
 
-// __app__ task:
-// - watchify
-//   - watch app directory
-//   - browserify
-//     + output: 'app-bundle.js'
+// __build__ task:
+// - concat files
 
-gulp.task('app', function() {
+gulp.task('build', function() {
   var files = [
     '_export',
     'extend',
@@ -97,7 +94,7 @@ gulp.task('docs', function() {
 // __watch__ task:
 gulp.task('watch', function () {
   // run `app` task on js file changes in './source/app'
-  gulp.watch(dir(sourceDir, '**/*.js'), ['app']);
+  gulp.watch(dir(sourceDir, '**/*.js'), ['build']);
 
   // run `docs` task on any file changes
   gulp.watch([
@@ -115,5 +112,5 @@ gulp.task('watch', function () {
 // });
 
 
-gulp.task('compile', ['app', 'docs']);
+gulp.task('compile', ['build', 'docs']);
 gulp.task('default', ['compile', 'watch']);
