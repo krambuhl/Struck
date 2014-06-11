@@ -1,22 +1,30 @@
-Struck.Intercom = function () {
+var Intercom = Struck.Intercom = function (root) {
 	var defaultMessage = {
+		single: false,
 		name: "all",
-
+		callback: _.noop,
+		context: root,
+		args: []
 	};
 
 	function Intercom() {
 		this.subscribers = [];
 	}
 
+	// split "event1 event2" into an
+	// array of event names
+	function splitName(com, name) {
+		// get result of name if defined as a function
+		var result = _.isFunction(name) ? name.call(com) : name;
 
-	function splitName(name) {
-		names = _.result(name);
-		var names = _.isArray(name) ? name.split()
+		// split by spaces if result is an array
+		// always returns an array
+		return _.isArray(result) ? result.split(" ") : [result];
 	}
 
 
 	Intercom.prototype.on = function (name, callback, context) {
-
+		var names = splitName(name);
 	};
 
 	Intercom.prototype.once = _.noop;
@@ -27,4 +35,4 @@ Struck.Intercom = function () {
 	Intercom.extend = Struck.extend;
 
 	return Intercom;
-}();
+}(root);
