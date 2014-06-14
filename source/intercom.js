@@ -34,9 +34,9 @@ var Intercom = Struck.Intercom = function (root) {
 		// get result of name if defined as a function
 		var result = _.isFunction(name) ? name.call(com) : name;
 
-		// split by spaces if result is an array
+		// split by spaces if result isn't an array
 		// always returns an array
-		return _.isArray(result) ? result.split(" ") : [result];
+		return _.isArray(result) ? result : result.split(" ");
 	}
 
 	// #####subscribe
@@ -73,7 +73,7 @@ var Intercom = Struck.Intercom = function (root) {
 	// #####trigger
 	//
 	function trigger(com, sub, data) {
-		// sub.callback.apply(sub.context, sub.args);
+		sub.callback.apply(sub.context, data ? [data].concat(sub.args) : sub.args);
 	}
 
 	// #####Intercom.on
@@ -122,10 +122,10 @@ var Intercom = Struck.Intercom = function (root) {
 			return subs.concat(matches);
 		}, [], this);
 
-		_.each(filteredSubs, function(sub) {
-			console.log(sub);
+		filteredSubs = _.unique(filteredSubs);
 
-			// trigger(this, sub);
+		_.each(filteredSubs, function(sub) {
+			trigger(this, sub, data);
 		}, this);
 	};
 
