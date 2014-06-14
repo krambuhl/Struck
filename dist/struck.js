@@ -53,13 +53,26 @@ Struck.extend = function(protoProps, staticProps) {
 };
 
 
+Struck.BaseObject = function () {
+	function Base(func) {
+		func.extend = Struck.extend;
+
+		_.extend(func.prototype, {
+
+		});
+
+		return func;
+	}
+
+	return Base;
+}();
+
+
 // ##Intercom
 //
 // A standalone function for an event subscriber
 // system to be used in other modules
-
-var Intercom = Struck.Intercom = function (root) {
-
+Struck.Intercom = function (root) {
 	// setup default subscription object
 	// used to clone and extend in `subscribe` function
 	var defaultSubscription = {
@@ -77,10 +90,16 @@ var Intercom = Struck.Intercom = function (root) {
 	// #####Constructor
 	// set up default subscriptio object's context to the
 	// intercom instance and create subscription collection
-	function Intercom() {
+
+	// function Intercom() {
+	// 	this.defaultSubscription = _.extend(_.clone(defaultSubscription), { context: this });
+	// 	this.subscriptions = [];
+	// }
+
+	var Intercom = Struck.BaseObject(function () {
 		this.defaultSubscription = _.extend(_.clone(defaultSubscription), { context: this });
 		this.subscriptions = [];
-	}
+	});
 
 	// #####splitName
 	// split "event1 event2" into an
@@ -184,22 +203,14 @@ var Intercom = Struck.Intercom = function (root) {
 		}, this);
 	};
 
-	Intercom.extend = Struck.extend;
-
 	return Intercom;
 }(root);
 
 
-Struck.computed = function (func, property) {
-
-	return {};
-};
-
-
 Struck.Model = function () {
-	function Model() {
+	var Model = Struck.BaseObject(function() {
 		_.extend(this, new Struck.Intercom());
-	}
+	});
 
 	Model.prototype.get = _.noop;
 	Model.prototype.set = _.noop;
@@ -221,7 +232,7 @@ Struck.View = function () {
   // `View` constructor returns a View object
   // that contains methods for template/model
   // rendering, dom caching, and event listening.
-  function View(options) {
+  var View = Struck.BaseObject(function(options) {
     var self = this;
 
     // setup default options
@@ -252,10 +263,7 @@ Struck.View = function () {
       // run setup function
       self.setup(self.options);
     });
-  }
-
-  // extend function for backbone-like inheritence
-  View.extend = Struck.extend;
+  });
 
   // caches the dom object and creates scoped find function
   View.prototype.setElement = function(el) {

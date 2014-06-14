@@ -60,8 +60,8 @@ gulp.task('build', function() {
   var files = [
     'build/_export',
     'extend',
+    'base-object',
     'intercom',
-    'computed',
     'model',
     'view',
     'build/_after'

@@ -10,7 +10,7 @@ Struck.View = function () {
   // `View` constructor returns a View object
   // that contains methods for template/model
   // rendering, dom caching, and event listening.
-  function View(options) {
+  var View = Struck.BaseObject(function(options) {
     var self = this;
 
     // setup default options
@@ -41,10 +41,7 @@ Struck.View = function () {
       // run setup function
       self.setup(self.options);
     });
-  }
-
-  // extend function for backbone-like inheritence
-  View.extend = Struck.extend;
+  });
 
   // caches the dom object and creates scoped find function
   View.prototype.setElement = function(el) {

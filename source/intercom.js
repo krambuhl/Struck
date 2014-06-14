@@ -2,9 +2,7 @@
 //
 // A standalone function for an event subscriber
 // system to be used in other modules
-
-var Intercom = Struck.Intercom = function (root) {
-
+Struck.Intercom = function (root) {
 	// setup default subscription object
 	// used to clone and extend in `subscribe` function
 	var defaultSubscription = {
@@ -22,10 +20,16 @@ var Intercom = Struck.Intercom = function (root) {
 	// #####Constructor
 	// set up default subscriptio object's context to the
 	// intercom instance and create subscription collection
-	function Intercom() {
+
+	// function Intercom() {
+	// 	this.defaultSubscription = _.extend(_.clone(defaultSubscription), { context: this });
+	// 	this.subscriptions = [];
+	// }
+
+	var Intercom = Struck.BaseObject(function () {
 		this.defaultSubscription = _.extend(_.clone(defaultSubscription), { context: this });
 		this.subscriptions = [];
-	}
+	});
 
 	// #####splitName
 	// split "event1 event2" into an
@@ -128,8 +132,6 @@ var Intercom = Struck.Intercom = function (root) {
 			trigger(this, sub, data);
 		}, this);
 	};
-
-	Intercom.extend = Struck.extend;
 
 	return Intercom;
 }(root);
