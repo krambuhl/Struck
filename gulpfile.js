@@ -54,7 +54,6 @@ var docGlob = '**/*.{js,css,sass,scss,json,md,html,hbs,handlebars}';
 function dir() { return slice(arguments).join('/'); }
 
 
-
 // __build__ task:
 // - concat files
 gulp.task('build', function() {
@@ -92,16 +91,7 @@ gulp.task('docs', function() {
 
 // __watch__ task:
 gulp.task('watch', function () {
-  // run `app` task on js file changes in './source/app'
-  gulp.watch(dir(sourceDir, '**/*.js'), ['build']);
-
-  // run `docs` task on any file changes
-  gulp.watch([
-    dir(sourceDir, docGlob),
-    dir(testsDir, docGlob),
-    'gulpfile.js',
-    'README.md'
-  ], ['docs']);
+  gulp.watch(dir(sourceDir, '**/*.js'), ['compile']);
 });
 
 // gulp.task('bump', function () {

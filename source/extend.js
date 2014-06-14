@@ -1,5 +1,7 @@
+// ###Extend
+//
 // _Pulled from Backbone.js 1.1.2 source_
-
+//
 // Helper function to correctly set up the prototype chain,
 // for subclasses. Similar to goog.inherits, but uses a hash
 // of prototype properties and class properties to be extended.

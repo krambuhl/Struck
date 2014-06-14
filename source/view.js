@@ -69,7 +69,7 @@ Struck.View = function () {
   // or any possible memory leaks
   View.prototype.cleanup = _.noop;
 
-  View.prototype.bind = function () { };
+  View.prototype.listenTo = function () { };
 
   // ###Private Functions
 
