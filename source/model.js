@@ -1,3 +1,6 @@
+// ##Model
+
+// object for maintaining data
 Struck.Model = function () {
 	var Model = Struck.BaseObject(function() {
 		_.extend(this, new Struck.Intercom());

@@ -12,7 +12,7 @@
 
 
 // ###Extend
-//
+
 // _Pulled from Backbone.js 1.1.2 source_
 //
 // Helper function to correctly set up the prototype chain,
@@ -53,6 +53,9 @@ Struck.extend = function(protoProps, staticProps) {
 };
 
 
+// ##BaseObject
+
+// function for enabling common architectures
 Struck.BaseObject = function () {
 	function Base(func) {
 		func.extend = Struck.extend;
@@ -69,7 +72,7 @@ Struck.BaseObject = function () {
 
 
 // ##Intercom
-//
+
 // A standalone function for an event subscriber
 // system to be used in other modules
 Struck.Intercom = function (root) {
@@ -90,12 +93,6 @@ Struck.Intercom = function (root) {
 	// #####Constructor
 	// set up default subscriptio object's context to the
 	// intercom instance and create subscription collection
-
-	// function Intercom() {
-	// 	this.defaultSubscription = _.extend(_.clone(defaultSubscription), { context: this });
-	// 	this.subscriptions = [];
-	// }
-
 	var Intercom = Struck.BaseObject(function () {
 		this.defaultSubscription = _.extend(_.clone(defaultSubscription), { context: this });
 		this.subscriptions = [];
@@ -207,6 +204,9 @@ Struck.Intercom = function (root) {
 }(root);
 
 
+// ##Model
+
+// object for maintaining data
 Struck.Model = function () {
 	var Model = Struck.BaseObject(function() {
 		_.extend(this, new Struck.Intercom());
@@ -220,10 +220,9 @@ Struck.Model = function () {
 }();
 
 
-// View
-// ======
+// ##View
 
-
+// Defines a base view to be extend
 Struck.View = function () {
   // array of options that will be extended
   // to the view when initialized

@@ -1,7 +1,6 @@
-// View
-// ======
+// ##View
 
-
+// Defines a base view to be extend
 Struck.View = function () {
   // array of options that will be extended
   // to the view when initialized
