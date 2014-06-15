@@ -294,12 +294,10 @@ Struck.View = function () {
 
   // cache dom objects from UI object
   function setupUI(view, ui) {
-    if (self.ui) {
-      view.ui = _.reduce(ui, function (result, selector, name) {
-        result[name] = view.$(ui[name]);
-        return result;
-      }, {});
-    }
+    view.ui = _.reduce(ui, function (result, selector, name) {
+      result[name] = view.$(ui[name]);
+      return result;
+    }, {});
   }
 
   return View;
