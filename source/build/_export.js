@@ -5,7 +5,7 @@
     });
   } else if (typeof exports !== 'undefined') {
     var _ = require('lodash'), $ = require('jquery');
-    factory(root, exports, _, $);
+    exports = factory(root, exports, _, $);
   } else {
     root.Struck = factory(root, {}, root._, root.jQuery);
   }

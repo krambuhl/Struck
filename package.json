@@ -45,5 +45,9 @@
     "underscore": "~1.6.0",
     "vinyl-source-stream": "~0.1.1",
     "watchify": "~0.8.2"
+  },
+  "dependencies": {
+    "jquery": "^2.1.1",
+    "lodash": "^2.4.1"
   }
 }
