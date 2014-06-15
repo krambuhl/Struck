@@ -1,6 +1,6 @@
 {
-  "name": "stuck",
-  "version": "0.1.0",
+  "name": "struck",
+  "version": "0.1.1",
   "author": "Evan Krambuhl <thekrambuhl@gmail.com>",
   "keywords": [
     "view",
@@ -11,11 +11,6 @@
   "repository": {
     "type": "git",
     "url": "git@github.com:krambuhl/struct.git"
-  },
-  "dependencies": {
-    "eventify": "^0.3.8",
-    "dom": "0.0.3",
-    "lodash": "~2.4.1"
   },
   "devDependencies": {
     "brfs": "~1.1.1",
