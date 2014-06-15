@@ -4,7 +4,8 @@
       root.Struck = factory(root, exports, _, $);
     });
   } else if (typeof exports !== 'undefined') {
-    factory(root, exports, require('lodash'), require('jquery'));
+    var _ = require('lodash'), $ = require('jquery');
+    factory(root, exports, _, $);
   } else {
     root.Struck = factory(root, {}, root._, root.jQuery);
   }
