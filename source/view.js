@@ -15,6 +15,9 @@ Struck.View = function () {
     // setup default options
     this.options = _.extend({}, options);
 
+    // extend selected instance opitions to object
+    _.extend(this, _.pick(this.options, viewOptions));
+
     // add event api to view
     this.com = new Struck.Intercom();
 
@@ -23,9 +26,6 @@ Struck.View = function () {
 
     // gets model
     this.model = _.result(self, 'model');
-
-    // extend selected instance opitions to object
-    _.extend(this, _.pick(this.options, viewOptions));
 
     // setup view elements
     if (this.el) this.setElement(_.result(this, 'el'));
