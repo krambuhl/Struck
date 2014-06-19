@@ -6,7 +6,6 @@ Struck.BaseObject = function () {
 		func.extend = Struck.extend;
 
 		_.extend(func.prototype, {
-
 		});
 
 		return func;

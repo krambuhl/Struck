@@ -65,7 +65,14 @@ Struck.Intercom = function (root) {
 	// #####unsubscribe
 	//
 	function unsubscribe(com, name, func) {
+		// com, name, func:
+		// .. remove specific subscriber function
 
+		// com, name:
+		// .. remove all subscribers by name
+
+		// com:
+		// .. remove all subscribers from in
 	}
 
 	// #####trigger
