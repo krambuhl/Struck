@@ -21,9 +21,6 @@ Struck.View = function () {
     // add event api to view
     this.com = new Struck.Intercom();
 
-    // assign UID to view object
-    this.uid = _.uniqueId('view');
-
     // gets model
     this.model = _.result(self, 'model');
 

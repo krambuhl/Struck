@@ -3,12 +3,19 @@
 // function for enabling common architectures
 Struck.BaseObject = function () {
 	function Base(func) {
-		func.extend = Struck.extend;
 
-		_.extend(func.prototype, {
-		});
+		function constructor() {
+			_.extend(this, {
+				// assign UID to view object
+				uid: _.uniqueId('struck')
+			});
 
-		return func;
+			func.apply(this, _.rest(arguments));
+		}
+
+		constructor.extend = Struck.extend;
+
+		return constructor;
 	}
 
 	return Base;

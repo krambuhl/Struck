@@ -59,13 +59,19 @@ Struck.extend = function(protoProps, staticProps) {
 // function for enabling common architectures
 Struck.BaseObject = function () {
 	function Base(func) {
-		func.extend = Struck.extend;
 
-		_.extend(func.prototype, {
+		function constructor() {
+			_.extend(this, {
+				// assign UID to view object
+				uid: _.uniqueId('struck')
+			});
 
-		});
+			func.apply(this, _.rest(arguments));
+		}
 
-		return func;
+		constructor.extend = Struck.extend;
+
+		return constructor;
 	}
 
 	return Base;
@@ -139,7 +145,14 @@ Struck.Intercom = function (root) {
 	// #####unsubscribe
 	//
 	function unsubscribe(com, name, func) {
+		// com, name, func:
+		// .. remove specific subscriber function
 
+		// com, name:
+		// .. remove all subscribers by name
+
+		// com:
+		// .. remove all subscribers from in
 	}
 
 	// #####trigger
@@ -243,9 +256,6 @@ Struck.View = function () {
 
     // add event api to view
     this.com = new Struck.Intercom();
-
-    // assign UID to view object
-    this.uid = _.uniqueId('view');
 
     // gets model
     this.model = _.result(self, 'model');
