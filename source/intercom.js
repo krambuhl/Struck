@@ -25,6 +25,9 @@ Struck.Intercom = function (root) {
 		this.subscriptions = [];
 	});
 
+
+
+
 	// #####splitName
 	// split "event1 event2" into an
 	// array of event names

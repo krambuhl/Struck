@@ -57,25 +57,41 @@ Struck.extend = function(protoProps, staticProps) {
 // ##BaseObject
 
 // function for enabling common architectures
-Struck.BaseObject = function () {
-	function Base(func) {
+Struck.BaseObject = function (func) {
+	var args = _.rest(arguments);
 
-		function constructor() {
-			_.extend(this, {
-				// assign UID to view object
-				uid: _.uniqueId('struck')
-			});
+	// Base wraps a constructor argument with
+	// it's own set of Functions
 
-			func.apply(this, _.rest(arguments));
-		}
+	// Note:
+	// might be preferable to stick to extend
+	// and call super constructor manually
+	// this seems like a surefire way to force
+	// beavior onto a constructor, but it seems
+	// like the inheritance chain gets blorked
+	function Base() {
+		if (!(this instanceof Base))
+			return new Base();
 
-		constructor.extend = Struck.extend;
+		// run default init
+		init(this);
 
-		return constructor;
+		// call constructor function
+		func.apply(this, args);
 	}
 
+	// functions run on object creation
+	function init(self) {
+		// assign UID to view object
+		self.uid = _.uniqueId('sid');
+	}
+
+	Base.extend = Struck.extend;
+
 	return Base;
-}();
+};
+
+Struck.BaseObject.extend = Struck.extend;
 
 
 // ##Intercom
@@ -104,6 +120,9 @@ Struck.Intercom = function (root) {
 		this.defaultSubscription = _.extend(_.clone(defaultSubscription), { context: this });
 		this.subscriptions = [];
 	});
+
+
+
 
 	// #####splitName
 	// split "event1 event2" into an
