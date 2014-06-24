@@ -57,39 +57,25 @@ Struck.extend = function(protoProps, staticProps) {
 // ##BaseObject
 
 // function for enabling common architectures
-Struck.BaseObject = function (func) {
-	var args = _.rest(arguments);
-
-	// Base wraps a constructor argument with
-	// it's own set of Functions
-
-	// Note:
-	// might be preferable to stick to extend
-	// and call super constructor manually
-	// this seems like a surefire way to force
-	// beavior onto a constructor, but it seems
-	// like the inheritance chain gets blorked
-	function Base() {
+Struck.BaseObject = function () {
+	function Base(options) {
 		if (!(this instanceof Base))
-			return new Base();
+			return new Base(options);
 
-		// run default init
-		init(this);
-
-		// call constructor function
-		func.apply(this, args);
+		this._constructor(options);
 	}
 
 	// functions run on object creation
-	function init(self) {
+	Base.prototype._constructor = function(options) {
 		// assign UID to view object
-		self.uid = _.uniqueId('sid');
-	}
+		this.uid = _.uniqueId('struck');
+	};
 
 	Base.extend = Struck.extend;
+	Base.create = _.noop;
 
 	return Base;
-};
+}();
 
 Struck.BaseObject.extend = Struck.extend;
 
