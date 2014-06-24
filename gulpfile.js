@@ -61,6 +61,7 @@ gulp.task('build', function() {
     'build/_export',
     'extend',
     'base-object',
+    'event-object',
     'intercom',
     'model',
     'view',

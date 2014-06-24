@@ -9,7 +9,7 @@ Struck.View = function () {
   // `View` constructor returns a View object
   // that contains methods for template/model
   // rendering, dom caching, and event listening.
-  var View = Struck.BaseObject.extend({
+  var View = Struck.EventObject.extend({
     constructor: function(options) {
       var self = this;
 

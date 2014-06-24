@@ -58,12 +58,12 @@ Struck.extend = function(protoProps, staticProps) {
 
 // function for enabling common architectures
 Struck.BaseObject = function () {
-	function Base(options) {
+	function BaseObject(options) {
 		this._constructor(options);
 	}
 
-	// functions run on object creation
-	Base.prototype._constructor = function(options) {
+	// base constructor
+	BaseObject.prototype._constructor = function(options) {
 		// assign UID to view object
 		this.uid = _.uniqueId('struck');
 
@@ -71,13 +71,25 @@ Struck.BaseObject = function () {
 		this.options = _.extend({}, options);
 	};
 
-	Base.extend = Struck.extend;
-	Base.create = _.noop;
+	BaseObject.extend = Struck.extend;
+	BaseObject.create = _.noop;
 
-	return Base;
+	return BaseObject;
 }();
 
-Struck.BaseObject.extend = Struck.extend;
+
+// ##EventObject
+
+//
+Struck.EventObject = function () {
+	var EventObject = Struck.BaseObject.extend({
+		constructor: function (options) {
+			this._constructor(options);
+		}
+	});
+
+	return EventObject;
+}();
 
 
 // ##Intercom
@@ -102,7 +114,7 @@ Struck.Intercom = function (root) {
 	// #####Constructor
 	// set up default subscriptio object's context to the
 	// intercom instance and create subscription collection
-	var Intercom = Struck.BaseObject.extend({
+	var Intercom = Struck.EventObject.extend({
 		constructor: function (options) {
 			this._constructor(options);
 			this.defaultSubscription = _.extend(_.clone(defaultSubscription), { context: this });
@@ -256,7 +268,7 @@ Struck.View = function () {
   // `View` constructor returns a View object
   // that contains methods for template/model
   // rendering, dom caching, and event listening.
-  var View = Struck.BaseObject.extend({
+  var View = Struck.EventObject.extend({
     constructor: function(options) {
       var self = this;
 

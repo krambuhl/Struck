@@ -2,12 +2,12 @@
 
 // function for enabling common architectures
 Struck.BaseObject = function () {
-	function Base(options) {
+	function BaseObject(options) {
 		this._constructor(options);
 	}
 
-	// functions run on object creation
-	Base.prototype._constructor = function(options) {
+	// base constructor
+	BaseObject.prototype._constructor = function(options) {
 		// assign UID to view object
 		this.uid = _.uniqueId('struck');
 
@@ -15,10 +15,8 @@ Struck.BaseObject = function () {
 		this.options = _.extend({}, options);
 	};
 
-	Base.extend = Struck.extend;
-	Base.create = _.noop;
+	BaseObject.extend = Struck.extend;
+	BaseObject.create = _.noop;
 
-	return Base;
+	return BaseObject;
 }();
-
-Struck.BaseObject.extend = Struck.extend;
