@@ -59,9 +59,6 @@ Struck.extend = function(protoProps, staticProps) {
 // function for enabling common architectures
 Struck.BaseObject = function () {
 	function Base(options) {
-		if (!(this instanceof Base))
-			return new Base(options);
-
 		this._constructor(options);
 	}
 
@@ -69,6 +66,9 @@ Struck.BaseObject = function () {
 	Base.prototype._constructor = function(options) {
 		// assign UID to view object
 		this.uid = _.uniqueId('struck');
+
+		// add options object to instance
+		this.options = _.extend({}, options);
 	};
 
 	Base.extend = Struck.extend;
@@ -102,9 +102,12 @@ Struck.Intercom = function (root) {
 	// #####Constructor
 	// set up default subscriptio object's context to the
 	// intercom instance and create subscription collection
-	var Intercom = Struck.BaseObject(function () {
-		this.defaultSubscription = _.extend(_.clone(defaultSubscription), { context: this });
-		this.subscriptions = [];
+	var Intercom = Struck.BaseObject.extend({
+		constructor: function (options) {
+			this._constructor(options);
+			this.defaultSubscription = _.extend(_.clone(defaultSubscription), { context: this });
+			this.subscriptions = [];
+		}
 	});
 
 
@@ -227,8 +230,11 @@ Struck.Intercom = function (root) {
 
 // object for maintaining data
 Struck.Model = function () {
-	var Model = Struck.BaseObject(function() {
-		_.extend(this, new Struck.Intercom());
+	var Model = Struck.BaseObject.extend({
+		constructor: function(options) {
+			this._constructor(options);
+			_.extend(this, new Struck.Intercom());
+		}
 	});
 
 	Model.prototype.get = _.noop;
@@ -250,34 +256,36 @@ Struck.View = function () {
   // `View` constructor returns a View object
   // that contains methods for template/model
   // rendering, dom caching, and event listening.
-  var View = Struck.BaseObject(function(options) {
-    var self = this;
+  var View = Struck.BaseObject.extend({
+    constructor: function(options) {
+      var self = this;
 
-    // setup default options
-    this.options = _.extend({}, options);
+      // call BaseObject constructor
+      this._constructor(options);
 
-    // extend selected instance opitions to object
-    _.extend(this, _.pick(this.options, viewOptions));
+      // extend selected instance opitions to object
+      _.extend(this, _.pick(this.options, viewOptions));
 
-    // add event api to view
-    this.com = new Struck.Intercom();
+      // add event api to view
+      this.com = new Struck.Intercom();
 
-    // gets model
-    this.model = _.result(self, 'model');
+      // gets model
+      this.model = _.result(self, 'model');
 
-    // setup view elements
-    if (this.el) this.setElement(_.result(this, 'el'));
+      // setup view elements
+      if (this.el) this.setElement(_.result(this, 'el'));
 
-    // render template with model if defined
-    if (this.template) this.render();
+      // render template with model if defined
+      if (this.template) this.render();
 
-    _.defer(function () {
-      // cache jquery elements
-      setupUI(self, _.result(self, 'ui'));
+      _.defer(function () {
+        // cache jquery elements
+        setupUI(self, _.result(self, 'ui'));
 
-      // run setup function
-      self.setup(self.options);
-    });
+        // run setup function
+        self.setup(self.options);
+      });
+    }
   });
 
   // caches the dom object and creates scoped find function
