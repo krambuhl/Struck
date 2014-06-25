@@ -24,8 +24,6 @@
 
 <script>
 var AppView = Struck.View.extend({
-    el: "#app",
-
     ui: {
         header: '#header',
         articles: '.article'
@@ -41,6 +39,13 @@ var AppView = Struck.View.extend({
 
     }
 });
+
+var app = AppView.create({
+    el: "#app",
+    ui: {
+        tags: "[data-tag]"
+    }
+})
 </script>
 
 
@@ -48,10 +53,10 @@ var AppView = Struck.View.extend({
 	<div id="header"></div>
 	<article class="article"></article>
 	<article class="article"></article>
+	<article class="article" data-tag="javascript"></article>
 	<article class="article"></article>
 	<article class="article"></article>
-	<article class="article"></article>
-	<article class="article"></article>
+	<article class="article" data-tag="clojure"></article>
 	<article class="article"></article>
 </div>
 

@@ -20,7 +20,7 @@ Struck.Intercom = function (root) {
 	// #####Constructor
 	// set up default subscriptio object's context to the
 	// intercom instance and create subscription collection
-	var Intercom = Struck.EventObject.extend({
+	var Intercom = Struck.BaseObject.extend({
 		constructor: function (options) {
 			this._constructor(options);
 			this.defaultSubscription = _.extend(_.clone(defaultSubscription), { context: this });

@@ -16,7 +16,9 @@ Struck.BaseObject = function () {
 	};
 
 	BaseObject.extend = Struck.extend;
-	BaseObject.create = _.noop;
+	BaseObject.create = function() {
+		
+	};
 
 	return BaseObject;
 }();
