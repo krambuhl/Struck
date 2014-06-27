@@ -3,21 +3,36 @@
 // function for enabling common architectures
 Struck.BaseObject = function () {
 	function BaseObject(options) {
-		this._constructor(options);
+		//
+		this.addInitializer(baseInitiation);
 	}
 
-	// base constructor
-	BaseObject.prototype._constructor = function(options) {
+	// #####addInitializer
+	BaseObject.prototype.addInitializer = function(func) {
+		if (!this.initializers) this.initializers = [];
+		this.initializers.push(func);
+	};
+
+	// #####baseInitiation
+	// when the object is created
+	function baseInitiation() {
 		// assign UID to view object
 		this.uid = _.uniqueId('struck');
 
 		// add options object to instance
 		this.options = _.extend({}, options);
-	};
+	}
+
+	BaseObject.prototype.destroy = _.noop;
 
 	BaseObject.extend = Struck.extend;
-	BaseObject.create = function() {
-		
+
+	// ###create
+	// prefered method of creating new objects
+	// over using the `new` style
+	BaseObject.create = function(options) {
+		var object = new BaseObject(options);
+		return object;
 	};
 
 	return BaseObject;

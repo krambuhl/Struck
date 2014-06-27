@@ -59,21 +59,36 @@ Struck.extend = function(protoProps, staticProps) {
 // function for enabling common architectures
 Struck.BaseObject = function () {
 	function BaseObject(options) {
-		this._constructor(options);
+		//
+		this.addInitializer(baseInitiation);
 	}
 
-	// base constructor
-	BaseObject.prototype._constructor = function(options) {
+	// #####addInitializer
+	BaseObject.prototype.addInitializer = function(func) {
+		if (!this.initializers) this.initializers = [];
+		this.initializers.push(func);
+	};
+
+	// #####baseInitiation
+	// when the object is created
+	function baseInitiation() {
 		// assign UID to view object
 		this.uid = _.uniqueId('struck');
 
 		// add options object to instance
 		this.options = _.extend({}, options);
-	};
+	}
+
+	BaseObject.prototype.destroy = _.noop;
 
 	BaseObject.extend = Struck.extend;
-	BaseObject.create = function() {
-		
+
+	// ###create
+	// prefered method of creating new objects
+	// over using the `new` style
+	BaseObject.create = function(options) {
+		var object = new BaseObject(options);
+		return object;
 	};
 
 	return BaseObject;
@@ -88,12 +103,8 @@ Struck.BaseObject = function () {
 // automates undelgating events of view removal.
 Struck.EventObject = function () {
 	var EventObject = Struck.BaseObject.extend({
-		constructor: function (options) {
-			this._constructor(options);
-		},
-
-		_constructor: function () {
-			Struck.BaseObject.prototype._constructor.apply(this, arguments);
+		baseInitiation: function () {
+			Struck.BaseObject.prototype.baseInitiation.apply(this, arguments);
 
 			// all event objects need an intercom for
 			// emiting and listening to events
@@ -104,9 +115,11 @@ Struck.EventObject = function () {
 	// #####listenTo
 
 	// Registers a event listener to the
-	// appropriete subsystem. Delegates jquery
+	// appropriate subsystem. Delegates jquery
 	// objects to the jq event system and struk
 	// objects to the instance's intercom
+	// we then keep a secondary object of events
+	// to remove when the object is deconstructed
 	EventObject.prototype.listenTo =  function (obj, events, func) {
 		// if object is jquery wrapped
 		// delegate events into object
@@ -122,6 +135,10 @@ Struck.EventObject = function () {
 	};
 
 	// #####stopListening
+	// removes an event listener from the
+	// appropriate subsystem.
+	// typeof obj == jquery ? jquery.off
+	// typeof ogj == Struck.EventObjt ? com.off
 	EventObject.prototype.stopListening = function (obj, events, func) {
 
 	};
