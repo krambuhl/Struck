@@ -15,6 +15,14 @@ Struck.EventObject = function () {
 		}
 	});
 
+	// #####hook
+
+	// trigger intercom events for hook
+	EventObject.prototype.hook = function (name) {
+		Struck.EventObject.prototype.hook.apply(this, arguments);
+		this.com.emit(name, arguments);
+	};
+
 	// #####listenTo
 
 	// Registers a event listener to the
@@ -23,7 +31,7 @@ Struck.EventObject = function () {
 	// objects to the instance's intercom
 	// we then keep a secondary object of events
 	// to remove when the object is deconstructed
-	EventObject.prototype.listenTo =  function (obj, events, func) {
+	EventObject.prototype.listenTo = function (obj, events, func) {
 		// if object is jquery wrapped
 		// delegate events into object
 

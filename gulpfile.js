@@ -59,6 +59,7 @@ function dir() { return slice(arguments).join('/'); }
 gulp.task('build', function() {
   var files = [
     'build/_export',
+    'build/utilities',
     'extend',
     'base-object',
     'event-object',

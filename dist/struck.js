@@ -12,6 +12,12 @@
 }(this, function(root, Struck, _, $, undefined) {
 
 
+
+function capitalize(string) {
+	return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+
 // ###Extend
 
 // _Pulled from Backbone.js 1.1.2 source_
@@ -59,25 +65,32 @@ Struck.extend = function(protoProps, staticProps) {
 // function for enabling common architectures
 Struck.BaseObject = function () {
 	function BaseObject(options) {
-		//
-		this.addInitializer(baseInitiation);
-	}
 
-	// #####addInitializer
-	BaseObject.prototype.addInitializer = function(func) {
-		if (!this.initializers) this.initializers = [];
-		this.initializers.push(func);
-	};
+		this.hook('beforeBaseInitiation', options);
+		this.baseInitiation.apply(this, arguments);
+		this.hook('afterBaseInitiation', options);
+
+
+	}
 
 	// #####baseInitiation
 	// when the object is created
-	function baseInitiation() {
+	BaseObject.prototype.baseInitiation = function() {
 		// assign UID to view object
 		this.uid = _.uniqueId('struck');
 
 		// add options object to instance
 		this.options = _.extend({}, options);
-	}
+	};
+
+	// #####hook
+	BaseObject.prototype.hook = function(name) {
+		var args = _.rest(arguments);
+		var methodHook = 'on' + capitalize(name);
+		if (this[methodHook]) {
+			return this[methodHook].apply(this, args);
+		}
+	};
 
 	BaseObject.prototype.destroy = _.noop;
 
@@ -112,6 +125,14 @@ Struck.EventObject = function () {
 		}
 	});
 
+	// #####hook
+
+	// trigger intercom events for hook
+	EventObject.prototype.hook = function (name) {
+		Struck.EventObject.prototype.hook.apply(this, arguments);
+		this.com.emit(name, arguments);
+	};
+
 	// #####listenTo
 
 	// Registers a event listener to the
@@ -120,7 +141,7 @@ Struck.EventObject = function () {
 	// objects to the instance's intercom
 	// we then keep a secondary object of events
 	// to remove when the object is deconstructed
-	EventObject.prototype.listenTo =  function (obj, events, func) {
+	EventObject.prototype.listenTo = function (obj, events, func) {
 		// if object is jquery wrapped
 		// delegate events into object
 
