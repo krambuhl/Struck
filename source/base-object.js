@@ -2,8 +2,21 @@
 
 // function for enabling common architectures
 Struck.BaseObject = function () {
-	function BaseObject(options) {
 
+	// ####BaseObject Constructor
+	//
+
+	// __Warning: overwriting the BaseObject
+	// Constructor will disable internal processes.__
+	// In cases where overwriting the constructor
+	// is required call the prototype to preserve
+	// functionality:
+
+	// `Struck.BaseObject.prototype.constructor.apply(this, arguments);`
+	
+	function BaseObject(options) {
+		// run base initiation and provide
+		// hooks that extended objects can use
 		this.hook('beforeBaseInitiation', options);
 		this.baseInitiation.apply(this, arguments);
 		this.hook('afterBaseInitiation', options);
