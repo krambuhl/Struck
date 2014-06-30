@@ -60,6 +60,7 @@ gulp.task('build', function() {
   var files = [
     'build/_export',
     'build/utilities',
+    'hook',
     'extend',
     'base-object',
     'event-object',

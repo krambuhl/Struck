@@ -18,9 +18,10 @@ Struck.EventObject = function () {
 	// #####hook
 
 	// trigger intercom events for hook
-	EventObject.prototype.hook = function (name) {
+	EventObject.prototype.hook = function (name, mod) {
+		var postfix = mod !== undefined ? ':' + mod : '';
 		Struck.EventObject.prototype.hook.apply(this, arguments);
-		this.com.emit(name, arguments);
+		this.com.emit(name + postfix, arguments);
 	};
 
 	// #####listenTo

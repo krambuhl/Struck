@@ -12,10 +12,29 @@
 }(this, function(root, Struck, _, $, undefined) {
 
 
+function getFuncName(func) {
+  var ret = func.toString();
+  ret = ret.substr('function '.length);
+  ret = ret.substr(0, ret.indexOf('('));
+  return ret;
+}
 
 function capitalize(string) {
 	return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+
+Struck.Hook = function () {
+	function Hook(name, func) {
+		return function() {
+			if (this.hook) this.hook(name, 'before');
+			func.apply(this, arguments);
+			if (this.hook) this.hook(name, 'after');
+		};
+	}
+
+	return Hook;
+}();
 
 
 // ###Extend
@@ -66,7 +85,9 @@ Struck.extend = function(protoProps, staticProps) {
 Struck.BaseObject = function () {
 
 	// ####BaseObject Constructor
-	//
+
+	// constructor is run when object is created
+	// runs base initiation by default
 
 	// __Warning: overwriting the BaseObject
 	// Constructor will disable internal processes.__
@@ -75,31 +96,29 @@ Struck.BaseObject = function () {
 	// functionality:
 
 	// `Struck.BaseObject.prototype.constructor.apply(this, arguments);`
-	
+
 	function BaseObject(options) {
 		// run base initiation and provide
 		// hooks that extended objects can use
-		this.hook('beforeBaseInitiation', options);
-		this.baseInitiation.apply(this, arguments);
-		this.hook('afterBaseInitiation', options);
-
-
+		this.baseInitiation(options);
 	}
 
 	// #####baseInitiation
 	// when the object is created
-	BaseObject.prototype.baseInitiation = function() {
+	BaseObject.prototype.baseInitiation = Struck.Hook('baseInitiation', function(options) {
 		// assign UID to view object
 		this.uid = _.uniqueId('struck');
 
 		// add options object to instance
 		this.options = _.extend({}, options);
-	};
+	});
 
 	// #####hook
-	BaseObject.prototype.hook = function(name) {
-		var args = _.rest(arguments);
-		var methodHook = 'on' + capitalize(name);
+	BaseObject.prototype.hook = function(name, mod) {
+		var args = _.rest(arguments, 2),
+			prefix = mod || 'on',
+			methodHook = prefix + capitalize(name);
+
 		if (this[methodHook]) {
 			return this[methodHook].apply(this, args);
 		}
@@ -141,9 +160,10 @@ Struck.EventObject = function () {
 	// #####hook
 
 	// trigger intercom events for hook
-	EventObject.prototype.hook = function (name) {
+	EventObject.prototype.hook = function (name, mod) {
+		var postfix = mod !== undefined ? ':' + mod : '';
 		Struck.EventObject.prototype.hook.apply(this, arguments);
-		this.com.emit(name, arguments);
+		this.com.emit(name + postfix, arguments);
 	};
 
 	// #####listenTo
