@@ -9,37 +9,32 @@ Struck.View = function () {
   // `View` constructor returns a View object
   // that contains methods for template/model
   // rendering, dom caching, and event listening.
-  var View = Struck.EventObject.extend({
-    constructor: function(options) {
-      var self = this;
+  var View = Struck.EventObject.extend();
 
-      // call BaseObject constructor
-      this._constructor(options);
+  View.prototype.baseInitiation = function () {
+    Struck.EventObject.prototype.baseInitiation.apply(this, arguments);
+    
+    var self = this;
+    // extend selected instance opitions to object
+    _.extend(this, _.pick(this.options, viewOptions));
 
-      // extend selected instance opitions to object
-      _.extend(this, _.pick(this.options, viewOptions));
+    // gets model
+    this.model = _.result(self, 'model');
 
-      // add event api to view
-      this.com = new Struck.Intercom();
+    // setup view elements
+    if (this.el) this.setElement(_.result(this, 'el'));
 
-      // gets model
-      this.model = _.result(self, 'model');
+    // render template with model if defined
+    if (this.template) this.render();
 
-      // setup view elements
-      if (this.el) this.setElement(_.result(this, 'el'));
+    _.defer(function () {
+      // cache jquery elements
+      setupUI(self, _.result(self, 'ui'));
 
-      // render template with model if defined
-      if (this.template) this.render();
-
-      _.defer(function () {
-        // cache jquery elements
-        setupUI(self, _.result(self, 'ui'));
-
-        // run setup function
-        self.setup(self.options);
-      });
-    }
-  });
+      // run setup function
+      self.setup(self.options);
+    });
+  };
 
   // caches the dom object and creates scoped find function
   View.prototype.setElement = function(el) {

@@ -1,3 +1,6 @@
+// ###Hook
+// 
+
 Struck.Hook = function () {
 	function Hook(name, func) {
 		return function() {

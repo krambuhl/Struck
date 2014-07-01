@@ -12,17 +12,13 @@
 }(this, function(root, Struck, _, $, undefined) {
 
 
-function getFuncName(func) {
-  var ret = func.toString();
-  ret = ret.substr('function '.length);
-  ret = ret.substr(0, ret.indexOf('('));
-  return ret;
-}
-
 function capitalize(string) {
 	return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+
+// ###Hook
+// 
 
 Struck.Hook = function () {
 	function Hook(name, func) {
@@ -132,7 +128,7 @@ Struck.BaseObject = function () {
 	// prefered method of creating new objects
 	// over using the `new` style
 	BaseObject.create = function(options) {
-		var object = new BaseObject(options);
+		var object = new this(options);
 		return object;
 	};
 
@@ -162,7 +158,7 @@ Struck.EventObject = function () {
 	// trigger intercom events for hook
 	EventObject.prototype.hook = function (name, mod) {
 		var postfix = mod !== undefined ? ':' + mod : '';
-		Struck.EventObject.prototype.hook.apply(this, arguments);
+		Struck.BaseObject.prototype.hook.apply(this, arguments);
 		this.com.emit(name + postfix, arguments);
 	};
 
@@ -377,37 +373,32 @@ Struck.View = function () {
   // `View` constructor returns a View object
   // that contains methods for template/model
   // rendering, dom caching, and event listening.
-  var View = Struck.EventObject.extend({
-    constructor: function(options) {
-      var self = this;
+  var View = Struck.EventObject.extend();
 
-      // call BaseObject constructor
-      this._constructor(options);
+  View.prototype.baseInitiation = function () {
+    Struck.EventObject.prototype.baseInitiation.apply(this, arguments);
+    
+    var self = this;
+    // extend selected instance opitions to object
+    _.extend(this, _.pick(this.options, viewOptions));
 
-      // extend selected instance opitions to object
-      _.extend(this, _.pick(this.options, viewOptions));
+    // gets model
+    this.model = _.result(self, 'model');
 
-      // add event api to view
-      this.com = new Struck.Intercom();
+    // setup view elements
+    if (this.el) this.setElement(_.result(this, 'el'));
 
-      // gets model
-      this.model = _.result(self, 'model');
+    // render template with model if defined
+    if (this.template) this.render();
 
-      // setup view elements
-      if (this.el) this.setElement(_.result(this, 'el'));
+    _.defer(function () {
+      // cache jquery elements
+      setupUI(self, _.result(self, 'ui'));
 
-      // render template with model if defined
-      if (this.template) this.render();
-
-      _.defer(function () {
-        // cache jquery elements
-        setupUI(self, _.result(self, 'ui'));
-
-        // run setup function
-        self.setup(self.options);
-      });
-    }
-  });
+      // run setup function
+      self.setup(self.options);
+    });
+  };
 
   // caches the dom object and creates scoped find function
   View.prototype.setElement = function(el) {

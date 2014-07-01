@@ -51,7 +51,7 @@ Struck.BaseObject = function () {
 	// prefered method of creating new objects
 	// over using the `new` style
 	BaseObject.create = function(options) {
-		var object = new BaseObject(options);
+		var object = new this(options);
 		return object;
 	};
 

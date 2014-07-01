@@ -20,7 +20,7 @@ Struck.EventObject = function () {
 	// trigger intercom events for hook
 	EventObject.prototype.hook = function (name, mod) {
 		var postfix = mod !== undefined ? ':' + mod : '';
-		Struck.EventObject.prototype.hook.apply(this, arguments);
+		Struck.BaseObject .prototype.hook.apply(this, arguments);
 		this.com.emit(name + postfix, arguments);
 	};
 
@@ -39,6 +39,13 @@ Struck.EventObject = function () {
 		// if object is Struck.EventObject
 		// delegate events to the underlying
 		// com object
+
+		if (obj instanceof jQuery) {
+			// do jquery stuff
+		// if object is event object we can assume that
+		} else if (obj instanceof Struck.EventObject) {
+
+		}
 	};
 
 	// #####listenOnce
