@@ -42,7 +42,9 @@ Struck.EventObject = function () {
 
 		if (obj instanceof jQuery) {
 			// do jquery stuff
-		// if object is event object we can assume that
+
+		// if object is (or extended from) an event object
+		// we can assume it has an Intercom
 		} else if (obj instanceof Struck.EventObject) {
 
 		}
@@ -61,6 +63,23 @@ Struck.EventObject = function () {
 	EventObject.prototype.stopListening = function (obj, events, func) {
 
 	};
+
+	// #####stopListeningAll
+	// remove all event listeners from Object
+	// iterates over internal list, delegating
+	// to stopListening
+	EventObject.prototype.stopListeningAll = function (obj, events, func) {
+
+	};
+
+	// #####destroy
+	// when an object is removed, the destroy function
+	// should be called to remove attached event listeners
+	BaseObject.prototype.destroy = Struck.Hook('destroy', function () {
+		// remove all event listeners listeners
+		this.stopListeningAll();
+	});
+
 
 	return EventObject;
 }();

@@ -17,19 +17,68 @@ function capitalize(string) {
 }
 
 
-// ###Hook
-// 
+// ##Hook
+
+// wraps function calls with hook logic,
+// used to wrap method calls in an Struck
+// Object.  The object's hook function will be
+// called before and after the function call
+
+// __Example:__
+// ```javascript
+// var HookedObj = Struck.EventObject.extend({
+//   initialize: function () {
+//
+//     this.com.on('beforeSayHello', function() {
+//       console.log('open mouth');
+//     });
+//   },
+//
+//   sayHello: Struck.Hook(function () {
+//     console.log('say hello');
+//   })
+// })
+//
+// var myHookedObject = HookedObj.create({
+//   afterSayHello: function () {
+//     console.log('close mouth');
+//   }
+// });
+//
+// myHookedObject.sayHello();
+//
+// output:
+//   - open mouth
+//   - say hello
+//   - close mouth
+// ```
 
 Struck.Hook = function () {
-	function Hook(name, func) {
-		return function() {
-			if (this.hook) this.hook(name, 'before');
-			func.apply(this, arguments);
-			if (this.hook) this.hook(name, 'after');
-		};
-	}
+  function Hook(name, func, opts) {
+    opts = _.isObject(func) ? func : opts;
 
-	return Hook;
+    var options = _.extend({
+      before: true,
+      after: true
+    }, opts);
+
+    // define function to called as a method of
+    // Struck Object, the `this` context is assumed
+    // to refer to the struck object.
+    return function() {
+      if (this.hook && options.before) {
+        this.hook(name, 'before');
+      }
+
+      func.apply(this, arguments);
+
+      if (this.hook && options.after) {
+        this.hook(name, 'after');
+      }
+    };
+  }
+
+  return Hook;
 }();
 
 
@@ -158,7 +207,7 @@ Struck.EventObject = function () {
 	// trigger intercom events for hook
 	EventObject.prototype.hook = function (name, mod) {
 		var postfix = mod !== undefined ? ':' + mod : '';
-		Struck.BaseObject.prototype.hook.apply(this, arguments);
+		Struck.BaseObject .prototype.hook.apply(this, arguments);
 		this.com.emit(name + postfix, arguments);
 	};
 
@@ -177,6 +226,15 @@ Struck.EventObject = function () {
 		// if object is Struck.EventObject
 		// delegate events to the underlying
 		// com object
+
+		if (obj instanceof jQuery) {
+			// do jquery stuff
+
+		// if object is (or extended from) an event object
+		// we can assume it has an Intercom
+		} else if (obj instanceof Struck.EventObject) {
+
+		}
 	};
 
 	// #####listenOnce
@@ -192,6 +250,23 @@ Struck.EventObject = function () {
 	EventObject.prototype.stopListening = function (obj, events, func) {
 
 	};
+
+	// #####stopListeningAll
+	// remove all event listeners from Object
+	// iterates over internal list, delegating
+	// to stopListening
+	EventObject.prototype.stopListeningAll = function (obj, events, func) {
+
+	};
+
+	// #####destroy
+	// when an object is removed, the destroy function
+	// should be called to remove attached event listeners
+	BaseObject.prototype.destroy = Struck.Hook('destroy', function () {
+		// remove all event listeners listeners
+		this.stopListeningAll();
+	});
+
 
 	return EventObject;
 }();
