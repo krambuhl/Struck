@@ -20,7 +20,12 @@ Struck.BaseObject = function () {
 		// run base initiation and provide
 		// hooks that extended objects can use
 		this.baseInitiation(options);
+
+		this.initialize();
 	}
+
+	BaseObject.prototype.initialize = _.noop;
+
 
 	// #####baseInitiation
 	// when the object is created
