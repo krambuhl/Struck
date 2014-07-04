@@ -21,6 +21,9 @@
 // })
 //
 // var myHookedObject = HookedObj.create({
+//   onSayHello: function() {
+///    console.log('hello complete);
+//   },
 //   afterSayHello: function () {
 //     console.log('close mouth');
 //   }
@@ -31,6 +34,7 @@
 // output:
 //   - open mouth
 //   - say hello
+//   - hello complete
 //   - close mouth
 // ```
 
@@ -42,20 +46,21 @@ Struck.Hook = function () {
       before: true,
       after: true
     }, opts);
+    
+    function hook(self, hname, prefix) {
+      if (self.hook) self.hook(hname, prefix);
+    }
 
     // define function to called as a method of
     // Struck Object, the `this` context is assumed
     // to refer to the struck object.
     return function() {
-      if (this.hook && options.before) {
-        this.hook(name, 'before');
-      }
+      if (options.before) hook(this, name, 'before');
 
       func.apply(this, arguments);
+      hook(this, name, 'on');
 
-      if (this.hook && options.after) {
-        this.hook(name, 'after');
-      }
+      if (options.after) hook(this, name, 'after');
     };
   }
 
