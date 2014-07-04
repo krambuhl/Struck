@@ -45,19 +45,17 @@ Struck.View = function () {
 
   // `render` function that runs
   // template function with model data
-  View.prototype.render = function() {
-
-  };
+  View.prototype.render = _.noop;
 
   // overwritable `setup` function
   // called when View is initialized
-  View.prototype.setup = _.noop;
+  View.prototype.setup = _.noop
 
   // overwritable `cleanup` function
   // that should be called when removing
   // a view to remove event listeners
   // or any possible memory leaks
-  View.prototype.cleanup = _.noop;
+  View.prototype.cleaup = _.noop;
 
   View.prototype.listenTo = function () { };
 
@@ -69,6 +67,15 @@ Struck.View = function () {
       result[name] = view.$(ui[name]);
       return result;
     }, {});
+    
+    // a ui object of:
+    // `{ header: '.header' }`
+    // results with an object like:
+    // `view.ui = {
+    //    header: $('.header')  
+    // }`
+    // then
+    // `view.ui.header.on('click', func)`
   }
 
   return View;
