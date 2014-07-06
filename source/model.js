@@ -2,7 +2,7 @@
 
 // object for maintaining data
 Struck.Model = function () {
-	var Model = Struck.BaseObject.extend({
+	var Model = Struck.EventObject.extend({
 		constructor: function(options) {
 			this._constructor(options);
 			_.extend(this, new Struck.Intercom());
