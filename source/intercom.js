@@ -73,12 +73,18 @@ Struck.Intercom = function (root) {
 	function unsubscribe(com, name, func) {
 		// com, name, func:
 		// .. remove specific subscriber function
+		if (func !== undefined) {
+
 
 		// com, name:
 		// .. remove all subscribers by name
+		} else if (name !== undefined) {
 
 		// com:
 		// .. remove all subscribers from in
+		} else {
+			com.subscriptions = []
+		}
 	}
 
 	// #####trigger

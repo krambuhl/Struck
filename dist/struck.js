@@ -457,7 +457,7 @@ Struck.View = function () {
 
   View.prototype.baseInitiation = function () {
     Struck.EventObject.prototype.baseInitiation.apply(this, arguments);
-    
+
     var self = this;
     // extend selected instance opitions to object
     _.extend(this, _.pick(this.options, viewOptions));
