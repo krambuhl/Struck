@@ -71,20 +71,21 @@ Struck.Intercom = function (root) {
 	// #####unsubscribe
 	//
 	function unsubscribe(com, name, func) {
+		// if no arguments, default to remove all
+		var filter = function () { return true; };
+
 		// com, name, func:
 		// .. remove specific subscriber function
 		if (func !== undefined) {
-
+			filter = function (sub) { return sub.name == name && sub.callback == func; };
 
 		// com, name:
 		// .. remove all subscribers by name
 		} else if (name !== undefined) {
-
-		// com:
-		// .. remove all subscribers from in
-		} else {
-			com.subscriptions = []
+			filter = function (sub) { return sub.name == name; };
 		}
+
+		com.subscriptions = _.reject(com.subscriptions, filter);
 	}
 
 	// #####trigger
