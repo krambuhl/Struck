@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en-US" dir="ltr">
 <head>
@@ -30,7 +29,7 @@ var AppView = Struck.View.extend({
     },
 
     setup: function () {
-        this.listenTo(this.ui.header, "click", onHeaderClick);
+        this.listenTo(this.ui.header, "click", this.onHeaderClick);
     },
 
     onHeaderClick: function () { },

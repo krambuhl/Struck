@@ -83,7 +83,7 @@ Struck.Intercom = function (root) {
 				return sub.name == name;
 			}
 
-			// remove all subscriptions if no arguments provided 
+			// remove all subscriptions if no arguments provided
 			return true;
 		};
 

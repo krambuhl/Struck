@@ -217,11 +217,13 @@ Struck.BaseObject = function () {
 Struck.EventObject = function () {
 	var EventObject = Struck.BaseObject.extend({
 		baseInitiation: function () {
-			Struck.BaseObject.prototype.baseInitiation.apply(this, arguments);
-
 			// all event objects need an intercom for
 			// emiting and listening to events
 			this.com = new Struck.Intercom();
+
+			// call super after defining com which
+			// is used for base hooks
+			Struck.BaseObject.prototype.baseInitiation.apply(this, arguments);
 		}
 	});
 
@@ -230,7 +232,7 @@ Struck.EventObject = function () {
 	// trigger intercom events for hook
 	EventObject.prototype.hook = function (name, mod) {
 		var postfix = mod !== undefined ? ':' + mod : '';
-		Struck.BaseObject .prototype.hook.apply(this, arguments);
+		Struck.BaseObject.prototype.hook.apply(this, arguments);
 		this.com.emit(name + postfix, arguments);
 	};
 
@@ -380,7 +382,7 @@ Struck.Intercom = function (root) {
 				return sub.name == name;
 			}
 
-			// remove all subscriptions if no arguments provided 
+			// remove all subscriptions if no arguments provided
 			return true;
 		};
 
