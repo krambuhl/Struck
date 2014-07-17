@@ -16,6 +16,19 @@ function capitalize(string) {
 	return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+// #####splitName
+// split "event1 event2" into an
+// array of event names
+function splitName(name, context) {
+	if (_.isUndefined(context)) context = this;
+	// get result of name if defined as a function
+	var result = _.isFunction(name) ? name.call(context) : name;
+
+	// split by spaces if result isn't an array
+	// always returns an array
+	return _.isArray(result) ? result : result.split(" ");
+}
+
 
 // ##Hook
 
@@ -40,6 +53,9 @@ function capitalize(string) {
 // })
 //
 // var myHookedObject = HookedObj.create({
+//   onSayHello: function() {
+///    console.log('hello complete);
+//   },
 //   afterSayHello: function () {
 //     console.log('close mouth');
 //   }
@@ -50,6 +66,7 @@ function capitalize(string) {
 // output:
 //   - open mouth
 //   - say hello
+//   - hello complete
 //   - close mouth
 // ```
 
@@ -61,20 +78,21 @@ Struck.Hook = function () {
       before: true,
       after: true
     }, opts);
+    
+    function hook(self, hname, prefix) {
+      if (self.hook) self.hook(hname, prefix);
+    }
 
     // define function to called as a method of
     // Struck Object, the `this` context is assumed
     // to refer to the struck object.
     return function() {
-      if (this.hook && options.before) {
-        this.hook(name, 'before');
-      }
+      if (options.before) hook(this, name, 'before');
 
       func.apply(this, arguments);
+      hook(this, name, 'on');
 
-      if (this.hook && options.after) {
-        this.hook(name, 'after');
-      }
+      if (options.after) hook(this, name, 'after');
     };
   }
 
@@ -267,7 +285,7 @@ Struck.EventObject = function () {
 	// #####destroy
 	// when an object is removed, the destroy function
 	// should be called to remove attached event listeners
-	BaseObject.prototype.destroy = Struck.Hook('destroy', function () {
+	EventObject.prototype.destroy = Struck.Hook('destroy', function () {
 		// remove all event listeners listeners
 		this.stopListeningAll();
 	});
@@ -300,8 +318,8 @@ Struck.Intercom = function (root) {
 	// set up default subscriptio object's context to the
 	// intercom instance and create subscription collection
 	var Intercom = Struck.BaseObject.extend({
-		constructor: function (options) {
-			this._constructor(options);
+		baseInitiation: function () {
+			Struck.BaseObject.prototype.baseInitiation.apply(this, arguments);
 			this.defaultSubscription = _.extend(_.clone(defaultSubscription), { context: this });
 			this.subscriptions = [];
 		}
@@ -350,14 +368,23 @@ Struck.Intercom = function (root) {
 	// #####unsubscribe
 	//
 	function unsubscribe(com, name, func) {
-		// com, name, func:
-		// .. remove specific subscriber function
+		var filter = function (sub) {
+			// com, name, func:
+			// .. remove specific subscriber function
+			if (func) {
+				return sub.name == name && sub.callback == func;
 
-		// com, name:
-		// .. remove all subscribers by name
+			// com, name:
+			// .. remove all subscribers by name
+			} else if (name) {
+				return sub.name == name;
+			}
 
-		// com:
-		// .. remove all subscribers from in
+			// remove all subscriptions if no arguments provided 
+			return true;
+		};
+
+		com.subscriptions = _.reject(com.subscriptions, filter);
 	}
 
 	// #####trigger
@@ -427,10 +454,9 @@ Struck.Intercom = function (root) {
 
 // object for maintaining data
 Struck.Model = function () {
-	var Model = Struck.BaseObject.extend({
-		constructor: function(options) {
-			this._constructor(options);
-			_.extend(this, new Struck.Intercom());
+	var Model = Struck.EventObject.extend({
+		baseInitiation: function(options) {
+			Struck.EventObject.prototype.baseInitiation.apply(this, arguments);
 		}
 	});
 
@@ -489,19 +515,17 @@ Struck.View = function () {
 
   // `render` function that runs
   // template function with model data
-  View.prototype.render = function() {
-
-  };
+  View.prototype.render = _.noop;
 
   // overwritable `setup` function
   // called when View is initialized
-  View.prototype.setup = _.noop;
+  View.prototype.setup = _.noop
 
   // overwritable `cleanup` function
   // that should be called when removing
   // a view to remove event listeners
   // or any possible memory leaks
-  View.prototype.cleanup = _.noop;
+  View.prototype.cleaup = _.noop;
 
   View.prototype.listenTo = function () { };
 
@@ -513,6 +537,15 @@ Struck.View = function () {
       result[name] = view.$(ui[name]);
       return result;
     }, {});
+    
+    // a ui object of:
+    // `{ header: '.header' }`
+    // results with an object like:
+    // `view.ui = {
+    //    header: $('.header')  
+    // }`
+    // then
+    // `view.ui.header.on('click', func)`
   }
 
   return View;

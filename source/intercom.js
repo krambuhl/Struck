@@ -74,19 +74,19 @@ Struck.Intercom = function (root) {
 		var filter = function (sub) {
 			// com, name, func:
 			// .. remove specific subscriber function
-			if (func !== undefined) {
+			if (func) {
 				return sub.name == name && sub.callback == func;
 
 			// com, name:
 			// .. remove all subscribers by name
-			} else if (name !== undefined) {
+			} else if (name) {
 				return sub.name == name;
 			}
 
-			// if no arguments, default to remove all
+			// remove all subscriptions if no arguments provided 
 			return true;
 		};
-		
+
 		com.subscriptions = _.reject(com.subscriptions, filter);
 	}
 

@@ -75,7 +75,7 @@ Struck.EventObject = function () {
 	// #####destroy
 	// when an object is removed, the destroy function
 	// should be called to remove attached event listeners
-	BaseObject.prototype.destroy = Struck.Hook('destroy', function () {
+	EventObject.prototype.destroy = Struck.Hook('destroy', function () {
 		// remove all event listeners listeners
 		this.stopListeningAll();
 	});
