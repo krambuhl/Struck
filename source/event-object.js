@@ -14,6 +14,8 @@ Struck.EventObject = function () {
 			// call super after defining com which
 			// is used for base hooks
 			Struck.BaseObject.prototype.baseInitiation.apply(this, arguments);
+
+			this.events = [];
 		}
 	});
 
@@ -48,7 +50,11 @@ Struck.EventObject = function () {
 		// if object is (or extended from) an event object
 		// we can assume it has an Intercom
 		} else if (obj instanceof Struck.EventObject) {
-
+			var eventId = obj.on(events, func);
+			this.events.push({
+			       events: events,
+			       func: func
+			});
 		}
 	};
 
