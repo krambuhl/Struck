@@ -10,7 +10,7 @@
   "main": "dist/struck.js",
   "scripts": {
     "compile": "gulp compile",
-    "start": "supervisor demo.js",
+    "start": "node demo.js",
     "test": ""
   },
   "repository": {
