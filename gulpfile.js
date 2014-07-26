@@ -11,6 +11,7 @@ var path  = require('path');
 // gulp general plugins
 var rename = require('gulp-rename');
 var concatMaps = require('gulp-concat-sourcemap');
+var filter = require('gulp-filter');
 
 // docs & tests
 var docco = require('gulp-docco');
@@ -49,7 +50,9 @@ gulp.task('build', function() {
       sourcesContent: false,
       sourceRoot: '../'
     }))
-    .pipe(gulp.dest(destDir));
+    .pipe(gulp.dest(destDir))
+    .pipe(filter("*.js"))
+    .pipe(gulp.dest('./example'));
 });
 
 
