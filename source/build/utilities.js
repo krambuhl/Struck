@@ -14,3 +14,9 @@ function splitName(name, context) {
 	// always returns an array
 	return _.isArray(result) ? result : result.split(" ");
 }
+
+// #####result
+// returns get result of an expression
+function result(expr) {
+	return _.isFunction(expr) ? expr() : expr;
+}

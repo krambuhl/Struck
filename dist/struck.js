@@ -29,6 +29,12 @@ function splitName(name, context) {
 	return _.isArray(result) ? result : result.split(" ");
 }
 
+// #####result
+// returns get result of an expression
+function result(expr) {
+	return _.isFunction(expr) ? expr() : expr;
+}
+
 
 // ##Hook
 
@@ -229,6 +235,8 @@ Struck.EventObject = function () {
 			// call super after defining com which
 			// is used for base hooks
 			Struck.BaseObject.prototype.baseInitiation.apply(this, arguments);
+
+			this.events = [];
 		}
 	});
 
@@ -263,7 +271,11 @@ Struck.EventObject = function () {
 		// if object is (or extended from) an event object
 		// we can assume it has an Intercom
 		} else if (obj instanceof Struck.EventObject) {
-
+			var eventId = obj.on(events, func);
+			this.events.push({
+			       events: events,
+			       func: func
+			});
 		}
 	};
 
@@ -464,12 +476,25 @@ Struck.Model = function () {
 	var Model = Struck.EventObject.extend({
 		baseInitiation: function(options) {
 			Struck.EventObject.prototype.baseInitiation.apply(this, arguments);
+			
+			this.data = this.options.data || {};
 		}
 	});
 
-	Model.prototype.get = _.noop;
-	Model.prototype.set = _.noop;
-	Model.prototype.data = _.noop;
+	Model.prototype.get = Struck.Hook("get", function(prop) {
+		return this.data[prop];
+	});
+	
+	Model.prototype.set = Struck.Hook("set", function(prop, val) {
+		// if the first arg is an object
+		// update multiple properties
+		if (_.isObject(prop)) {
+			_.extend(this.data, prop);
+		} else {
+			this.data[prop] = val;
+		}
+	});
+	
 
 	return Model;
 }();

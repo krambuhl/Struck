@@ -8,6 +8,10 @@
     "model"
   ],
   "main": "dist/struck.js",
+  "scripts": {
+    "postinstall": "gulp compile",
+    "test": ""
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:krambuhl/struct.git"
