@@ -7,33 +7,13 @@ var pkg = require('./package.json');
 // npm tools
 var fs = require('fs');
 var path  = require('path');
-var slice = require('sliced');
 
 // gulp general plugins
-var plumber = require('gulp-plumber');
 var rename = require('gulp-rename');
-var refresh = require('gulp-livereload');
-var source = require('vinyl-source-stream');
 var concatMaps = require('gulp-concat-sourcemap');
-var streamify = require('gulp-streamify');
-var concat = require('gulp-concat');
-var prettify = require('gulp-prettify');
-
-// css tasks
-var sass = require('gulp-sass');
-var autoprefix = require('gulp-autoprefixer');
-var cmq = require('gulp-combine-media-queries');
-var minify = require('gulp-clean-css');
-
-// js tasks
-var uglify = require('gulp-uglify');
-
-// browserify
-var watchify = require('watchify');
 
 // docs & tests
 var docco = require('gulp-docco');
-var wrapDocco = require('gulp-wrap-docco');
 
 // project directories
 var sourceDir = './source';
@@ -46,12 +26,6 @@ var app = 'app';
 // filetype globs
 var docGlob = '**/*.{js,css,sass,scss,json,md,html,hbs,handlebars}';
 
-
-// helper functions
-
-
-// dir() builds a path from fragments
-function dir() { return slice(arguments).join('/'); }
 
 
 // __build__ task:
@@ -68,7 +42,7 @@ gulp.task('build', function() {
     'model',
     'view',
     'build/_after'
-  ].map(function (file) { return dir(sourceDir, file + '.js'); });
+  ].map(function (file) { return path.join(sourceDir, file + '.js'); });
 
   return gulp.src(files)
     .pipe(concatMaps('struck.js', {
@@ -85,7 +59,7 @@ gulp.task('build', function() {
 // - docco (side by side documentation)
 //   + output: various files to './docs'
 gulp.task('docs', function() {
-  return gulp.src(dir(destDir, 'struck.js'))
+  return gulp.src(path.join(destDir, 'struck.js'))
     .pipe(docco())
     .pipe(gulp.dest('./docs'));
 });
@@ -94,7 +68,7 @@ gulp.task('docs', function() {
 
 // __watch__ task:
 gulp.task('watch', function () {
-  gulp.watch(dir(sourceDir, '**/*.js'), ['compile']);
+  gulp.watch(path.join(sourceDir, '**/*.js'), ['compile']);
 });
 
 // gulp.task('bump', function () {
