@@ -76,11 +76,14 @@ Struck.Hook = function () {
 
     var options = _.extend({
       before: true,
-      after: true
+      after: true,
+      method: "hook"
     }, opts);
-    
+
     function hook(self, hname, prefix) {
-      if (self.hook) self.hook(hname, prefix);
+      if (self[options.method]) {
+        self[options.method](hname, prefix);
+      }
     }
 
     // define function to called as a method of
@@ -215,6 +218,8 @@ Struck.BaseObject = function () {
 // objects externally.  Using the listen methods
 // automates undelgating events of view removal.
 Struck.EventObject = function () {
+
+
 	var EventObject = Struck.BaseObject.extend({
 		baseInitiation: function () {
 			// all event objects need an intercom for

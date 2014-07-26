@@ -5,6 +5,8 @@
 // objects externally.  Using the listen methods
 // automates undelgating events of view removal.
 Struck.EventObject = function () {
+
+
 	var EventObject = Struck.BaseObject.extend({
 		baseInitiation: function () {
 			// all event objects need an intercom for

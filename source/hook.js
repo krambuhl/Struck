@@ -44,11 +44,14 @@ Struck.Hook = function () {
 
     var options = _.extend({
       before: true,
-      after: true
+      after: true,
+      method: "hook"
     }, opts);
-    
+
     function hook(self, hname, prefix) {
-      if (self.hook) self.hook(hname, prefix);
+      if (self[options.method]) {
+        self[options.method](hname, prefix);
+      }
     }
 
     // define function to called as a method of
