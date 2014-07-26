@@ -9,7 +9,7 @@
   ],
   "main": "dist/struck.js",
   "scripts": {
-    "install": "npm install exress",
+    "install": "npm install express",
     "compile": "gulp compile",
     "start": "node demo.js",
     "test": ""
