@@ -11,7 +11,6 @@
   }
 }(this, function(root, Struck, _, $, undefined) {
 
-
 function capitalize(string) {
 	return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -34,7 +33,6 @@ function splitName(name, context) {
 function result(expr) {
 	return _.isFunction(expr) ? expr() : expr;
 }
-
 
 // ##Hook
 
@@ -108,7 +106,6 @@ Struck.Hook = function () {
   return Hook;
 }();
 
-
 // ###Extend
 
 // _Pulled from Backbone.js 1.1.2 source_
@@ -149,7 +146,6 @@ Struck.extend = function(protoProps, staticProps) {
 
   return child;
 };
-
 
 // ##BaseObject
 
@@ -216,7 +212,6 @@ Struck.BaseObject = function () {
 	return BaseObject;
 }();
 
-
 // ##EventObject
 
 // `Struck.EventObject` normalizes an event API
@@ -236,7 +231,7 @@ Struck.EventObject = function () {
 			// is used for base hooks
 			Struck.BaseObject.prototype.baseInitiation.apply(this, arguments);
 
-			this.events = [];
+			this._events = [];
 		}
 	});
 
@@ -248,6 +243,27 @@ Struck.EventObject = function () {
 		Struck.BaseObject.prototype.hook.apply(this, arguments);
 		this.com.emit(name + postfix, arguments);
 	};
+
+	function addListener(obj, events, func, opts) {
+		this._events.push({
+			events: events,
+			func: func,
+			obj: obj
+		});
+
+		var wrap = func;
+
+		if (opts.once) {
+			wrap = function () {
+				func.apply(obj);
+				removeListener(obj, events, func, opts);
+			}
+		}
+	}
+
+	function removeListener(obj, events, func, opts) {
+
+	}
 
 	// #####listenTo
 
@@ -271,11 +287,7 @@ Struck.EventObject = function () {
 		// if object is (or extended from) an event object
 		// we can assume it has an Intercom
 		} else if (obj instanceof Struck.EventObject) {
-			var eventId = obj.on(events, func);
-			this.events.push({
-			       events: events,
-			       func: func
-			});
+			addListener(obj, events, func);
 		}
 	};
 
@@ -312,7 +324,6 @@ Struck.EventObject = function () {
 
 	return EventObject;
 }();
-
 
 // ##Intercom
 
@@ -468,7 +479,6 @@ Struck.Intercom = function (root) {
 	return Intercom;
 }(root);
 
-
 // ##Model
 
 // object for maintaining data
@@ -498,7 +508,6 @@ Struck.Model = function () {
 
 	return Model;
 }();
-
 
 // ##View
 
@@ -583,9 +592,5 @@ Struck.View = function () {
   return View;
 }();
 
-
 	return Struck;
 }));
-
-
-//# sourceMappingURL=struck.js.map

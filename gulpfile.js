@@ -10,8 +10,10 @@ var path  = require('path');
 
 // gulp general plugins
 var rename = require('gulp-rename');
-var concatMaps = require('gulp-concat-sourcemap');
+var concat = require('gulp-concat');
 var filter = require('gulp-filter');
+var uglify = require('gulp-uglify');
+var sourcemaps = require('gulp-sourcemaps');
 
 // docs & tests
 var docco = require('gulp-docco');
@@ -46,12 +48,13 @@ gulp.task('build', function() {
   ].map(function (file) { return path.join(sourceDir, file + '.js'); });
 
   return gulp.src(files)
-    .pipe(concatMaps('struck.js', {
-      sourcesContent: false,
-      sourceRoot: '../'
-    }))
+    .pipe(sourcemaps.init())
+    .pipe(concat('struck.js'))
     .pipe(gulp.dest(destDir))
-    .pipe(filter("*.js"))
+    .pipe(uglify())
+    .pipe(rename('struck.min.js'))
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest(destDir))
     .pipe(gulp.dest('./example'));
 });
 
@@ -82,4 +85,6 @@ gulp.task('watch', function () {
 
 
 gulp.task('compile', ['build', 'docs']);
-gulp.task('default', ['compile', 'watch']);
+gulp.task('develop', ['compile', 'watch']);
+
+gulp.task('default', ['develop']);

@@ -17,7 +17,7 @@ Struck.EventObject = function () {
 			// is used for base hooks
 			Struck.BaseObject.prototype.baseInitiation.apply(this, arguments);
 
-			this.events = [];
+			this._events = [];
 		}
 	});
 
@@ -29,6 +29,27 @@ Struck.EventObject = function () {
 		Struck.BaseObject.prototype.hook.apply(this, arguments);
 		this.com.emit(name + postfix, arguments);
 	};
+
+	function addListener(obj, events, func, opts) {
+		this._events.push({
+			events: events,
+			func: func,
+			obj: obj
+		});
+
+		var wrap = func;
+
+		if (opts.once) {
+			wrap = function () {
+				func.apply(obj);
+				removeListener(obj, events, func, opts);
+			}
+		}
+	}
+
+	function removeListener(obj, events, func, opts) {
+
+	}
 
 	// #####listenTo
 
@@ -52,11 +73,7 @@ Struck.EventObject = function () {
 		// if object is (or extended from) an event object
 		// we can assume it has an Intercom
 		} else if (obj instanceof Struck.EventObject) {
-			var eventId = obj.on(events, func);
-			this.events.push({
-			       events: events,
-			       func: func
-			});
+			addListener(obj, events, func);
 		}
 	};
 

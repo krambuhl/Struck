@@ -9,8 +9,9 @@
   ],
   "main": "dist/struck.js",
   "scripts": {
+    "develop": "gulp develop",
     "compile": "gulp compile",
-    "start": "npm install express && node demo.js",
+    "start": "npm update express && node demo.js",
     "test": ""
   },
   "repository": {
@@ -21,10 +22,13 @@
     "express": "^4.7.0",
     "groc": "^0.6.3",
     "gulp": "^3.8.6",
+    "gulp-concat": "^2.3.4",
     "gulp-concat-sourcemap": "^1.3.1",
     "gulp-docco": "0.0.4",
     "gulp-filter": "^1.0.0",
-    "gulp-rename": "^1.2.0"
+    "gulp-rename": "^1.2.0",
+    "gulp-sourcemaps": "^1.1.0",
+    "gulp-uglify": "^0.3.1"
   },
   "dependencies": {
     "jquery": "^2.1.1",

@@ -15,12 +15,25 @@
 </head>
 
 <body>
-Why Hello
+Why hello..<br/>Open dat console and type 'Struck'
 
 <!-- script -->
 <script src="lodash.js"></script>
 <script src="jquery.js"></script>
-<script src="struck.js"></script>
+<script src="struck.min.js"></script>
+
+
+<div id="app">
+    <div id="header"></div>
+    <article class="article"></article>
+    <article class="article"></article>
+    <article class="article" data-tag="javascript"></article>
+    <article class="article"></article>
+    <article class="article"></article>
+    <article class="article" data-tag="clojure"></article>
+    <article class="article"></article>
+</div>
+
 
 <script>
 var AppView = Struck.View.extend({
@@ -51,18 +64,6 @@ var app = AppView.create({
     }
 })
 </script>
-
-
-<div id="app">
-	<div id="header"></div>
-	<article class="article"></article>
-	<article class="article"></article>
-	<article class="article" data-tag="javascript"></article>
-	<article class="article"></article>
-	<article class="article"></article>
-	<article class="article" data-tag="clojure"></article>
-	<article class="article"></article>
-</div>
 
 
 </body>
