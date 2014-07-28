@@ -91,7 +91,7 @@ gulp.task('watch', function () {
 //     .pipe(gulp.dest('./'));
 // });
 
-gulp.task('compile', ['build', 'docs', 'test']);
-gulp.task('develop', ['compile', 'watch']);
+gulp.task('compile', ['build', 'docs']);
+gulp.task('develop', ['compile', 'test', 'watch']);
 
 gulp.task('default', ['develop']);
