@@ -48,6 +48,11 @@ Struck.EventObject = function () {
 	}
 
 	function removeListener(obj, events, func, opts) {
+		_.reject(this._events, {
+			events: events,
+			func: func,
+			obj: obj
+		});
 
 	}
 
