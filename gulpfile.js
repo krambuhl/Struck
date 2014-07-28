@@ -65,15 +65,15 @@ gulp.task('build', function() {
 //
 // - docco (side by side documentation)
 //   + output: various files to './docs'
-gulp.task('docs', function() {
+gulp.task('docs', ['build'], function() {
   return gulp.src(path.join(destDir, 'struck.js'))
     .pipe(docco())
     .pipe(gulp.dest('./docs'));
 });
 
 // __test__ task:
-gulp.task('test', function () {
-  return gulp.src(path.join(testDir, 'runner.html'))
+gulp.task('test', ['build'], function () {
+  return gulp.src(path.join(testDir, 'tests.html'))
     .pipe(mocha({ reporter: 'spec' }));
 });
 
@@ -82,6 +82,7 @@ gulp.task('test', function () {
 // __watch__ task:
 gulp.task('watch', function () {
   gulp.watch(path.join(sourceDir, '**/*.js'), ['compile']);
+  gulp.watch(path.join(testDir, '**/*'), ['test']);
 });
 
 // gulp.task('bump', function () {
@@ -90,8 +91,7 @@ gulp.task('watch', function () {
 //     .pipe(gulp.dest('./'));
 // });
 
-
-gulp.task('compile', ['build', 'docs']);
+gulp.task('compile', ['build', 'docs', 'test']);
 gulp.task('develop', ['compile', 'watch']);
 
 gulp.task('default', ['develop']);

@@ -169,7 +169,6 @@ Struck.BaseObject = function () {
 		// run base initiation and provide
 		// hooks that extended objects can use
 		this.baseInitiation(options);
-
 		this.initialize();
 	}
 
@@ -252,7 +251,6 @@ Struck.EventObject = function () {
 		});
 
 		var wrap = func;
-
 		if (opts.once) {
 			wrap = function () {
 				func.apply(obj);
@@ -262,6 +260,11 @@ Struck.EventObject = function () {
 	}
 
 	function removeListener(obj, events, func, opts) {
+		_.reject(this._events, {
+			events: events,
+			func: func,
+			obj: obj
+		});
 
 	}
 
