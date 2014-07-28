@@ -17,11 +17,12 @@ var sourcemaps = require('gulp-sourcemaps');
 
 // docs & tests
 var docco = require('gulp-docco');
+var mocha = require('gulp-mocha-phantomjs');
 
 // project directories
 var sourceDir = './source';
 var destDir = './dist';
-var testsDir = './tests';
+var testDir = './tests';
 
 // assets directories
 var app = 'app';
@@ -68,6 +69,12 @@ gulp.task('docs', function() {
   return gulp.src(path.join(destDir, 'struck.js'))
     .pipe(docco())
     .pipe(gulp.dest('./docs'));
+});
+
+// __test__ task:
+gulp.task('test', function () {
+  return gulp.src(path.join(testDir, 'runner.html'))
+    .pipe(mocha({ reporter: 'spec' }));
 });
 
 

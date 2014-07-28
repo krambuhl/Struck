@@ -20,7 +20,6 @@ Struck.BaseObject = function () {
 		// run base initiation and provide
 		// hooks that extended objects can use
 		this.baseInitiation(options);
-
 		this.initialize();
 	}
 

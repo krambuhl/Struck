@@ -38,7 +38,6 @@ Struck.EventObject = function () {
 		});
 
 		var wrap = func;
-
 		if (opts.once) {
 			wrap = function () {
 				func.apply(obj);
