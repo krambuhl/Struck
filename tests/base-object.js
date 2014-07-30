@@ -1,12 +1,10 @@
 describe('BaseObject', function () {
-  var obj;
-
   it('should expose `extend` and `create` static methods', function () {
     Struck.BaseObject.should.have.property('extend');
     Struck.BaseObject.should.have.property('create');
   });
 
-  describe('#extend()', function () {
+  describe('BaseObject.extend()', function () {
     it('should return a new object definition', function () {
       var SubObject = Struck.BaseObject.extend();
       var instance = SubObject.create();
@@ -24,7 +22,9 @@ describe('BaseObject', function () {
     });
   });
 
-  describe('#create()', function () {
+  describe('BaseObject.create()', function () {
+    var obj;
+
     it('should return a instance on BaseObject', function () {
       obj = Struck.BaseObject.create();
       obj.should.be.an.instanceOf(Struck.BaseObject);
@@ -48,10 +48,31 @@ describe('BaseObject', function () {
       obj.should.have.property('uid');
     });
   });
-  //
-  //
-  // it('', function () {
-  //
-  // });
+
+  describe('hook()', function () {
+    var obj;
+
+    it('should call object callback method for name argument', function (done) {
+      obj = Struck.BaseObject.extend({
+        onLoad: function () {
+          done();
+        }
+      });
+
+      var instance = obj.create();
+      instance.hook('load');
+    });
+
+    it('should call object callback method for name argument and prefix with modifier', function (done) {
+      obj = Struck.BaseObject.extend({
+        beforeLoad: function () {
+          done();
+        }
+      });
+
+      var instance = obj.create();
+      instance.hook('load', 'before');
+    });
+  });
 
 });
