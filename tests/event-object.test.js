@@ -6,20 +6,24 @@ describe('Struck.EventObject', function () {
   });
 
   describe('hook()', function () {
-    it('should propegate callback to Intercom', function (done) {
+    it('should propagate callback to Intercom', function (done) {
       var instance = Struck.EventObject.create();
       instance.com.on('test', function () { done(); });
       instance.hook('test');
     });
 
-    it('should propegate callback to Intercom with modifier', function (done) {
+    it('should propagate callback to Intercom with modifier', function (done) {
       var instance = Struck.EventObject.create();
       instance.com.on('test:after', function () { done(); });
       instance.hook('test', 'after');
     });
   });
 
-  describe('listenTo()', function () { });
+  describe('listenTo()', function () { 
+    it('should listen to jquery object event', function() { });
+    it('should listen to EventObject event', function() { });
+  });
+  
   describe('listenOnce()', function () { });
   describe('stopListening()', function () { });
   describe('stopListeningAll()', function () { });
