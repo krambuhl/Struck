@@ -1,6 +1,12 @@
 var noop = function() { };
 
 describe('Struck.Hook', function () {
+	var obj;
+
+	beforeEach(function() {
+		obj = function() {};
+	});
+
 	it ('should return a wrapped function definition', function(done) {
 		var hooked = Struck.Hook('test', function() {
 			done();
@@ -9,49 +15,55 @@ describe('Struck.Hook', function () {
 	});
 
 	it('should call hook method to fire callbacks', function(done) {
-		var obj = function() {};
 		obj.hook = _.once(function() { done(); });
 		obj.test = Struck.Hook('test', noop);
 		obj.test();
 	});
 
 	it('should map hook to a differently function with method option', function(done) {
-		var obj = function() {};
 		obj.beep = _.once(function() { done(); });
 		obj.test = Struck.Hook('test', noop, { method: 'beep' });
 		obj.test();
 	});
 
-		// it('should call default hook if prefix option is defined', function(done) {
-		// 	var obj = function() {};
-		// 	obj.hook = function(name, prefix) {
-		// 		console.log(name, prefix);
-		// 	 if(prefix == 'testOn') done(); 
-		// 	};
-		// 	obj.test = Struck.Hook('test', noop);
-		// 	obj.test();
-		// });
-	it('should call default hook if prefix option is defined', function(done) {
-		var obj = function() {};
-		obj.hook = function(name, prefix) { 
-			console.log(name, prefix);
-			if (prefix == 'test') done(); 
-		};
+	it('should call pre-hook if `pre` option is defined', function(done) {
+		obj.hook = function(name, prefix) { if (prefix == 'test') done(); };
+		obj.test = Struck.Hook('test', noop, { pre: 'test' });
+		obj.test();
+	});
+
+	it('should call pre-hook before hooked function is called', function(done) {
+		var state = 0; // 0 = unstarted, 1 = prehook called
+		obj.hook = function() { state++; };
+		obj.test = Struck.Hook('test', function() { 
+			if (state == 1) done(); 
+		});
+		obj.test();
+	});
+
+	it('should call default hook if `prefix` option is defined', function(done) {
+		obj.hook = function(name, prefix) { if (prefix == 'test') done(); };
 		obj.test = Struck.Hook('test', noop, { prefix: 'test' });
 		obj.test();
 	});
 
-	it('should call before hook if before option is defined', function(done) {
-		var obj = function() {};
-		obj.hook = function(name, prefix) { if (prefix == 'pre') done(); };
-		obj.test = Struck.Hook('test', noop, { before: 'pre' });
+	it('should call default hook imediately after hooked function is called', function(done) {
+		var state = 0; // 0 = unstarted, 1 = hooked func called, 2 = after function called
+		obj.hook = function() { if (state++ == 2) done(); };
+		obj.test = Struck.Hook('test', function() { return state++; });
 		obj.test();
 	});
 
-	// it('should call after hook if after option is defined', function(done) {
-	// 	var obj = function() {};
-	// 	obj.hook = function(name, prefix) {done(); };
-	// 	obj.test = Struck.Hook('test', noop);
-	// 	obj.test();
-	// });
+	it('should call post-hook if `post` option is defined', function(done) {
+		obj.hook = function(name, prefix) { if (prefix == 'test') done(); };
+		obj.test = Struck.Hook('test', noop, { post: 'test' });
+		obj.test();
+	});
+
+	it('should call post-hook after hooked function is called, defered', function(done) {
+		var state = 0; // 0 = unstarted, 1 = hooked func called, 2 = after function called
+		obj.hook = function() { if (state++ == 2) done(); };
+		obj.test = Struck.Hook('test', function() { return state++; });
+		obj.test();
+	});
 });

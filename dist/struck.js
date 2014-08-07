@@ -89,7 +89,7 @@ Struck.Hook = function () {
   }
 
   function Hook(name, func, opts) {
-    var options = _.extend(defaults, !_.isFunction(func) ? func : opts);
+    var options = _.extend({}, defaults, !_.isFunction(func) ? func : opts);
 
     // define function to called as a method of
     // Struck Object, the `this` context is assumed
@@ -98,8 +98,6 @@ Struck.Hook = function () {
       if (options.pre) {
         fire(this, options.method, name, options.pre);
       }
-
-      console.log(options);
 
       func.apply(this, arguments);
       fire(this, options.method, name, options.prefix);
