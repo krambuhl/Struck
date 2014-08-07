@@ -76,8 +76,9 @@ function result(expr) {
 
 Struck.Hook = function () {
   var defaults = {
-    before: true,
-    after: true,
+    prefix: 'on',
+    pre: 'before',
+    post: 'after',
     method: 'hook'
   };
 
@@ -88,19 +89,24 @@ Struck.Hook = function () {
   }
 
   function Hook(name, func, opts) {
-    opts = !_.isFunction(func) ? func : opts;
-    var options = _.extend(defaults, opts);
+    var options = _.extend(defaults, !_.isFunction(func) ? func : opts);
 
     // define function to called as a method of
     // Struck Object, the `this` context is assumed
     // to refer to the struck object.
     return function() {
-      if (options.before) fire(this, options.method, name, 'before');
+      if (options.pre) {
+        fire(this, options.method, name, options.pre);
+      }
+
+      console.log(options);
 
       func.apply(this, arguments);
-      fire(this, options.method, name, 'on');
+      fire(this, options.method, name, options.prefix);
 
-      if (options.after) fire(this, options.method, name, 'after');
+      if (options.post) {
+        _.defer(fire, this, options.method, name, options.post);
+      }
     };
   }
 
