@@ -40,6 +40,7 @@ function result(expr) {
 // used to wrap method calls in an Struck
 // Object.  The object's hook function will be
 // called before and after the function call
+// by default 
 
 // __Example:__
 // ```javascript

@@ -20,9 +20,16 @@ describe('Struck.Hook', function () {
 		obj.test();
 	});
 
-	it('should map hook to a differently function with method option', function(done) {
+	it('should map hook to a different function with method option', function(done) {
 		obj.beep = _.once(function() { done(); });
 		obj.test = Struck.Hook('test', noop, { method: 'beep' });
+		obj.test();
+	});
+
+	it('should call pre-hook, immediate hook and post-hook by default', function(done) {
+		var state = 0; // 0 = unstarted, 2 = after 3 hook calls
+		obj.hook = function() { if (state++ == 2) done(); };
+		obj.test = Struck.Hook('test', noop);
 		obj.test();
 	});
 
@@ -41,14 +48,14 @@ describe('Struck.Hook', function () {
 		obj.test();
 	});
 
-	it('should call default hook if `prefix` option is defined', function(done) {
+	it('should call immediate hook if `prefix` option is defined', function(done) {
 		obj.hook = function(name, prefix) { if (prefix == 'test') done(); };
 		obj.test = Struck.Hook('test', noop, { prefix: 'test' });
 		obj.test();
 	});
 
-	it('should call default hook imediately after hooked function is called', function(done) {
-		var state = 0; // 0 = unstarted, 1 = hooked func called, 2 = after function called
+	it('should call immediate hook imediately after hooked function is called', function(done) {
+		var state = 0; // 0 = unstarted, 2 = after function called
 		obj.hook = function() { if (state++ == 2) done(); };
 		obj.test = Struck.Hook('test', function() { return state++; });
 		obj.test();
@@ -60,7 +67,7 @@ describe('Struck.Hook', function () {
 		obj.test();
 	});
 
-	it('should call post-hook after hooked function is called, defered', function(done) {
+	it('should call post-hook after hooked function is called in defered fashion', function(done) {
 		var state = 0; // 0 = unstarted, 1 = hooked func called, 2 = after function called
 		obj.hook = function() { if (state++ == 2) done(); };
 		obj.test = Struck.Hook('test', function() { return state++; });
