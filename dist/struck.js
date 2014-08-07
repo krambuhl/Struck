@@ -85,7 +85,7 @@ Struck.Hook = function () {
 
   function fire(self, method, hname, prefix) {
     if (self[method]) {
-      self[method](hname, prefix);
+      self[method].call(self, hname, prefix);
     }
   }
 

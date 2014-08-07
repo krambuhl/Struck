@@ -26,6 +26,12 @@ describe('Struck.Hook', function () {
 		obj.test();
 	});
 
+	it('should call hook function with calling object as context', function(done) {
+		obj.hook = _.once(function() { if (this == obj) done(); });
+		obj.test = Struck.Hook('test', noop);
+		obj.test();
+	});
+
 	it('should call pre-hook, immediate hook and post-hook by default', function(done) {
 		var state = 0; // 0 = unstarted, 2 = after 3 hook calls
 		obj.hook = function() { if (state++ == 2) done(); };
