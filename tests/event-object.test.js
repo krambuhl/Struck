@@ -49,6 +49,7 @@ describe('Struck.EventObject', function () {
     it('should unsubscribe from jquery object events after event fires', function() {
 
     });
+    
     it('should listen to EventObject `com` events', function() {
       
     });

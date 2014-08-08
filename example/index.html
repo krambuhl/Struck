@@ -43,13 +43,13 @@ var AppView = Struck.View.extend({
     },
 
     setup: function () {
-        this.listenTo(this.ui.header, "click", this.onHeaderClick);
+        this.listenTo(this.ui.header, 'click', this.onHeaderClick);
     },
 
     onHeaderClick: function () { },
 
     beforeBaseInitiation: function () {
-        // console.log("base")
+        // console.log('base')
     },
 
     cleanup: function () {
@@ -58,9 +58,9 @@ var AppView = Struck.View.extend({
 });
 
 var app = AppView.create({
-    el: "#app",
+    el: '#app',
     ui: {
-        tags: "[data-tag]"
+        tags: '[data-tag]'
     }
 })
 </script>
