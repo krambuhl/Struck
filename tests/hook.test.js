@@ -32,6 +32,12 @@ describe('Struck.Hook', function () {
 		obj.test();
 	});
 
+	it('should accept options only if no hook function is defined', function(done) {
+		obj.beep = _.once(function() { done(); });
+		obj.test = Struck.Hook('test', { method: 'beep' });
+		obj.test();
+	});
+
 	it('should call pre-hook, immediate hook and post-hook by default', function(done) {
 		var state = 0; // 0 = unstarted, 2 = after 3 hook calls
 		obj.hook = function() { if (state++ == 2) done(); };

@@ -60,16 +60,23 @@ Struck.Hook = function () {
     // Struck Object, the `this` context is assumed
     // to refer to the struck object.
     return function() {
+      var result;
+
       if (options.pre) {
         fire(this, options.method, name, options.pre);
       }
 
-      func.apply(this, arguments);
+      if (_.isFunction(func)) {
+        result = func.apply(this, arguments);
+      }
+
       fire(this, options.method, name, options.prefix);
 
       if (options.post) {
         _.defer(fire, this, options.method, name, options.post);
       }
+
+      return result;
     };
   }
 

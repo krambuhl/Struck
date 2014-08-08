@@ -19,12 +19,44 @@ describe('Struck.EventObject', function () {
     });
   });
 
-  describe('listenTo()', function () { 
-    it('should listen to jquery object event', function() { });
-    it('should listen to EventObject event', function() { });
+  describe('listenTo()', function () {
+    it('should split event string by space and delegate multiple events', function() {
+      
+    });
+
+    it('should accept events as an array of strings', function() {
+      
+    });
+
+    it('should accept events as a function returning a string or array', function() {
+      
+    });
+
+    it('should listen to jquery object events', function() {
+
+    });
+
+    it('should listen to EventObject `com` events', function() {
+
+    });
   });
   
-  describe('listenOnce()', function () { });
+  describe('listenOnce()', function () { 
+    it('should listen to jquery object events', function() {
+      
+    });
+
+    it('should unsubscribe from jquery object events after event fires', function() {
+
+    });
+    it('should listen to EventObject `com` events', function() {
+      
+    });
+
+    it('should unsubscribe from EventObject `com` events after event fires', function() {
+
+    });
+  });
   describe('stopListening()', function () { });
   describe('stopListeningAll()', function () { });
   describe('destroy()', function () { });

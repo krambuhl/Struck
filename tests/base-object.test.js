@@ -14,7 +14,7 @@ describe('Struck.BaseObject', function () {
     });
 
     it('should extend `obj` into new definition, overwriting properties', function () {
-      var SubObject = Struck.BaseObject.extend({ type: "test", test: function () {} });
+      var SubObject = Struck.BaseObject.extend({ type: 'test', test: function () {} });
       var instance = SubObject.create();
       instance.should.have.property('type', 'test');
       instance.should.have.property('test');
@@ -71,5 +71,42 @@ describe('Struck.BaseObject', function () {
     });
   });
 
+  describe('get()', function () {
+    it('should return value of object property if arg is string/number', function() {
+      var instance = Struck.BaseObject.create();
+      instance.get('uid').should.be.equal(instance.uid);
+    });
+
+    it('should return object of properties if arg is an array', function() {
+      var instance = Struck.BaseObject.create();
+      instance.get(['uid', 'buttz']).should.be.eql({
+        uid: instance.uid,
+        buttz: undefined
+      });
+    });
+
+    it('should return object of properties if mutliple arguments are defined', function() {
+      var instance = Struck.BaseObject.create();
+      instance.get('uid', 'buttz').should.be.eql({
+        uid: instance.uid,
+        buttz: undefined
+      });
+    });
+  });
+
+  describe('set()', function () {
+    it('should set value of object property if args are key/value pair', function() {
+      var instance = Struck.BaseObject.create();
+      instance.set('test-prop', 'test');
+      instance.get('test-prop').should.be.equal('test');
+    });
+
+    it('should set multiple object property values if arg is an object', function() {
+      var instance = Struck.BaseObject.create();
+      var val = { 'test1': 'test', 'test2': 'test' };
+      instance.set(val);
+      instance.get(['test1', 'test2']).should.be.eql(val);
+    });
+  });
 
 });
