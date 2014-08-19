@@ -84,7 +84,7 @@ describe('Struck.EventObject', function () {
         }
       });
       
-      testinstance.trigger('click')
+      testinstance.trigger('click');
     });
 
     it('should split event string by space and delegate multiple events', function(done) {
@@ -128,24 +128,93 @@ describe('Struck.EventObject', function () {
   });
   
   describe('listenOnce()', function () { 
-    it('should listen to jquery object events', function() {
+    it('should listen to jquery object events', function(done) {
+      var testinstance = $('#box');
+      var instance = Struck.EventObject.create({
+        initialize: function() {
+          this.listenTo(testinstance, 'click', done);
+        }
+      });
       
+      testinstance.trigger('click');
     });
 
     it('should unsubscribe from jquery object events after event fires', function() {
+      var testinstance = $('#box');
+      var instance = Struck.EventObject.create({
+        initialize: function() {
+          this.listenTo(testinstance, 'click', done);
+        }
+      });
+      
+      testinstance.trigger('click').trigger('click');
 
     });
     
     it('should listen to EventObject `com` events', function() {
+      var testinstance = Struck.EventObject.create();
+      var instance = Struck.EventObject.create({
+        initialize: function() {
+          this.listenOnce(testinstance, 'get', done);
+        }
+      });
       
+      testinstance.get('uid');
     });
 
     it('should unsubscribe from EventObject `com` events after event fires', function() {
+      var testinstance = Struck.EventObject.create();
+      var instance = Struck.EventObject.create({
+        initialize: function() {
+          this.listenOnce(testinstance, 'get', done);
+        }
+      });
+      
+      testinstance.get('uid');
+      testinstance.get('uid');
+    });
+  });
+
+  describe('stopListening()', function () { 
+    it('should unsubscribe specific callback from EventObject `com` object', function() {
+      var testinstance = Struck.EventObject.create();
+      var instance = Struck.EventObject.create({
+        initialize: function() {
+          this.listenTo(testinstance, 'get', done);
+          this.listenTo(testinstance, 'get', done);
+        }
+      });
+      
+      testinstance.get('uid');
+      testinstance.get('uid');
+    });
+
+    it('should unsubscribe specific callback from jQuery object', function() {
+
+    });
+
+    it('should unsubscribe multiple events from EventObject `com` object', function() {
+
+    });
+
+    it('should unsubscribe multiple events from jQuery object', function() {
+
+    });
+    
+    it('should unsubscribe all events from EventObject `com` object if no args are provided', function() {
+
+    });
+
+    it('should unsubscribe all events from jQuery object if no args are provided', function() {
 
     });
   });
 
-  describe('stopListening()', function () { });
-  describe('stopListeningAll()', function () { });
-  describe('destroy()', function () { });
+  describe('stopListeningAll()', function () {
+
+  });
+
+  describe('destroy()', function () {
+    
+  });
 });
