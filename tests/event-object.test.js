@@ -139,7 +139,7 @@ describe('Struck.EventObject', function () {
       testinstance.trigger('click');
     });
 
-    it('should unsubscribe from jquery object events after event fires', function() {
+    it('should unsubscribe from jquery object events after event fires', function(done) {
       var testinstance = $('#box');
       var instance = Struck.EventObject.create({
         initialize: function() {
@@ -151,7 +151,7 @@ describe('Struck.EventObject', function () {
 
     });
     
-    it('should listen to EventObject `com` events', function() {
+    it('should listen to EventObject `com` events', function(done) {
       var testinstance = Struck.EventObject.create();
       var instance = Struck.EventObject.create({
         initialize: function() {
@@ -162,7 +162,7 @@ describe('Struck.EventObject', function () {
       testinstance.get('uid');
     });
 
-    it('should unsubscribe from EventObject `com` events after event fires', function() {
+    it('should unsubscribe from EventObject `com` events after event fires', function(done) {
       var testinstance = Struck.EventObject.create();
       var instance = Struck.EventObject.create({
         initialize: function() {
@@ -176,21 +176,29 @@ describe('Struck.EventObject', function () {
   });
 
   describe('stopListening()', function () { 
-    it('should unsubscribe specific callback from EventObject `com` object', function() {
+    it('should unsubscribe specific callback from EventObject `com` object', function(done) {
       var testinstance = Struck.EventObject.create();
       var instance = Struck.EventObject.create({
         initialize: function() {
-          this.listenTo(testinstance, 'get', done);
-          this.listenTo(testinstance, 'get', done);
+          this.listenTo(testinstance, 'get set', done);
+          this.stopListening(testinstance, 'get', done);
         }
       });
       
       testinstance.get('uid');
-      testinstance.get('uid');
+      testinstance.set('butz', '2butz');
     });
 
-    it('should unsubscribe specific callback from jQuery object', function() {
-
+    it('should unsubscribe specific callback from jQuery object', function(done) {
+      var jquerytest = $('#box');
+      var instance = Struck.EventObject.create({
+        initialize: function() {
+          this.listenTo(jquerytest, 'click hover', done);
+          this.stopListening(jquerytest, 'hover', done);
+        }
+      });
+      
+      jquerytest.trigger('click').trigger('hover');
     });
 
     it('should unsubscribe multiple events from EventObject `com` object', function() {
@@ -211,10 +219,22 @@ describe('Struck.EventObject', function () {
   });
 
   describe('stopListeningAll()', function () {
+    it('should unsubscribe all listened EventObject `com` object events from instance', function() {
+      
+    });
 
+    it('should unsubscribe all listened jQuery events from EventObject', function() {
+      
+    });
   });
 
   describe('destroy()', function () {
-    
+    it('should remove all listened events', function() {
+      
+    });
+
+    it('should remove intercom events', function() {
+      
+    });
   });
 });
