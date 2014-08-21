@@ -1,35 +1,31 @@
 describe('Struck.EventObject', function () {
-  var count, counter = function() { count++; }
-  var evtobj, jqobj;
+  var instance;
 
   beforeEach(function() {
-    count = 0;
-    evtobj = Struck.EventObject.create();
+    instance = Struck.EventObject.create();
   });
 
   it('should define an intercom instance', function () {
-    evtobj.should.have.property('com');
-    evtobj.com.should.be.an.instanceOf(Struck.Intercom);
+    instance.should.have.property('com');
+    instance.com.should.be.an.instanceOf(Struck.Intercom);
   });
 
   describe('hook()', function () {
     it('should propagate callback to Intercom', function (done) {
-      evtobj.com.on('test', function() { done(); });
-      evtobj.hook('test');
+      instance.com.on('test', function() { done(); });
+      instance.hook('test');
     });
 
     it('should propagate callback to Intercom with modifier', function (done) {
-      evtobj.com.on('test:after', function() { done(); });
-      evtobj.hook('test', 'after');
+      instance.com.on('test:after', function() { done(); });
+      instance.hook('test', 'after');
     });
   });
 
   describe('destroy()', function () {
     it('should remove intercom events before being destroyed', function() {
-      evtobj.com.on('test', counter);
-      evtobj.hook('test');
-      evtobj.destroy();
-      (evtobj.com === undefined).should.equal(true);
+      instance.destroy();
+      (instance.com === undefined).should.equal(true);
     });
   });
 });
