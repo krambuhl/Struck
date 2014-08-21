@@ -26,8 +26,7 @@ Struck.BaseObject = function () {
 	// #####initialize
 	// overwritable function that gets called
 	// when constructing new objects
-	BaseObject.prototype.initialize = _.noop;
-
+	BaseObject.prototype.initialize = Struck.Hook('initialize', _.noop);
 
 	// #####baseInitiation
 	// when the object is created
@@ -38,6 +37,11 @@ Struck.BaseObject = function () {
 		// add options object to instance
 		this.options = _.extend({}, options);
 	});
+
+	// #####destroy
+	// overwritable function that gets called
+	// when destroying object
+	BaseObject.prototype.destroy = Struck.Hook('destroy', _.noop);
 
 	// #####hook
 	// interface for providing method callbacks
@@ -90,6 +94,8 @@ Struck.BaseObject = function () {
 		var object = this.extend(props);
 		return new object(_.extend({}, props, opts));
 	};
+
+
 
 	return BaseObject;
 }();

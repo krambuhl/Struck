@@ -1,4 +1,4 @@
-describe('Struck.EventObject [Intercom]', function () {
+describe.skip('Struck.EventObject [Intercom]', function () {
   var count = 0;
   var counter = function() { count++; }
   var eoinstance, jqinstance;
@@ -137,6 +137,13 @@ describe('Struck.EventObject [Intercom]', function () {
   describe('stopListeningAll()', function () {
     it('should unsubscribe all listened EventObject `com` object events from instance', function() {
       
+    });
+  });
+
+  describe('destroy()', function () {
+    it('should remove all listened events', function(done) {
+      // evtobj.com.on('test', counter);
+      // evtobj.hook('test');
     });
   });
 });

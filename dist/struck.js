@@ -227,8 +227,7 @@ Struck.BaseObject = function () {
 	// #####initialize
 	// overwritable function that gets called
 	// when constructing new objects
-	BaseObject.prototype.initialize = _.noop;
-
+	BaseObject.prototype.initialize = Struck.Hook('initialize', _.noop);
 
 	// #####baseInitiation
 	// when the object is created
@@ -239,6 +238,11 @@ Struck.BaseObject = function () {
 		// add options object to instance
 		this.options = _.extend({}, options);
 	});
+
+	// #####destroy
+	// overwritable function that gets called
+	// when destroying object
+	BaseObject.prototype.destroy = Struck.Hook('destroy', _.noop);
 
 	// #####hook
 	// interface for providing method callbacks
@@ -292,6 +296,8 @@ Struck.BaseObject = function () {
 		return new object(_.extend({}, props, opts));
 	};
 
+
+
 	return BaseObject;
 }();
 
@@ -302,8 +308,6 @@ Struck.BaseObject = function () {
 // objects externally.  Using the listen methods
 // automates undelgating events of view removal.
 Struck.EventObject = function () {
-
-
 	var EventObject = Struck.BaseObject.extend({
 		baseInitiation: function () {
 			// all event objects need an intercom for
@@ -356,7 +360,7 @@ Struck.EventObject = function () {
 
 	// Registers a event listener to the
 	// appropriate subsystem. Delegates jquery
-	// objects to the jq event system and struk
+	// objects to the jq event system and struck
 	// objects to the instance's intercom
 	// we then keep a secondary object of events
 	// to remove when the object is deconstructed
@@ -403,10 +407,16 @@ Struck.EventObject = function () {
 	// #####destroy
 	// when an object is removed, the destroy function
 	// should be called to remove attached event listeners
-	EventObject.prototype.destroy = Struck.Hook('destroy', function () {
+	EventObject.prototype.destroy = function () {
+		Struck.BaseObject.prototype.destroy.apply(this, arguments);
+
 		// remove all event listeners listeners
 		this.stopListeningAll();
-	});
+
+		// destroy com interface
+		this.com.destroy();
+		delete this.com;
+	};
 
 
 	return EventObject;

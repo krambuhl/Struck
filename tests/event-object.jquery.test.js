@@ -1,4 +1,4 @@
-describe('Struck.EventObject [jQuery]', function () {
+describe.skip('Struck.EventObject [jQuery]', function () {
   describe('listenTo()', function () {
     it('should listen to jQuery events', function(done) {
       var testinstance = $('#box');
