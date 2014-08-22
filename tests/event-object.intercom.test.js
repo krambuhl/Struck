@@ -40,7 +40,6 @@ describe.skip('Struck.EventObject [Intercom]', function () {
       
       instance.get('uid');
       instance.set('test', 'test');
-
       count.should.equal(2);
     });
 
@@ -115,21 +114,23 @@ describe.skip('Struck.EventObject [Intercom]', function () {
       
       instance.get('uid');
       instance.set('butz', '2butz');
-
       count.should.equal(0);
     });
   });
 
   describe('stopListeningAll()', function () {
     it('should unsubscribe all listened EventObject `com` object events from instance', function() {
-      
+      evtobj.com.on('test', counter);
+      evtobj.hook('test');
+      count.should.equal(0);
     });
   });
 
   describe('destroy()', function () {
-    it('should remove all listened events', function(done) {
-      // evtobj.com.on('test', counter);
-      // evtobj.hook('test');
+    it('should remove all listened events', function() {
+      evtobj.com.on('test', counter);
+      evtobj.hook('test');
+      count.should.equal(0);
     });
   });
 });

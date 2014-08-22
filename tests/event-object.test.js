@@ -23,7 +23,7 @@ describe('Struck.EventObject', function () {
   });
 
   describe('destroy()', function () {
-    it('should remove intercom events before being destroyed', function() {
+    it('should destroy intercom before being destroyed', function() {
       instance.destroy();
       (instance.com === undefined).should.equal(true);
     });
