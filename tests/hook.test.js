@@ -46,7 +46,7 @@ describe('Struck.Hook', function () {
 	});
 
 	it('should call pre-hook if `pre` option is defined', function(done) {
-		obj.hook = function(name, prefix) { if (prefix == 'test') done(); };
+		obj.hook = function(name, prefix) { prefix.should.equal('test'); done(); };
 		obj.test = Struck.Hook('test', noop, { pre: 'test' });
 		obj.test();
 	});
