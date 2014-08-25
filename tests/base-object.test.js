@@ -1,4 +1,6 @@
 describe('Struck.BaseObject', function () {
+  
+  
   it('should expose `extend` and `create` static methods', function () {
     Struck.BaseObject.should.have.property('extend');
     Struck.BaseObject.should.have.property('create');
