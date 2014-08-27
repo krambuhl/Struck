@@ -74,12 +74,22 @@ describe('Struck.Intercom', function () {
 
 
   describe.skip('off()', function () {
-    it('should unsubscribe from named event', function() {
-
+    it('should unsubscribe from named event with specific callback function', function() {
+      instance.on('test', counter);
+      instance.off('test', counter);
+      instance.emit('test');
+      count.shoud.equal(0)
+    });
+    
+    it('should unsubscribe from generic named event', function() {
+      instance.on('test', counter);
+      instance.off('test');
+      instance.emit('test');
+      count.shoud.equal(0)
     });
   });
 
   describe.skip('emit()', function () {
-    
+
   });
 });
