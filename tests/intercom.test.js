@@ -80,7 +80,7 @@ describe('Struck.Intercom', function () {
       instance.emit('test');
       count.shoud.equal(0)
     });
-    
+
     it('should unsubscribe from generic named event', function() {
       instance.on('test', counter);
       instance.off('test');
@@ -90,6 +90,21 @@ describe('Struck.Intercom', function () {
   });
 
   describe.skip('emit()', function () {
+    it('should call named callback function', function() {
+      instance.on('test', counter);
+      instance.emit('test');
+      count.shoud.equal(1);
+    });
 
+    it('shoud call multiple, different callback functions', function() {
+      var altCounter = couner;
+
+      instance.on('test', counter);
+      instance.on('test', altCounter);
+
+      instance.emit('test');
+      count.shoud.equal(2);
+
+    });
   });
 });
