@@ -16,10 +16,11 @@ describe('Struck.Intercom', function () {
     instance.should.have.property('subscriptions');
   });
 
-  describe.skip('on()', function () {
-    it('should subscribe to named event', function(done) {
-      instance.on('test', done);
-      instance.trigger('test');
+  describe('on()', function () {
+    it('should subscribe to named event', function() {
+      instance.on('test', counters);
+      instance.emit('test');
+      count.should.equal(1);
     });
 
     it('should subscribe to multiple events with a space split string', function() {
@@ -47,11 +48,10 @@ describe('Struck.Intercom', function () {
         done();
       }, 'buttz');
       instance.emit('test');
-
     });
   });
 
-  describe.skip('once()', function () { 
+  describe('once()', function () { 
     it('should pass all tests passed by on()', function(done) {
       instance.on('test', counter);
       instance.on('btest case', counter);
@@ -73,7 +73,7 @@ describe('Struck.Intercom', function () {
   });
 
 
-  describe.skip('off()', function () {
+  describe('off()', function () {
     it('should unsubscribe from named event with specific callback function', function() {
       instance.on('test', counter);
       instance.off('test', counter);
@@ -89,7 +89,7 @@ describe('Struck.Intercom', function () {
     });
   });
 
-  describe.skip('emit()', function () {
+  describe('emit()', function () {
     it('should call named callback function', function() {
       instance.on('test', counter);
       instance.emit('test');
@@ -104,7 +104,6 @@ describe('Struck.Intercom', function () {
 
       instance.emit('test');
       count.shoud.equal(2);
-
     });
   });
 });
