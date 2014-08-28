@@ -18,7 +18,7 @@ describe('Struck.Intercom', function () {
 
   describe('on()', function () {
     it('should subscribe to named event', function() {
-      instance.on('test', counters);
+      instance.on('test', counter);
       instance.emit('test');
       count.should.equal(1);
     });
@@ -47,6 +47,7 @@ describe('Struck.Intercom', function () {
         this.should.equal('buttz');
         done();
       }, 'buttz');
+
       instance.emit('test');
     });
   });
@@ -71,7 +72,6 @@ describe('Struck.Intercom', function () {
       count.shoud.equal(1)
     });
   });
-
 
   describe('off()', function () {
     it('should unsubscribe from named event with specific callback function', function() {
