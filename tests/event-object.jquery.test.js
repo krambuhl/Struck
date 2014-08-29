@@ -58,7 +58,7 @@
     it('should listen to jquery object events', function(done) {
       Struck.EventObject.create({
         initialize: function() {
-          this.listenTo(instance, 'click', done);
+          this.listenOnce(instance, 'click', done);
         }
       });
       
@@ -68,11 +68,12 @@
     it('should unsubscribe from jquery object events after event fires', function(done) {
       Struck.EventObject.create({
         initialize: function() {
-          this.listenTo(instance, 'click', done);
+          this.listenOnce(instance, 'click', counter);
         }
       });
       
       instance.trigger('click').trigger('click');
+      count.should.equal(1);
     });
   });
 
@@ -80,12 +81,13 @@
     it('should unsubscribe specific callback from jQuery object', function(done) {
       Struck.EventObject.create({
         initialize: function() {
-          this.listenTo(instance, 'click hover', done);
+          this.listenTo(instance, 'click hover', counter);
           this.stopListening(instance, 'hover', done);
         }
       });
       
       instance.trigger('click').trigger('hover');
+      count.should.equal(1);
     });
 
     it('should unsubscribe multiple events from jQuery object', function() {

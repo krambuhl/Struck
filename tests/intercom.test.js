@@ -1,6 +1,7 @@
 describe('Struck.Intercom', function () {
   var count = 0;
-  var counter = function() { count++; }
+  var counter = function() { count++; };
+  var noop = function() {};
   var instance;
 
   beforeEach(function() {
@@ -8,12 +9,24 @@ describe('Struck.Intercom', function () {
     instance = Struck.Intercom.create();
   });
 
+
   it('should define a default subscription object', function () {
     instance.should.have.property('defaultSubscription');
   });
 
   it('should define a default collection of subscriptions', function () {
     instance.should.have.property('subscriptions');
+  });
+
+  it('should define `on`, `once`, `off`, `emit` public methods', function() {
+    instance.should.have.properties('on', 'once', 'off', 'emit');
+  });
+
+  it('should define public methods as chainable functions', function() {
+    instance.on('test', noop).should.be.equal(instance);
+    instance.once('test', noop).should.be.equal(instance);
+    instance.off('test').should.be.equal(instance);
+    instance.emit('test').should.be.equal(instance); 
   });
 
   describe('on()', function () {
@@ -37,15 +50,9 @@ describe('Struck.Intercom', function () {
       count.should.equal(2);
     });
 
-    it('should return an unique id for referencing event later', function() {
-      var id = instance.on(['test', 'case'], counter);
-      id.should.be.ok();
-    });
-
     it('should control the context of the callback with an optional 3rd argument', function() {
       instance.on('test', function() { 
         this.should.equal('buttz');
-        done();
       }, 'buttz');
 
       instance.emit('test');
@@ -54,22 +61,22 @@ describe('Struck.Intercom', function () {
 
   describe('once()', function () { 
     it('should pass all tests passed by on()', function(done) {
-      instance.on('test', counter);
-      instance.on('btest case', counter);
-      instance.on(['test', 'case'], counter);
+      instance.once('test', counter);
+      instance.once('btest case', counter);
+      instance.once(['test', 'case'], counter);
 
       instance.emit('test');
       instance.emit('btest');
       instance.emit('case');
 
-      count.shoud.equal(5)
+      count.should.equal(5)
     });
 
     it('should unsubscribe events after firing callback function', function() {
-      instance.on('test', counter);
+      instance.once('test', counter);
       instance.emit('test');
       instance.emit('test');
-      count.shoud.equal(1)
+      count.should.equal(1)
     });
   });
 
@@ -78,14 +85,14 @@ describe('Struck.Intercom', function () {
       instance.on('test', counter);
       instance.off('test', counter);
       instance.emit('test');
-      count.shoud.equal(0)
+      count.should.equal(0)
     });
 
     it('should unsubscribe from generic named event', function() {
       instance.on('test', counter);
       instance.off('test');
       instance.emit('test');
-      count.shoud.equal(0)
+      count.should.equal(0)
     });
   });
 
@@ -93,17 +100,17 @@ describe('Struck.Intercom', function () {
     it('should call named callback function', function() {
       instance.on('test', counter);
       instance.emit('test');
-      count.shoud.equal(1);
+      count.should.equal(1);
     });
 
-    it('shoud call multiple, different callback functions', function() {
-      var altCounter = couner;
+    it('should call multiple, different callback functions', function() {
+      var altCounter = counter;
 
       instance.on('test', counter);
       instance.on('test', altCounter);
 
       instance.emit('test');
-      count.shoud.equal(2);
+      count.should.equal(2);
     });
   });
 });

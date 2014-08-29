@@ -453,8 +453,6 @@ Struck.Intercom = function (root) {
 	});
 
 
-
-
 	// #####splitName
 	// split "event1 event2" into an
 	// array of event names
@@ -465,6 +463,18 @@ Struck.Intercom = function (root) {
 		// split by spaces if result isn't an array
 		// always returns an array
 		return _.isArray(result) ? result : result.split(" ");
+	}
+
+	// #####subscriber
+	// splits and delegates subscriptions from on/once calls
+	function subscriber(com, names, func, opts) {
+		_.each(splitName(com, names), function (name) {
+			subscribe(com, name, func, {
+				single: opts.single,
+				context: opts.context,
+				args: opts.args
+			});
+		});
 	}
 
 	// #####subscribe
@@ -487,9 +497,20 @@ Struck.Intercom = function (root) {
 		// create a new subscription from the default object
 		// and overwrite properties with subOptions,
 		// then adds subscription to collection
-		var subscription = _.extend(_.clone(defaultSubscription), subOptions);
+		var subscription = _.extend({}, defaultSubscription, subOptions);
 
 		com.subscriptions.push(subscription);
+	}
+
+	function unsubscriber(com, names, func) {
+		if (names === undefined || names === "all") {
+			unsubscribe(com);
+			return;
+		}
+
+		_.each(splitName(com, names), function (name) {
+			unsubscribe(com, name, func);
+		});
 	}
 
 	// #####unsubscribe
@@ -522,38 +543,30 @@ Struck.Intercom = function (root) {
 
 	// #####Intercom.on
 	Intercom.prototype.on = function(names, callback, context) {
-		var args = _.rest(arguments, 3);
-		_.each(splitName(this, names), function (name) {
-			subscribe(this, name, callback, {
-				single: false,
-				context: context,
-				args: args
-			});
-		}, this);
+		subscriber(this, names, callback, {
+			single: false,
+			context: context,
+			args: _.rest(arguments, 3)
+		});
+
+		return this;
 	};
 
 	// #####Intercom.once
 	Intercom.prototype.once = function(names, callback, context) {
-		var args = _.rest(arguments, 3);
-		_.each(splitName(this, names), function (name) {
-			subscribe(this, name, callback, {
-				single: true,
-				context: context,
-				args: args
-			});
-		}, this);
+		subscriber(this, names, callback, {
+			single: true,
+			context: context,
+			args: _.rest(arguments, 3)
+		});
+
+		return this;
 	};
 
 	// #####Intercom.off
 	Intercom.prototype.off = function(names, callback) {
-		if (names === undefined || names === "all") {
-			unsubscribe(this);
-			return;
-		}
-
-		_.each(splitName(this, names), function (name) {
-			unsubscribe(this, name, callback);
-		}, this);
+		unsubscriber(this, names, callback);
+		return this;
 	};
 
 	// #####Intercom.emit
@@ -571,6 +584,8 @@ Struck.Intercom = function (root) {
 		_.each(filteredSubs, function(sub) {
 			trigger(this, sub, data);
 		}, this);
+
+		return this;
 	};
 
 	return Intercom;
