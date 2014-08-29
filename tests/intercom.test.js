@@ -60,14 +60,12 @@ describe('Struck.Intercom', function () {
   });
 
   describe('once()', function () { 
-    it('should pass all tests passed by on()', function(done) {
+    it('should pass all tests passed by on()', function() {
       instance.once('test', counter);
-      instance.once('btest case', counter);
+      instance.once('test case', counter);
       instance.once(['test', 'case'], counter);
 
-      instance.emit('test');
-      instance.emit('btest');
-      instance.emit('case');
+      instance.emit('test case');
 
       count.should.equal(5)
     });
@@ -103,6 +101,20 @@ describe('Struck.Intercom', function () {
       count.should.equal(1);
     });
 
+    it('should call multiple event callbacks with a space seprtated event string', function() {
+      instance.on('test', counter);
+      instance.on('case', counter);
+      instance.emit('test case');
+      count.should.equal(2);
+    });
+
+    it('should call multiple event callbacks with an array of event strings', function() {
+      instance.on('test', counter);
+      instance.on('case', counter);
+      instance.emit(['test', 'case']);
+      count.should.equal(2);
+    });
+
     it('should call multiple, different callback functions', function() {
       var altCounter = counter;
 
@@ -111,6 +123,15 @@ describe('Struck.Intercom', function () {
 
       instance.emit('test');
       count.should.equal(2);
+    });
+
+    it('should accept a 2nd argument of data sent to callback function', function(done) {
+      instance.on('test', function(data) {
+        data.test.should.equal('case');
+        done();
+      });
+
+      instance.emit('test', { test: 'case' });
     });
   });
 });

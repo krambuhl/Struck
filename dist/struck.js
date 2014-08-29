@@ -481,7 +481,7 @@ Struck.Intercom = function (root) {
 	// build subscription object from
 	// name and function, additional
 	// options are optional...
-	function subscribe(com, name, func, options) {
+	function subscribe(com, name, func, opts) {
 		if (!name && !func) return;
 
 		var subOptions = {
@@ -491,14 +491,13 @@ Struck.Intercom = function (root) {
 
 		// add useful options to subOptions
 		_.each(subscriptionKeys, function (key) {
-			if (options[key]) subOptions[key] = options[key];
+			if (opts[key]) subOptions[key] = opts[key];
 		});
 
 		// create a new subscription from the default object
 		// and overwrite properties with subOptions,
 		// then adds subscription to collection
 		var subscription = _.extend({}, defaultSubscription, subOptions);
-
 		com.subscriptions.push(subscription);
 	}
 
@@ -539,6 +538,10 @@ Struck.Intercom = function (root) {
 	//
 	function trigger(com, sub, data) {
 		sub.callback.apply(sub.context, data ? [data].concat(sub.args) : sub.args);
+		
+		if (sub.single) {
+			unsubscribe(com, sub.name, sub.callback);
+		}
 	}
 
 	// #####Intercom.on
@@ -566,6 +569,7 @@ Struck.Intercom = function (root) {
 	// #####Intercom.off
 	Intercom.prototype.off = function(names, callback) {
 		unsubscriber(this, names, callback);
+
 		return this;
 	};
 
