@@ -9,7 +9,7 @@ Struck.EventObject = function () {
 		baseInitiation: function () {
 			// all event objects need an intercom for
 			// emiting and listening to events
-			this.com = new Struck.Intercom();
+			this.com = Struck.Intercom.create();
 
 			// call super after defining com which
 			// is used for base hooks
@@ -104,15 +104,17 @@ Struck.EventObject = function () {
 	// #####destroy
 	// when an object is removed, the destroy function
 	// should be called to remove attached event listeners
-	EventObject.prototype.destroy = function () {
+	EventObject.prototype.destroy = function () {		
 		Struck.BaseObject.prototype.destroy.apply(this, arguments);
 
 		// remove all event listeners listeners
 		this.stopListeningAll();
 
-		// destroy com interface
-		this.com.destroy();
-		delete this.com;
+		_.defer(function(self) { 
+			// destroy com interface
+			self.com.destroy();
+			delete self.com;
+		}, this);
 	};
 
 
