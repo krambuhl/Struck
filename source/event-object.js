@@ -53,15 +53,8 @@ Struck.EventObject = function () {
 
 	}
 
-	// #####listenTo
 
-	// Registers a event listener to the
-	// appropriate subsystem. Delegates jquery
-	// objects to the jq event system and struck
-	// objects to the instance's intercom
-	// we then keep a secondary object of events
-	// to remove when the object is deconstructed
-	EventObject.prototype.listenTo = function (obj, events, func) {
+	function listen(obj, events, func, options) {
 		// if object is jquery wrapped
 		// delegate events into object
 
@@ -77,11 +70,41 @@ Struck.EventObject = function () {
 		} else if (obj instanceof Struck.EventObject) {
 			addListener(obj, events, func);
 		}
+
+	}
+
+	function unlisten() {
+
+	}
+
+
+	// #####listenTo
+
+	// Registers a event listener to the
+	// appropriate subsystem. Delegates jquery
+	// objects to the jq event system and struck
+	// objects to the instance's intercom
+	// we then keep a secondary object of events
+	// to remove when the object is deconstructed
+	EventObject.prototype.listenTo = function (obj, events, func, opts) {
+		listen(obj, events, func, _.extend({
+			single: false,
+			args: args,
+			context: this
+		}, opts));
+
+		return this;
 	};
 
 	// #####listenOnce
-	EventObject.prototype.listenOnce = function (obj, events, func) {
+	EventObject.prototype.listenOnce = function (obj, events, func, opts) {
+		listen(obj, events, func, _.extend({
+			single: true,
+			args: args,
+			context: this
+		}, opts));
 
+		return this;
 	};
 
 	// #####stopListening
@@ -90,15 +113,22 @@ Struck.EventObject = function () {
 	// typeof obj == jquery ? jquery.off
 	// typeof ogj == Struck.EventObjt ? com.off
 	EventObject.prototype.stopListening = function (obj, events, func) {
-
+		unlisten(obj, events, func);
+		return this;
 	};
 
 	// #####stopListeningAll
 	// remove all event listeners from Object
 	// iterates over internal list, delegating
 	// to stopListening
-	EventObject.prototype.stopListeningAll = function (obj, events, func) {
+	EventObject.prototype.stopListeningAll = function () {
+		if (this._events.length === 0) return;
 
+		_.each(this._events, function(ev) {
+			unlisten(ev.obj, ev.events, ev.func);
+		}, this);
+
+		return this;
 	};
 
 	// #####destroy
@@ -115,6 +145,8 @@ Struck.EventObject = function () {
 			self.com.destroy();
 			delete self.com;
 		}, this);
+
+		return this;
 	};
 
 
