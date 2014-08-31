@@ -11,7 +11,7 @@
   "scripts": {
     "develop": "gulp develop",
     "compile": "gulp compile",
-    "start": "npm update express && node demo.js",
+    "start": "npm update express && node server.js",
     "test": "gulp test"
   },
   "repository": {
@@ -19,6 +19,7 @@
     "url": "git@github.com:krambuhl/struct.git"
   },
   "devDependencies": {
+    "coveralls": "^2.11.1",
     "express": "^4.7.0",
     "groc": "^0.6.3",
     "gulp": "^3.8.6",
@@ -29,7 +30,8 @@
     "gulp-mocha-phantomjs": "^0.3.0",
     "gulp-rename": "^1.2.0",
     "gulp-sourcemaps": "^1.1.0",
-    "gulp-uglify": "^0.3.1"
+    "gulp-uglify": "^0.3.1",
+    "mocha-lcov-reporter": "0.0.1"
   },
   "dependencies": {
     "jquery": "^2.1.1",
