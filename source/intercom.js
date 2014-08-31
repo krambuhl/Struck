@@ -114,7 +114,7 @@ Struck.Intercom = function (root) {
 	//
 	function trigger(com, sub, data) {
 		sub.callback.apply(sub.context, data ? [data].concat(sub.args) : sub.args);
-		
+
 		if (sub.single) {
 			unsubscribe(com, sub.name, sub.callback);
 		}

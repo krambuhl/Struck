@@ -26,7 +26,7 @@ describe('Struck.Intercom', function () {
     instance.on('test', noop).should.be.equal(instance);
     instance.once('test', noop).should.be.equal(instance);
     instance.off('test').should.be.equal(instance);
-    instance.emit('test').should.be.equal(instance); 
+    instance.emit('test').should.be.equal(instance);
   });
 
   describe('on()', function () {
@@ -51,7 +51,7 @@ describe('Struck.Intercom', function () {
     });
 
     it('should control the context of the callback with an optional 3rd argument', function() {
-      instance.on('test', function() { 
+      instance.on('test', function() {
         this.should.equal('buttz');
       }, 'buttz');
 
@@ -59,7 +59,7 @@ describe('Struck.Intercom', function () {
     });
   });
 
-  describe('once()', function () { 
+  describe('once()', function () {
     it('should pass all tests passed by on()', function() {
       instance.once('test', counter);
       instance.once('test case', counter);
@@ -67,14 +67,14 @@ describe('Struck.Intercom', function () {
 
       instance.emit('test case');
 
-      count.should.equal(5)
+      count.should.equal(5);
     });
 
     it('should unsubscribe events after firing callback function', function() {
       instance.once('test', counter);
       instance.emit('test');
       instance.emit('test');
-      count.should.equal(1)
+      count.should.equal(1);
     });
   });
 
@@ -83,14 +83,14 @@ describe('Struck.Intercom', function () {
       instance.on('test', counter);
       instance.off('test', counter);
       instance.emit('test');
-      count.should.equal(0)
+      count.should.equal(0);
     });
 
     it('should unsubscribe from generic named event', function() {
       instance.on('test', counter);
       instance.off('test');
       instance.emit('test');
-      count.should.equal(0)
+      count.should.equal(0);
     });
   });
 

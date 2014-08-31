@@ -5,6 +5,8 @@
 // objects externally.  Using the listen methods
 // automates undelgating events of view removal.
 Struck.EventObject = function () {
+	'use strict';
+
 	var EventObject = Struck.BaseObject.extend({
 		baseInitiation: function () {
 			// all event objects need an intercom for
@@ -29,22 +31,21 @@ Struck.EventObject = function () {
 	};
 
 	function addListener(obj, events, func, opts) {
+		if (opts.once) {
+			func = function () {
+				func.apply(obj);
+				removeListener(obj, events, func, opts);
+			};
+		}
+
 		this._events.push({
 			events: events,
 			func: func,
 			obj: obj
 		});
-
-		var wrap = func;
-		if (opts.once) {
-			wrap = function () {
-				func.apply(obj);
-				removeListener(obj, events, func, opts);
-			}
-		}
 	}
 
-	function removeListener(obj, events, func, opts) {
+	function removeListener(obj, events, func) {
 		_.reject(this._events, {
 			events: events,
 			func: func,
@@ -72,6 +73,7 @@ Struck.EventObject = function () {
 		}
 
 	}
+
 
 	function unlisten() {
 
@@ -148,7 +150,6 @@ Struck.EventObject = function () {
 
 		return this;
 	};
-
 
 	return EventObject;
 }();
