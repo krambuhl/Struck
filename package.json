@@ -12,7 +12,8 @@
     "develop": "gulp develop",
     "compile": "gulp compile",
     "start": "npm update express && node server.js",
-    "test": "./node_modules/karma/bin/karma start --single-run true"
+    "test": "gulp test",
+    "ci-test": "rm -r ./coverage && ./node_modules/karma/bin/karma start --single-run true"
   },
   "config": {
     "blanket": {
