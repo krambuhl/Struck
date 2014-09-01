@@ -32,15 +32,15 @@ var dir = {
 gulp.task('build', function() {
   var files = [
     'build/_export',
-    'build/utilities',
+    'utilities',
     'hook',
     'computed',
     'extend',
     'base-object',
     'event-object',
     'intercom',
-    'model',
-    'view',
+    // 'model',
+    // 'view',
     'build/_after'
   ].map(function (file) { return path.join(dir.source, file + '.js'); });
 

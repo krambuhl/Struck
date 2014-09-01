@@ -49,15 +49,13 @@ Struck.View = function () {
 
   // overwritable `setup` function
   // called when View is initialized
-  View.prototype.setup = _.noop
+  View.prototype.setup = _.noop;
 
   // overwritable `cleanup` function
   // that should be called when removing
   // a view to remove event listeners
   // or any possible memory leaks
   View.prototype.cleaup = _.noop;
-
-  View.prototype.listenTo = function () { };
 
   // ###Private Functions
 

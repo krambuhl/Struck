@@ -68,6 +68,7 @@ describe('Struck.Hook', function () {
 
 	it('should call immediate hook imediately after hooked function is called', function(done) {
 		var state = 0; // 0 = unstarted, 2 = after function called
+		
 		obj.hook = function() { if (state++ == 2) done(); };
 		obj.test = Struck.Hook('test', function() { return state++; });
 		obj.test();
