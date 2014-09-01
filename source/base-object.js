@@ -41,7 +41,7 @@ Struck.BaseObject = function () {
 	// #####destroy
 	// overwritable function that gets called
 	// when destroying object
-	BaseObject.prototype.destroy = _.noop;
+	BaseObject.prototype.destroy = Struck.Hook('destroy', _.noop);
 
 	// #####hook
 	// interface for providing method callbacks

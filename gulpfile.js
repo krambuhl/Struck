@@ -18,10 +18,13 @@ var docco = require('gulp-docco');
 var mocha = require('gulp-mocha-phantomjs');
 
 // project directories
-var sourceDir = './source';
-var distDir = './dist';
-var testDir = './tests';
-
+var dir = {
+  source: './source',
+  dist: './dist',
+  test: './test',
+  docs: './docs',
+  example: './example'
+};
 
 
 // __build__ task:
@@ -39,17 +42,17 @@ gulp.task('build', function() {
     'model',
     'view',
     'build/_after'
-  ].map(function (file) { return path.join(sourceDir, file + '.js'); });
+  ].map(function (file) { return path.join(dir.source, file + '.js'); });
 
   return gulp.src(files)
     .pipe(sourcemaps.init())
     .pipe(concat('struck.js'))
-    .pipe(gulp.dest(distDir))
+    .pipe(gulp.dest(dir.dist))
     .pipe(uglify())
     .pipe(rename('struck.min.js'))
     .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest(distDir))
-    .pipe(gulp.dest('./example'));
+    .pipe(gulp.dest(dir.dist))
+    .pipe(gulp.dest(dir.example));
 });
 
 
@@ -59,21 +62,23 @@ gulp.task('build', function() {
 // - docco (side by side documentation)
 //   + output: various files to './docs'
 gulp.task('docs', ['build'], function() {
-  return gulp.src(path.join(distDir, 'struck.js'))
+  return gulp.src(path.join(dir.dist, 'struck.js'))
     .pipe(docco())
-    .pipe(gulp.dest('./docs'));
+    .pipe(gulp.dest(dir.docs));
 });
+
 
 // __test__ task:
 gulp.task('test', ['build'], function () {
-  return gulp.src(path.join(testDir, 'tests.html'))
+  return gulp.src(path.join(dir.test, 'tests.html'))
     .pipe(mocha({ reporter: 'spec' }));
 });
 
+
 // __watch__ task:
 gulp.task('watch', function () {
-  gulp.watch(path.join(sourceDir, '**/*.js'), ['compile']);
-  gulp.watch(path.join(testDir, '**/*'), ['test']);
+  gulp.watch(path.join(dir.source, '**/*.js'), ['compile']);
+  gulp.watch(path.join(dir.test, '**/*'), ['test']);
 });
 
 // gulp.task('bump', function () {
@@ -83,7 +88,7 @@ gulp.task('watch', function () {
 // });
 
 // gulp.task('release', ['build', 'bump'], function() {
-//   gulp.src(path.join(distDir));
+//   gulp.src(path.join(dir.dist));
 // });
 
 gulp.task('compile', ['build', 'docs']);
