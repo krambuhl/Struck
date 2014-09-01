@@ -1,3 +1,5 @@
+// ###Utilities
+
 function capitalize(string) {
 	return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -5,10 +7,11 @@ function capitalize(string) {
 // #####splitName
 // split "event1 event2" into an
 // array of event names
-function splitName(name, context) {
+function splitName(context, names) {
 	if (_.isUndefined(context)) context = this;
+	
 	// get result of name if defined as a function
-	var result = _.isFunction(name) ? name.call(context) : name;
+	var result = _.isFunction(names) ? names.call(context) : names;
 
 	// split by spaces if result isn't an array
 	// always returns an array

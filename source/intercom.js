@@ -7,7 +7,7 @@ Struck.Intercom = function (root) {
 	// used to clone and extend in `subscribe` function
 	var defaultSubscription = {
 		single: false,
-		name: "all",
+		name: 'all',
 		callback: _.noop,
 		context: root,
 		args: []
@@ -28,18 +28,6 @@ Struck.Intercom = function (root) {
 		}
 	});
 
-
-	// #####splitName
-	// split "event1 event2" into an
-	// array of event names
-	function splitName(com, name) {
-		// get result of name if defined as a function
-		var result = _.isFunction(name) ? name.call(com) : name;
-
-		// split by spaces if result isn't an array
-		// always returns an array
-		return _.isArray(result) ? result : result.split(" ");
-	}
 
 	// #####subscriber
 	// splits and delegates subscriptions from on/once calls
@@ -78,7 +66,7 @@ Struck.Intercom = function (root) {
 	}
 
 	function unsubscriber(com, names, func) {
-		if (names === undefined || names === "all") {
+		if (names === undefined || names === 'all') {
 			unsubscribe(com);
 			return;
 		}
