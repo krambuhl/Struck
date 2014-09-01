@@ -26,7 +26,7 @@ module.exports = function(config) {
     preprocessors: { 'dist/struck.js': ['coverage'] },
 
     coverageReporter: {
-      type: 'lcovonly',
+      type: 'lcov',
       dir: 'coverage/'
     },
 

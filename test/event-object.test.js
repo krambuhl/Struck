@@ -12,7 +12,7 @@ describe('Struck.EventObject', function () {
 
   describe('hook()', function () {
     it('should propagate callback to Intercom', function (done) {
-      instance.com.on('test', function() { done(); });
+      instance.com.on(function() { return 'test'; }, function() { done(); });
       instance.hook('test');
     });
 
