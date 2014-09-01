@@ -13,7 +13,7 @@
     "compile": "gulp compile",
     "start": "npm update express && node server.js",
     "test": "gulp test",
-    "ci-test": "rm -r ./coverage && ./node_modules/karma/bin/karma start --single-run true"
+    "ci-test": "./node_modules/karma/bin/karma start --single-run true"
   },
   "config": {
     "blanket": {
