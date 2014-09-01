@@ -22,6 +22,16 @@ describe('Struck.BaseObject', function () {
       instance.should.have.property('test');
       instance.test.should.be.a.Function;
     });
+
+    it('should overwrite constructor if defined as an option', function(done) {
+      var SubObject = Struck.BaseObject.extend({
+        constructor: function() {
+          done();
+        }
+      });
+
+      SubObject.create();
+    });
   });
 
   describe('BaseObject.create()', function () {
