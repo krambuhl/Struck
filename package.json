@@ -12,7 +12,7 @@
     "develop": "gulp develop",
     "compile": "gulp compile",
     "start": "npm update express && node server.js",
-    "test": "karma start --single-run true"
+    "test": "./node_modules/karma/bin/karma start --single-run true"
   },
   "config": {
     "blanket": {
