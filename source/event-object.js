@@ -25,60 +25,43 @@ Struck.EventObject = function () {
 
 	// trigger intercom events for hook
 	EventObject.prototype.hook = function (name, mod) {
-		var postfix = mod !== undefined ? ':' + mod : '';
+		var postfix = mod !== undefined && mod !== 'on' ? ':' + mod : '';
 		Struck.BaseObject.prototype.hook.apply(this, arguments);
 		this.com.emit(name + postfix, arguments);
 	};
 
-	function addListener(obj, events, func, opts) {
-		if (opts.once) {
-			func = function () {
-				func.apply(obj);
-				removeListener(obj, events, func, opts);
-			};
-		}
 
-		this._events.push({
+	function addListener(self, obj, events, func, opts) {
+		events = result(events);
+		if (_.isArray(events)) events.join(' ');
+
+		var method = opts.once ? 'on' : 'once';
+		var ev = {
 			events: events,
 			func: func,
 			obj: obj
-		});
-	}
+		};
 
-	function removeListener(obj, events, func) {
-		_.reject(this._events, {
-			events: events,
-			func: func,
-			obj: obj
-		});
-
-	}
-
-
-	function listen(obj, events, func, options) {
-		// if object is jquery wrapped
-		// delegate events into object
-
-		// if object is Struck.EventObject
-		// delegate events to the underlying
-		// com object
+		self._events.push(ev);
 
 		if (obj instanceof jQuery) {
-			// do jquery stuff
-
-		// if object is (or extended from) an event object
-		// we can assume it has an Intercom
+			obj[method](events, func);
 		} else if (obj instanceof Struck.EventObject) {
-			addListener(obj, events, func);
+			obj.com[method](events, func, opts.context);
 		}
-
 	}
 
+	function removeListener(self, obj, events, func) {
+		var rejects = _.reject(obj._events, {
+			events: events,
+			func: func,
+			obj: obj
+		});
 
-	function unlisten() {
-
+		_.each(rejects, function(reject) {
+			reject.obj.off(reject.events, rejects.func);
+		});
 	}
-
 
 	// #####listenTo
 
@@ -88,23 +71,25 @@ Struck.EventObject = function () {
 	// objects to the instance's intercom
 	// we then keep a secondary object of events
 	// to remove when the object is deconstructed
-	EventObject.prototype.listenTo = function (obj, events, func, opts) {
-		listen(obj, events, func, _.extend({
+	EventObject.prototype.listenTo = function (obj, events, func, context) {
+		var args = _.last(arguments, 4);
+		addListener(this, obj, events, func, {
 			single: false,
 			args: args,
-			context: this
-		}, opts));
+			context: (context || this)
+		});
 
 		return this;
 	};
 
 	// #####listenOnce
-	EventObject.prototype.listenOnce = function (obj, events, func, opts) {
-		listen(obj, events, func, _.extend({
+	EventObject.prototype.listenOnce = function (obj, events, func, context) {
+		var args = _.last(arguments, 4);
+		addListener(this, obj, events, func, {
 			single: true,
 			args: args,
-			context: this
-		}, opts));
+			context: (context || this)
+		});
 
 		return this;
 	};
@@ -115,7 +100,7 @@ Struck.EventObject = function () {
 	// typeof obj == jquery ? jquery.off
 	// typeof ogj == Struck.EventObjt ? com.off
 	EventObject.prototype.stopListening = function (obj, events, func) {
-		unlisten(obj, events, func);
+		removeListener(this, obj, events, func);
 		return this;
 	};
 
@@ -127,7 +112,7 @@ Struck.EventObject = function () {
 		if (this._events.length === 0) return;
 
 		_.each(this._events, function(ev) {
-			unlisten(ev.obj, ev.events, ev.func);
+			removeListener(this, ev.obj, ev.events, ev.func);
 		}, this);
 
 		return this;
