@@ -66,7 +66,7 @@ Struck.Intercom = function (root) {
 	}
 
 	function unsubscriber(com, names, func) {
-		if (names === undefined || names === 'all') {
+		if (names === undefined) {
 			unsubscribe(com);
 			return;
 		}

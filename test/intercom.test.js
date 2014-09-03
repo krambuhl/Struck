@@ -92,6 +92,13 @@ describe('Struck.Intercom', function () {
       instance.emit('test');
       count.should.equal(0);
     });
+
+    it('should unsubscribe all events from object', function() {
+      instance.on('test buttz', counter);
+      instance.off();
+      instance.emit('test buttz');
+      count.should.equal(0);
+    });
   });
 
   describe('emit()', function () {
