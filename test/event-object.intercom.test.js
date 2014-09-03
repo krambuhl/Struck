@@ -83,18 +83,17 @@ describe('Struck.EventObject [Intercom]', function () {
     });
   });
 
-  describe.skip('stopListening()', function () { 
+  describe('stopListening()', function () { 
     it('should unsubscribe specific callback from EventObject `com` object', function() {
       Struck.EventObject.create({
         initialize: function() {
-          this.listenTo(instance, 'get set', counter);
+          this.listenTo(instance, 'get', counter);
           this.stopListening(instance, 'get', counter);
         }
       });
       
       instance.get('uid');
-      instance.set('butz', '2butz');
-      count.should.equal(1);
+      count.should.equal(0);
     });
 
     it('should unsubscribe multiple events from EventObject `com` object', function() {
@@ -107,7 +106,7 @@ describe('Struck.EventObject [Intercom]', function () {
       
       instance.get('uid');
       instance.set('butz', '2butz');
-      instance.com.trigger('buttz');
+      instance.com.emit('buttz');
       count.should.equal(1);
     });
 
@@ -138,22 +137,16 @@ describe('Struck.EventObject [Intercom]', function () {
     });
   });
 
-  describe.skip('stopListeningAll()', function () {
-    it('should unsubscribe all listened EventObject `com` object events from instance', function() {
-      instance.com.on('test', counter);
-      instance.com.stopListeningAll();
-
-      instance.hook('test');
-      count.should.equal(0);
-    });
-  });
-
-  describe.skip('destroy()', function () {
+  describe('destroy()', function () {
     it('should remove all listened events', function() {
-      instance.com.on('test', counter);
-      instance.destroy();
+      Struck.EventObject.create({
+        initialize: function() {
+          this.listenTo(instance, 'get set', counter);
+          this.stopListening();
+        }
+      });
 
-      instance.hook('test');
+      instance.hook('get set');
       count.should.equal(0);
     });
   });

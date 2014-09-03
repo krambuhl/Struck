@@ -32,34 +32,75 @@ Struck.EventObject = function () {
 
 
 	function addListener(self, obj, events, func, opts) {
-		events = result(events);
-		if (_.isArray(events)) events.join(' ');
+		var method = 'on',
+			callback = func;
 
-		var method = opts.once ? 'on' : 'once';
-		var ev = {
-			events: events,
-			func: func,
-			obj: obj
-		};
-
-		self._events.push(ev);
-
-		if (obj instanceof jQuery) {
-			obj[method](events, func);
-		} else if (obj instanceof Struck.EventObject) {
-			obj.com[method](events, func, opts.context);
+		if (opts.single) {
+			method = 'once';
+			callback = function() {
+				func.apply(this, arguments);
+				removeListener(self, obj, events, callback);
+			};
 		}
+
+		events = result(events);
+		if (events && !_.isArray(events)) events = events.split(' ');
+
+		_.each(events, function(ev) {
+			self._events.push({
+				events: ev,
+				func: callback,
+				obj: obj
+			});
+
+			if (obj instanceof jQuery) {
+				obj[method](ev, func);
+			} else if (obj instanceof Struck.EventObject) {
+				var args = [ev, callback, opts.context].concat(opts.args);
+				obj.com[method].apply(obj.com, args);
+			}
+		});
 	}
 
 	function removeListener(self, obj, events, func) {
-		var rejects = _.reject(obj._events, {
-			events: events,
-			func: func,
-			obj: obj
-		});
+		events = result(events);
+		if (events && !_.isArray(events)) events = events.split(' ');
+
+		var rejects = [];
+		var passes = [];
+
+		if (func) {
+			_.each(events, function(name) {
+				_.each(self._events, function(ev) {
+					var reject = (ev.obj == obj && ev.events == name && ev.func == func);
+					if (reject) rejects.push(ev); else passes.push(ev);
+				});
+			});
+		} else if (events) {
+			_.each(events, function(name) {
+				_.each(self._events, function(ev) {
+					var reject = (ev.obj == obj && ev.events == name);
+					if (reject) rejects.push(ev); else passes.push(ev);
+				});
+			});
+		} else if (obj) {
+			_.each(self._events, function(ev) {
+				var reject = (ev.obj == obj);
+				if (reject) rejects.push(ev); else passes.push(ev);
+			});
+		} else {
+			rejects = self._events;
+		}
+
+
+		self._events = passes;
 
 		_.each(rejects, function(reject) {
-			reject.obj.off(reject.events, rejects.func);
+			if (reject.obj instanceof jQuery) {
+				reject.obj.off(reject.events, reject.func);
+			} else if (reject.obj instanceof Struck.EventObject) {
+				reject.obj.com.off(reject.events, rejects.func);
+			}
 		});
 	}
 
@@ -72,7 +113,7 @@ Struck.EventObject = function () {
 	// we then keep a secondary object of events
 	// to remove when the object is deconstructed
 	EventObject.prototype.listenTo = function (obj, events, func, context) {
-		var args = _.last(arguments, 4);
+		var args = _.rest(arguments, 4);
 		addListener(this, obj, events, func, {
 			single: false,
 			args: args,
@@ -84,7 +125,7 @@ Struck.EventObject = function () {
 
 	// #####listenOnce
 	EventObject.prototype.listenOnce = function (obj, events, func, context) {
-		var args = _.last(arguments, 4);
+		var args = _.rest(arguments, 4);
 		addListener(this, obj, events, func, {
 			single: true,
 			args: args,
@@ -104,20 +145,6 @@ Struck.EventObject = function () {
 		return this;
 	};
 
-	// #####stopListeningAll
-	// remove all event listeners from Object
-	// iterates over internal list, delegating
-	// to stopListening
-	EventObject.prototype.stopListeningAll = function () {
-		if (this._events.length === 0) return;
-
-		_.each(this._events, function(ev) {
-			removeListener(this, ev.obj, ev.events, ev.func);
-		}, this);
-
-		return this;
-	};
-
 	// #####destroy
 	// when an object is removed, the destroy function
 	// should be called to remove attached event listeners
@@ -125,7 +152,7 @@ Struck.EventObject = function () {
 		Struck.BaseObject.prototype.destroy.apply(this, arguments);
 
 		// remove all event listeners listeners
-		this.stopListeningAll();
+		this.stopListeni();
 
 		_.defer(function(self) { 
 			// destroy com interface
