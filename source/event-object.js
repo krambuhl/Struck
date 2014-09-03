@@ -152,7 +152,7 @@ Struck.EventObject = function () {
 		Struck.BaseObject.prototype.destroy.apply(this, arguments);
 
 		// remove all event listeners listeners
-		this.stopListeni();
+		this.stopListening();
 
 		_.defer(function(self) { 
 			// destroy com interface
