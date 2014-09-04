@@ -13,7 +13,8 @@
     "compile": "gulp compile",
     "start": "npm update express && node server.js",
     "test": "gulp test",
-    "ci-test": "./node_modules/karma/bin/karma start --single-run true"
+    "ci-test": "./node_modules/karma/bin/karma start --single-run true && npm run ci-climate",
+    "ci-climate": "mv coverage/*/lcov.info coverage && codeclimate < coverage/lcov.info"
   },
   "config": {
     "blanket": {
@@ -27,6 +28,7 @@
     "url": "git@github.com:krambuhl/struct.git"
   },
   "devDependencies": {
+    "codeclimate-test-reporter": "0.0.3",
     "express": "^4.7.0",
     "groc": "^0.6.3",
     "gulp": "^3.8.6",
