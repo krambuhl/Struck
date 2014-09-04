@@ -133,4 +133,18 @@ describe('Struck.EventObject [jQuery]', function () {
       count.should.equal(0);
     });
   });
+
+  describe('destroy()', function () {
+    it('should remove all listened events', function() {
+      Struck.EventObject.create({
+        initialize: function() {
+          this.listenTo(instance, 'click hover', counter);
+          this.destroy();
+        }
+      });
+      
+      instance.trigger('click').trigger('hover');
+      count.should.equal(0);
+    });
+  });
 });

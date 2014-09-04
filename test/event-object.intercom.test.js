@@ -142,7 +142,7 @@ describe('Struck.EventObject [Intercom]', function () {
       Struck.EventObject.create({
         initialize: function() {
           this.listenTo(instance, 'get set', counter);
-          this.stopListening();
+          this.destroy();
         }
       });
 
