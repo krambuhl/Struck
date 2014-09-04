@@ -5,7 +5,7 @@ describe('Struck.EventObject [jQuery]', function () {
 
   beforeEach(function() {
     count = 0;
-    instance = $('#box');
+    instance = $('body');
   });
 
   afterEach(function() {
