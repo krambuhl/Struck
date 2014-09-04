@@ -1,6 +1,6 @@
- describe.skip('Struck.EventObject [jQuery]', function () {
+describe('Struck.EventObject [jQuery]', function () {
   var count = 0;
-  var counter = function() { count++; }
+  var counter = function() { count++; };
   var instance;
 
   beforeEach(function() {
@@ -8,18 +8,23 @@
     instance = $('#box');
   });
 
+  afterEach(function() {
+    instance.off();
+  });
+
   describe('listenTo()', function () {
-    it('should listen to jQuery events', function(done) {
+    it('should listen to jQuery events', function() {
       Struck.EventObject.create({
         initialize: function() {
-          this.listenTo(instance, 'click', done);
+          this.listenTo(instance, 'click', counter);
         }
       });
 
       instance.trigger('click');
+      count.should.equal(1);
     });
 
-    it('should split event string by space and delegate multiple events', function(done) {
+    it('should split event string by space and delegate multiple events', function() {
       Struck.EventObject.create({
         initialize: function() {
           this.listenTo(instance, 'click hover', counter);
@@ -30,7 +35,7 @@
       count.should.equal(2);
     });
 
-    it('should accept events as an array of strings', function(done) {
+    it('should accept events as an array of strings', function() {
       Struck.EventObject.create({
         initialize: function() {
           this.listenTo(instance, ['click', 'hover'], counter);
@@ -41,31 +46,33 @@
       count.should.equal(2);
     });
 
-    it('should accept events as a function returning a string or array', function(done) {
+    it('should accept events as a function returning a string or array', function() {
       Struck.EventObject.create({
         initialize: function() {
           this.listenTo(instance, function() {
             return 'click';
-          }, done);
+          }, counter);
         }
       });
       
       instance.trigger('click');
+      count.should.equal(1);
     });
   });
   
   describe('listenOnce()', function () { 
-    it('should listen to jquery object events', function(done) {
+    it('should listen to jquery object events', function() {
       Struck.EventObject.create({
         initialize: function() {
-          this.listenOnce(instance, 'click', done);
+          this.listenOnce(instance, 'click', counter);
         }
       });
       
       instance.trigger('click');
+      count.should.equal(1);
     });
 
-    it('should unsubscribe from jquery object events after event fires', function(done) {
+    it('should unsubscribe from jquery object events after event fires', function() {
       Struck.EventObject.create({
         initialize: function() {
           this.listenOnce(instance, 'click', counter);
@@ -78,11 +85,11 @@
   });
 
   describe('stopListening()', function () { 
-    it('should unsubscribe specific callback from jQuery object', function(done) {
+    it('should unsubscribe specific callback from jQuery object', function() {
       Struck.EventObject.create({
         initialize: function() {
           this.listenTo(instance, 'click hover', counter);
-          this.stopListening(instance, 'hover', done);
+          this.stopListening(instance, 'hover', counter);
         }
       });
       
@@ -113,22 +120,16 @@
       instance.trigger('click').trigger('hover');
       count.should.equal(0);
     });
-  });
 
-  describe('stopListeningAll()', function () {
-    it('should unsubscribe all listened jQuery events from EventObject', function() {
-      var instance2 = $('html');
-
+    it('should unsubscribe all events if no args are provided', function() {
       Struck.EventObject.create({
         initialize: function() {
-          this.listenTo(instance, 'click', counter);
-          this.listenTo(instance2, 'click', counter);
-          this.stopListeningAll();
+          this.listenTo(instance, 'click hover', counter);
+          this.stopListening();
         }
       });
       
-      instance.trigger('click');
-      instance2.trigger('click');
+      instance.trigger('click').trigger('hover');
       count.should.equal(0);
     });
   });

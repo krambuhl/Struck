@@ -32,16 +32,10 @@ Struck.EventObject = function () {
 
 
 	function addListener(self, obj, events, func, opts) {
-		var method = 'on',
-			callback = func;
-
-		if (opts.single) {
-			method = 'once';
-			callback = function() {
-				func.apply(this, arguments);
-				removeListener(self, obj, events, callback);
-			};
-		}
+		var callback = !opts.single ? func : function() {
+			func.apply(this, arguments);
+			removeListener(self, obj, events, callback);
+		};
 
 		events = result(events);
 		if (events && !_.isArray(events)) events = events.split(' ');
@@ -54,10 +48,10 @@ Struck.EventObject = function () {
 			});
 
 			if (obj instanceof jQuery) {
-				obj[method](ev, func);
+				obj[opts.single ? 'one' : 'on'](ev, func);
 			} else if (obj instanceof Struck.EventObject) {
 				var args = [ev, callback, opts.context].concat(opts.args);
-				obj.com[method].apply(obj.com, args);
+				obj.com[opts.single ? 'once' : 'on'].apply(obj.com, args);
 			}
 		});
 	}
