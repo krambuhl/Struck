@@ -50,8 +50,7 @@ Struck.EventObject = function () {
 			if (obj instanceof jQuery) {
 				obj[opts.single ? 'one' : 'on'](ev, func);
 			} else if (obj instanceof Struck.EventObject) {
-				var args = [ev, callback, opts.context].concat(opts.args);
-				obj.com[opts.single ? 'once' : 'on'].apply(obj.com, args);
+				obj.com[opts.single ? 'once' : 'on'].call(obj.com, ev, callback, opts.context);
 			}
 		});
 	}
@@ -107,10 +106,8 @@ Struck.EventObject = function () {
 	// we then keep a secondary object of events
 	// to remove when the object is deconstructed
 	EventObject.prototype.listenTo = function (obj, events, func, context) {
-		var args = _.rest(arguments, 4);
 		addListener(this, obj, events, func, {
 			single: false,
-			args: args,
 			context: (context || this)
 		});
 
@@ -119,10 +116,8 @@ Struck.EventObject = function () {
 
 	// #####listenOnce
 	EventObject.prototype.listenOnce = function (obj, events, func, context) {
-		var args = _.rest(arguments, 4);
 		addListener(this, obj, events, func, {
 			single: true,
-			args: args,
 			context: (context || this)
 		});
 
@@ -136,6 +131,11 @@ Struck.EventObject = function () {
 	// typeof ogj == Struck.EventObjt ? com.off
 	EventObject.prototype.stopListening = function (obj, events, func) {
 		removeListener(this, obj, events, func);
+		return this;
+	};
+
+	EventObject.prototype.trigger = function(events) {
+		this.com.emit.apply(this.com, [events].concat(_.rest(arguments, 1)));
 		return this;
 	};
 

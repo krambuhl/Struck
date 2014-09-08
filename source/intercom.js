@@ -9,8 +9,7 @@ Struck.Intercom = function (root) {
 		single: false,
 		name: 'all',
 		callback: _.noop,
-		context: root,
-		args: []
+		context: root
 	};
 
 	// get keys from default subscription object
@@ -35,8 +34,7 @@ Struck.Intercom = function (root) {
 		_.each(splitName(com, names), function (name) {
 			subscribe(com, name, func, {
 				single: opts.single,
-				context: opts.context,
-				args: opts.args
+				context: opts.context
 			});
 		});
 	}
@@ -100,8 +98,8 @@ Struck.Intercom = function (root) {
 
 	// #####trigger
 	//
-	function trigger(com, sub, data) {
-		sub.callback.apply(sub.context, data ? [data].concat(sub.args) : sub.args);
+	function trigger(com, sub, args) {
+		sub.callback.apply(sub.context, args);
 
 		if (sub.single) {
 			unsubscribe(com, sub.name, sub.callback);
@@ -112,8 +110,7 @@ Struck.Intercom = function (root) {
 	Intercom.prototype.on = function(names, callback, context) {
 		subscriber(this, names, callback, {
 			single: false,
-			context: context,
-			args: _.rest(arguments, 3)
+			context: context
 		});
 
 		return this;
@@ -123,8 +120,7 @@ Struck.Intercom = function (root) {
 	Intercom.prototype.once = function(names, callback, context) {
 		subscriber(this, names, callback, {
 			single: true,
-			context: context,
-			args: _.rest(arguments, 3)
+			context: context
 		});
 
 		return this;
@@ -133,12 +129,12 @@ Struck.Intercom = function (root) {
 	// #####Intercom.off
 	Intercom.prototype.off = function(names, callback) {
 		unsubscriber(this, names, callback);
-
 		return this;
 	};
 
 	// #####Intercom.emit
-	Intercom.prototype.emit = function (names, data) {
+	Intercom.prototype.emit = function (names) {
+		var args = _.rest(arguments, 1);
 		var filteredSubs = _.reduce(splitName(this, names), function (subs, name) {
 			var matches = _.filter(this.subscriptions, function (subscriber) {
 				return subscriber.name == name;
@@ -150,7 +146,7 @@ Struck.Intercom = function (root) {
 		filteredSubs = _.unique(filteredSubs);
 
 		_.each(filteredSubs, function(sub) {
-			trigger(this, sub, data);
+			trigger(this, sub, args);
 		}, this);
 
 		return this;

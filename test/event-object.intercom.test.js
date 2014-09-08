@@ -137,6 +137,35 @@ describe('Struck.EventObject [Intercom]', function () {
     });
   });
 
+  describe('trigger()', function() {
+    it('should send data to callback function', function(done) {
+      Struck.EventObject.create({
+        initialize: function() {
+          this.listenTo(instance, 'test', function(data) {
+            data.should.equal('data');
+            done();
+          });
+        }
+      });
+
+      instance.trigger('test', 'data');
+    });
+
+    it('should send multiple data arguments to callback function', function(done) {
+      Struck.EventObject.create({
+        initialize: function() {
+          this.listenTo(instance, 'test', function(data, data2) {
+            data.should.equal('data');
+            data2 .should.equal('data');
+            done();
+          });
+        }
+      });
+
+      instance.trigger('test', 'data', 'data');
+    });
+  });
+
   describe('destroy()', function () {
     it('should remove all listened events', function() {
       Struck.EventObject.create({

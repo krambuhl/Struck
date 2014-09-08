@@ -132,13 +132,23 @@ describe('Struck.Intercom', function () {
       count.should.equal(2);
     });
 
-    it('should accept a 2nd argument of data sent to callback function', function(done) {
+    it('should accept an additional argument of data sent to callback function', function(done) {
       instance.on('test', function(data) {
-        data.test.should.equal('case');
+        data.should.equal('case');
         done();
       });
 
-      instance.emit('test', { test: 'case' });
+      instance.emit('test', 'case');
+    });
+
+    it('should accept additional arguments of data sent to callback function', function(done) {
+      instance.on('test', function(data, data2) {
+        data.should.equal('case');
+        data2.should.equal('base');
+        done();
+      });
+
+      instance.emit('test', 'case', 'base');
     });
   });
 });
