@@ -11,7 +11,6 @@
   "scripts": {
     "develop": "gulp develop",
     "compile": "gulp compile",
-    "start": "npm update express && node server.js",
     "test": "gulp test",
     "ci-test": "./node_modules/karma/bin/karma start --single-run true && npm run ci-climate",
     "ci-climate": "mv coverage/*/lcov.info coverage && codeclimate < coverage/lcov.info"
