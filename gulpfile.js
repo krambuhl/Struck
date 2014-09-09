@@ -22,8 +22,7 @@ var dir = {
   source: './source',
   dist: './dist',
   test: './test',
-  docs: './docs',
-  example: './example'
+  docs: './docs'
 };
 
 
@@ -51,8 +50,7 @@ gulp.task('build', function() {
     .pipe(uglify())
     .pipe(rename('struck.min.js'))
     .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest(dir.dist))
-    .pipe(gulp.dest(dir.example));
+    .pipe(gulp.dest(dir.dist));
 });
 
 

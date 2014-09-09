@@ -142,9 +142,9 @@ describe('Struck.Intercom', function () {
     });
 
     it('should accept additional arguments of data sent to callback function', function(done) {
-      instance.on('test', function(data, data2) {
+      instance.on('test', function(data, alt) {
         data.should.equal('case');
-        data2.should.equal('base');
+        alt.should.equal('base');
         done();
       });
 
