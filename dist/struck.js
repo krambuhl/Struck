@@ -315,7 +315,7 @@ Struck.BaseObject = (function () {
 // for adding event listeners and listening to
 // objects externally.  Using the listen methods
 // automates undelgating events of view removal.
-Struck.EventObject = function () {
+Struck.EventObject = (function () {
 	'use strict';
 
 	var EventObject = Struck.BaseObject.extend({
@@ -394,21 +394,21 @@ Struck.EventObject = function () {
 		_.each(self._events, function(ev) {
 			_.each(events, function(name) {
 				if (func) {
-					pushResults(ev.obj == obj && ev.events == name && ev.func == func, ev);
+					pushResults(ev.obj === obj && ev.events === name && ev.func === func, ev);
 				} else if (events) {
-					pushResults(ev.obj == obj && ev.events == name, ev);
+					pushResults(ev.obj === obj && ev.events === name, ev);
 				}
 			});
 		});
 
 		if (obj && !events && !func) {
 			_.each(self._events, function(ev) {
-				pushResults(ev.obj == obj, ev);
+				pushResults(ev.obj === obj, ev);
 			});
 		} else if (!events) { 
 			rejects = self._events; 
 		}
-		
+
 		self._events = passes;
 
 		_.each(rejects, function(reject) {
@@ -429,29 +429,27 @@ Struck.EventObject = function () {
 	// we then keep a secondary object of events
 	// to remove when the object is deconstructed
 	EventObject.prototype.listenTo = function (obj, events, func, context) {
-		var opts = { 
+		addListener(this, { 
 			obj: obj,
 			events: events,
 			func: func,
 			single: false, 
 			context: firstDef(context, this) 
-		};
+		});
 
-		addListener(this, opts);
 		return this;
 	};
 
 	// #####listenOnce
 	EventObject.prototype.listenOnce = function (obj, events, func, context) {
-		var opts = { 
+		addListener(this, { 
 			obj: obj,
 			events: events,
 			func: func,
 			single: true, 
 			context: firstDef(context, this) 
-		};
-
-		addListener(this, opts);
+		});
+		
 		return this;
 	};
 
@@ -489,7 +487,7 @@ Struck.EventObject = function () {
 	};
 
 	return EventObject;
-}();
+})();
 
 // ##Intercom
 
