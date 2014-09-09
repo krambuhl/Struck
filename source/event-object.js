@@ -72,22 +72,32 @@ Struck.EventObject = function () {
 		var rejects = [],
 			passes = [];
 
+		function pushResults(rejected, ev) {
+			if (rejected) { 
+				rejects.push(ev);
+			} else { 
+				passes.push(ev);
+			}
+		}
+
 		_.each(self._events, function(ev) {
 			_.each(events, function(name) {
-				var reject;
 				if (func) {
-					reject = (ev.obj == obj && ev.events == name && ev.func == func);
+					pushResults(ev.obj == obj && ev.events == name && ev.func == func, ev);
 				} else if (events) {
-					reject = (ev.obj == obj && ev.events == name);
-				} else if (obj) {
-					reject = (ev.obj == obj);
+					pushResults(ev.obj == obj && ev.events == name, ev);
 				}
-
-				if (reject) rejects.push(ev); else passes.push(ev);
 			});
 		});
 
-		if (!events) { rejects = self._events; }
+		if (obj && !events && !func) {
+			_.each(self._events, function(ev) {
+				pushResults(ev.obj == obj, ev);
+			});
+		} else if (!events) { 
+			rejects = self._events; 
+		}
+		
 		self._events = passes;
 
 		_.each(rejects, function(reject) {
