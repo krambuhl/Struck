@@ -38,14 +38,14 @@ describe('Struck.Intercom', function () {
 
     it('should subscribe to multiple events with a space split string', function() {
       instance.on('star wars', counter);
-      instance.emit('star')
+      instance.emit('star');
       instance.emit('wars');
       count.should.equal(2);
     });
 
     it('should subscribe to multiple events with an array of event strings', function() {
       instance.on(['test', 'case'], counter);
-      instance.emit('test')
+      instance.emit('test');
       instance.emit('case');
       count.should.equal(2);
     });

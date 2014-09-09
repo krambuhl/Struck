@@ -23,3 +23,9 @@ function splitName(context, names) {
 function result(expr) {
 	return _.isFunction(expr) ? expr() : expr;
 }
+
+function firstDef() {
+	return _.find(arguments, function(arg) { 
+		return !_.isUndefined(arg);
+	});
+}

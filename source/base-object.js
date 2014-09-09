@@ -1,7 +1,7 @@
 // ##BaseObject
 
 // function for enabling common architectures
-Struck.BaseObject = function () {
+Struck.BaseObject = (function () {
 
 	// ####BaseObject Constructor
 
@@ -32,7 +32,7 @@ Struck.BaseObject = function () {
 	// when the object is created
 	BaseObject.prototype.baseInitiation = Struck.Hook('baseInitiation', function(options) {
 		// assign UID to view object
-		this.uid = _.uniqueId('struck');
+		this.uid = _.uniqueId('uid');
 
 		// add options object to instance
 		this.options = _.extend({}, options);
@@ -48,7 +48,7 @@ Struck.BaseObject = function () {
 	// like `onRender`
 	BaseObject.prototype.hook = function(name, mod) {
 		var args = _.rest(arguments, 2),
-			prefix = mod || 'on',
+			prefix = firstDef(mod, 'on'),
 			methodHook = prefix + capitalize(name);
 
 		if (this[methodHook]) {
@@ -91,11 +91,10 @@ Struck.BaseObject = function () {
 	// prefered method of creating new objects
 	// over using the `new` style
 	BaseObject.create = function(props, opts) {
-		var object = this.extend(props);
-		return new object(_.extend({}, props, opts));
+		var Creator = this.extend(props);
+		return new Creator(_.extend({}, props, opts));
 	};
 
 
-
 	return BaseObject;
-}();
+})();

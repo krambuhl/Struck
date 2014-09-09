@@ -2,7 +2,7 @@
 
 // A standalone function for an event subscriber
 // system to be used in other modules
-Struck.Intercom = function (root) {
+Struck.Intercom = (function () {
 	// setup default subscription object
 	// used to clone and extend in `subscribe` function
 	var defaultSubscription = {
@@ -22,7 +22,7 @@ Struck.Intercom = function (root) {
 	var Intercom = Struck.BaseObject.extend({
 		baseInitiation: function () {
 			Struck.BaseObject.prototype.baseInitiation.apply(this, arguments);
-			this.defaultSubscription = _.extend(_.clone(defaultSubscription), { context: this });
+			this.defaultSubscription = _.extend({}, defaultSubscription, { context: this });
 			this.subscriptions = [];
 		}
 	});
@@ -108,21 +108,15 @@ Struck.Intercom = function (root) {
 
 	// #####Intercom.on
 	Intercom.prototype.on = function(names, callback, context) {
-		subscriber(this, names, callback, {
-			single: false,
-			context: context
-		});
-
+		var opts = { single: false, context: context };
+		subscriber(this, names, callback, opts);
 		return this;
 	};
 
 	// #####Intercom.once
 	Intercom.prototype.once = function(names, callback, context) {
-		subscriber(this, names, callback, {
-			single: true,
-			context: context
-		});
-
+		var opts = { single: true, context: context };
+		subscriber(this, names, callback, opts);
 		return this;
 	};
 
@@ -153,4 +147,4 @@ Struck.Intercom = function (root) {
 	};
 
 	return Intercom;
-}(root);
+})();

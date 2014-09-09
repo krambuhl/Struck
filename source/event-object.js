@@ -4,7 +4,7 @@
 // for adding event listeners and listening to
 // objects externally.  Using the listen methods
 // automates undelgating events of view removal.
-Struck.EventObject = function () {
+Struck.EventObject = (function () {
 	'use strict';
 
 	var EventObject = Struck.BaseObject.extend({
@@ -30,19 +30,29 @@ Struck.EventObject = function () {
 		this.com.emit(name + postfix, arguments);
 	};
 
+	function getEvents(events) {
+		events = result(events);
+		if (events && !_.isArray(events)) {
+			events = events.split(' ');
+		}
 
-	function addListener(self, obj, events, func, opts) {
+		return events;
+	}
+
+
+	function addListener(self, opts) {
+		var obj = opts.obj,
+			events = opts.events,
+			func = opts.func;
+
 		var callback = !opts.single ? func : function() {
 			func.apply(this, arguments);
 			removeListener(self, obj, events, callback);
 		};
 
-		events = result(events);
-		if (events && !_.isArray(events)) events = events.split(' ');
-
 		_.each(events, function(ev) {
 			self._events.push({
-				events: ev,
+				events: events,
 				func: callback,
 				obj: obj
 			});
@@ -55,36 +65,35 @@ Struck.EventObject = function () {
 		});
 	}
 
-	function removeListener(self, obj, events, func) {
-		events = result(events);
-		if (events && !_.isArray(events)) events = events.split(' ');
-
-		var rejects = [];
-		var passes = [];
-
+	function checkRejection(ev, obj, name, func) {
 		if (func) {
-			_.each(events, function(name) {
-				_.each(self._events, function(ev) {
-					var reject = (ev.obj == obj && ev.events == name && ev.func == func);
-					if (reject) rejects.push(ev); else passes.push(ev);
-				});
-			});
-		} else if (events) {
-			_.each(events, function(name) {
-				_.each(self._events, function(ev) {
-					var reject = (ev.obj == obj && ev.events == name);
-					if (reject) rejects.push(ev); else passes.push(ev);
-				});
-			});
+			return (ev.obj === obj && ev.events === name && ev.func === func);
+		} else if (name) {
+			return (ev.obj === obj && ev.events === name);
 		} else if (obj) {
-			_.each(self._events, function(ev) {
-				var reject = (ev.obj == obj);
-				if (reject) rejects.push(ev); else passes.push(ev);
-			});
-		} else {
-			rejects = self._events;
+			return (ev.obj === obj);
 		}
 
+		return reject;
+	}
+
+	function removeListener(self, obj, events, func) {
+		var rejects = [],
+			passes = [];
+
+		_.each(getEvents(events), function(name) {
+			_.each(self._events, function(ev) {
+				if (checkRejection(ev, obj, name, func)) { 
+					rejects.push(ev); 
+				} else { 
+					passes.push(ev);
+				}
+			});
+		});
+
+		if (!events) {
+			rejects = self._events;
+		}
 
 		self._events = passes;
 
@@ -106,21 +115,29 @@ Struck.EventObject = function () {
 	// we then keep a secondary object of events
 	// to remove when the object is deconstructed
 	EventObject.prototype.listenTo = function (obj, events, func, context) {
-		addListener(this, obj, events, func, {
-			single: false,
-			context: (context || this)
-		});
+		var opts = { 
+			obj: obj,
+			events: events,
+			callback: func,
+			single: false, 
+			context: firstDef(context, this) 
+		};
 
+		addListener(this, opts);
 		return this;
 	};
 
 	// #####listenOnce
 	EventObject.prototype.listenOnce = function (obj, events, func, context) {
-		addListener(this, obj, events, func, {
-			single: true,
-			context: (context || this)
-		});
+		var opts = { 
+			obj: obj,
+			events: events,
+			callback: func,
+			single: true, 
+			context: firstDef(context, this) 
+		};
 
+		addListener(this, opts);
 		return this;
 	};
 
@@ -158,4 +175,4 @@ Struck.EventObject = function () {
 	};
 
 	return EventObject;
-}();
+})();
