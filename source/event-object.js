@@ -4,7 +4,7 @@
 // for adding event listeners and listening to
 // objects externally.  Using the listen methods
 // automates undelgating events of view removal.
-Struck.EventObject = (function () {
+Struck.EventObject = function () {
 	'use strict';
 
 	var EventObject = Struck.BaseObject.extend({
@@ -30,6 +30,7 @@ Struck.EventObject = (function () {
 		this.com.emit(name + postfix, arguments);
 	};
 
+
 	function getEvents(events) {
 		events = result(events);
 		if (events && !_.isArray(events)) {
@@ -42,59 +43,51 @@ Struck.EventObject = (function () {
 
 	function addListener(self, opts) {
 		var obj = opts.obj,
-			events = opts.events,
+			events = getEvents(opts.events),
 			func = opts.func;
 
 		var callback = !opts.single ? func : function() {
 			func.apply(this, arguments);
-			removeListener(self, obj, events, callback);
+			removeListener(self, obj, opts.events, callback);
 		};
 
 		_.each(events, function(ev) {
 			self._events.push({
-				events: events,
+				events: ev,
 				func: callback,
 				obj: obj
 			});
 
 			if (obj instanceof jQuery) {
-				obj[opts.single ? 'one' : 'on'](ev, func);
+				obj[opts.single ? 'one' : 'on'](ev, callback);
 			} else if (obj instanceof Struck.EventObject) {
 				obj.com[opts.single ? 'once' : 'on'].call(obj.com, ev, callback, opts.context);
 			}
 		});
 	}
 
-	function checkRejection(ev, obj, name, func) {
-		if (func) {
-			return (ev.obj === obj && ev.events === name && ev.func === func);
-		} else if (name) {
-			return (ev.obj === obj && ev.events === name);
-		} else if (obj) {
-			return (ev.obj === obj);
-		}
-
-		return reject;
-	}
-
 	function removeListener(self, obj, events, func) {
+		events = getEvents(events);
+
 		var rejects = [],
 			passes = [];
 
-		_.each(getEvents(events), function(name) {
-			_.each(self._events, function(ev) {
-				if (checkRejection(ev, obj, name, func)) { 
-					rejects.push(ev); 
-				} else { 
-					passes.push(ev);
+		_.each(self._events, function(ev) {
+			_.each(events, function(name) {
+				var reject;
+				if (func) {
+					reject = (ev.obj == obj && ev.events == name && ev.func == func);
+				} else if (events) {
+					reject = (ev.obj == obj && ev.events == name);
+				} else if (obj) {
+					reject = (ev.obj == obj);
 				}
+
+				if (reject) rejects.push(ev); else passes.push(ev);
 			});
 		});
 
-		if (!events) {
-			rejects = self._events;
-		}
-
+		if (!events) { rejects = self._events; }
 		self._events = passes;
 
 		_.each(rejects, function(reject) {
@@ -118,7 +111,7 @@ Struck.EventObject = (function () {
 		var opts = { 
 			obj: obj,
 			events: events,
-			callback: func,
+			func: func,
 			single: false, 
 			context: firstDef(context, this) 
 		};
@@ -132,7 +125,7 @@ Struck.EventObject = (function () {
 		var opts = { 
 			obj: obj,
 			events: events,
-			callback: func,
+			func: func,
 			single: true, 
 			context: firstDef(context, this) 
 		};
@@ -175,4 +168,4 @@ Struck.EventObject = (function () {
 	};
 
 	return EventObject;
-})();
+}();

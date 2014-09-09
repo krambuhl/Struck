@@ -36,6 +36,12 @@ function splitName(context, names) {
 function result(expr) {
 	return _.isFunction(expr) ? expr() : expr;
 }
+
+function firstDef() {
+	return _.find(arguments, function(arg) { 
+		return !_.isUndefined(arg);
+	});
+}
 // ##Hook
 
 // wraps function calls with hook logic,
@@ -205,7 +211,7 @@ Struck.extend = function(protoProps, staticProps) {
 // ##BaseObject
 
 // function for enabling common architectures
-Struck.BaseObject = function () {
+Struck.BaseObject = (function () {
 
 	// ####BaseObject Constructor
 
@@ -236,7 +242,7 @@ Struck.BaseObject = function () {
 	// when the object is created
 	BaseObject.prototype.baseInitiation = Struck.Hook('baseInitiation', function(options) {
 		// assign UID to view object
-		this.uid = _.uniqueId('struck');
+		this.uid = _.uniqueId('uid');
 
 		// add options object to instance
 		this.options = _.extend({}, options);
@@ -252,7 +258,7 @@ Struck.BaseObject = function () {
 	// like `onRender`
 	BaseObject.prototype.hook = function(name, mod) {
 		var args = _.rest(arguments, 2),
-			prefix = mod || 'on',
+			prefix = firstDef(mod, 'on'),
 			methodHook = prefix + capitalize(name);
 
 		if (this[methodHook]) {
@@ -295,14 +301,13 @@ Struck.BaseObject = function () {
 	// prefered method of creating new objects
 	// over using the `new` style
 	BaseObject.create = function(props, opts) {
-		var object = this.extend(props);
-		return new object(_.extend({}, props, opts));
+		var Creator = this.extend(props);
+		return new Creator(_.extend({}, props, opts));
 	};
 
 
-
 	return BaseObject;
-}();
+})();
 
 // ##EventObject
 
@@ -337,14 +342,25 @@ Struck.EventObject = function () {
 	};
 
 
-	function addListener(self, obj, events, func, opts) {
+	function getEvents(events) {
+		events = result(events);
+		if (events && !_.isArray(events)) {
+			events = events.split(' ');
+		}
+
+		return events;
+	}
+
+
+	function addListener(self, opts) {
+		var obj = opts.obj,
+			events = getEvents(opts.events),
+			func = opts.func;
+
 		var callback = !opts.single ? func : function() {
 			func.apply(this, arguments);
-			removeListener(self, obj, events, callback);
+			removeListener(self, obj, opts.events, callback);
 		};
-
-		events = result(events);
-		if (events && !_.isArray(events)) events = events.split(' ');
 
 		_.each(events, function(ev) {
 			self._events.push({
@@ -354,7 +370,7 @@ Struck.EventObject = function () {
 			});
 
 			if (obj instanceof jQuery) {
-				obj[opts.single ? 'one' : 'on'](ev, func);
+				obj[opts.single ? 'one' : 'on'](ev, callback);
 			} else if (obj instanceof Struck.EventObject) {
 				obj.com[opts.single ? 'once' : 'on'].call(obj.com, ev, callback, opts.context);
 			}
@@ -362,36 +378,27 @@ Struck.EventObject = function () {
 	}
 
 	function removeListener(self, obj, events, func) {
-		events = result(events);
-		if (events && !_.isArray(events)) events = events.split(' ');
+		events = getEvents(events);
 
-		var rejects = [];
-		var passes = [];
+		var rejects = [],
+			passes = [];
 
-		if (func) {
+		_.each(self._events, function(ev) {
 			_.each(events, function(name) {
-				_.each(self._events, function(ev) {
-					var reject = (ev.obj == obj && ev.events == name && ev.func == func);
-					if (reject) rejects.push(ev); else passes.push(ev);
-				});
-			});
-		} else if (events) {
-			_.each(events, function(name) {
-				_.each(self._events, function(ev) {
-					var reject = (ev.obj == obj && ev.events == name);
-					if (reject) rejects.push(ev); else passes.push(ev);
-				});
-			});
-		} else if (obj) {
-			_.each(self._events, function(ev) {
-				var reject = (ev.obj == obj);
+				var reject;
+				if (func) {
+					reject = (ev.obj == obj && ev.events == name && ev.func == func);
+				} else if (events) {
+					reject = (ev.obj == obj && ev.events == name);
+				} else if (obj) {
+					reject = (ev.obj == obj);
+				}
+
 				if (reject) rejects.push(ev); else passes.push(ev);
 			});
-		} else {
-			rejects = self._events;
-		}
+		});
 
-
+		if (!events) { rejects = self._events; }
 		self._events = passes;
 
 		_.each(rejects, function(reject) {
@@ -412,21 +419,29 @@ Struck.EventObject = function () {
 	// we then keep a secondary object of events
 	// to remove when the object is deconstructed
 	EventObject.prototype.listenTo = function (obj, events, func, context) {
-		addListener(this, obj, events, func, {
-			single: false,
-			context: (context || this)
-		});
+		var opts = { 
+			obj: obj,
+			events: events,
+			func: func,
+			single: false, 
+			context: firstDef(context, this) 
+		};
 
+		addListener(this, opts);
 		return this;
 	};
 
 	// #####listenOnce
 	EventObject.prototype.listenOnce = function (obj, events, func, context) {
-		addListener(this, obj, events, func, {
-			single: true,
-			context: (context || this)
-		});
+		var opts = { 
+			obj: obj,
+			events: events,
+			func: func,
+			single: true, 
+			context: firstDef(context, this) 
+		};
 
+		addListener(this, opts);
 		return this;
 	};
 
@@ -470,7 +485,7 @@ Struck.EventObject = function () {
 
 // A standalone function for an event subscriber
 // system to be used in other modules
-Struck.Intercom = function (root) {
+Struck.Intercom = (function () {
 	// setup default subscription object
 	// used to clone and extend in `subscribe` function
 	var defaultSubscription = {
@@ -490,7 +505,7 @@ Struck.Intercom = function (root) {
 	var Intercom = Struck.BaseObject.extend({
 		baseInitiation: function () {
 			Struck.BaseObject.prototype.baseInitiation.apply(this, arguments);
-			this.defaultSubscription = _.extend(_.clone(defaultSubscription), { context: this });
+			this.defaultSubscription = _.extend({}, defaultSubscription, { context: this });
 			this.subscriptions = [];
 		}
 	});
@@ -576,21 +591,15 @@ Struck.Intercom = function (root) {
 
 	// #####Intercom.on
 	Intercom.prototype.on = function(names, callback, context) {
-		subscriber(this, names, callback, {
-			single: false,
-			context: context
-		});
-
+		var opts = { single: false, context: context };
+		subscriber(this, names, callback, opts);
 		return this;
 	};
 
 	// #####Intercom.once
 	Intercom.prototype.once = function(names, callback, context) {
-		subscriber(this, names, callback, {
-			single: true,
-			context: context
-		});
-
+		var opts = { single: true, context: context };
+		subscriber(this, names, callback, opts);
 		return this;
 	};
 
@@ -621,7 +630,7 @@ Struck.Intercom = function (root) {
 	};
 
 	return Intercom;
-}(root);
+})();
 
 	return Struck;
 }));
