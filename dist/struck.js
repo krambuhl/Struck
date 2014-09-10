@@ -20,11 +20,7 @@ function capitalize(string) {
 // #####splitName
 // split "event1 event2" into an
 // array of event names
-function splitName(context, names) {
-	if (_.isUndefined(context)) {
-		context = this;
-	}
-	
+function splitName(context, names) {	
 	// get result of name if defined as a function
 	var result = _.isFunction(names) ? names.call(context) : names;
 
@@ -129,16 +125,16 @@ Struck.Hook = (function () {
   return Hook;
 })();
 
-Struck.Computed = (function () {
-  var defaults = {};
+// Struck.Computed = (function () {
+//   var defaults = {};
 
-  function Computed() {
-    var options = _.extend({}, defaults, opts);
-    options = options;
-  }
+//   function Computed() {
+//     var options = _.extend({}, defaults, opts);
+//     options = options;
+//   }
 
-  return Computed;
-})();
+//   return Computed;
+// })();
 
 
 // var example = Struck.BaseObject.create();
