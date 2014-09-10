@@ -33,7 +33,7 @@ gulp.task('build', function() {
     'build/_export',
     'utilities',
     'hook',
-    'computed',
+    // 'computed',
     'extend',
     'base-object',
     'event-object',

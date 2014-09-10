@@ -9,4 +9,4 @@
   } else {
     root.Struck = factory(root, {}, root._, root.jQuery);
   }
-}(this, function(root, Struck, _, $, undefined) {
+}(this, function(root, Struck, _, $) {
