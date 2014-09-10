@@ -1,4 +1,4 @@
-Struck.Computed = function () {
+Struck.Computed = (function () {
   var defaults = {};
 
   function Computed() {
@@ -7,7 +7,7 @@ Struck.Computed = function () {
   }
 
   return Computed;
-}();
+})();
 
 
 // var example = Struck.BaseObject.create();

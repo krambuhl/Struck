@@ -44,7 +44,7 @@ Struck.Intercom = (function () {
 	// name and function, additional
 	// options are optional...
 	function subscribe(com, name, func, opts) {
-		if (!name && !func) return;
+		if (!name && !func) { return; }
 
 		var subOptions = {
 			name: name,
@@ -53,7 +53,9 @@ Struck.Intercom = (function () {
 
 		// add useful options to subOptions
 		_.each(subscriptionKeys, function (key) {
-			if (opts[key]) subOptions[key] = opts[key];
+			if (opts[key]) {
+				subOptions[key] = opts[key];
+			}
 		});
 
 		// create a new subscription from the default object
@@ -81,12 +83,12 @@ Struck.Intercom = (function () {
 			// com, name, func:
 			// .. remove specific subscriber function
 			if (func) {
-				return sub.name == name && sub.callback == func;
+				return sub.name === name && sub.callback === func;
 
 			// com, name:
 			// .. remove all subscribers by name
 			} else if (name) {
-				return sub.name == name;
+				return sub.name === name;
 			}
 
 			// remove all subscriptions if no arguments provided
@@ -132,7 +134,7 @@ Struck.Intercom = (function () {
 		var args = _.rest(arguments, 1);
 		var filteredSubs = _.reduce(splitName(this, names), function (subs, name) {
 			var matches = _.filter(this.subscriptions, function (subscriber) {
-				return subscriber.name == name;
+				return subscriber.name === name;
 			}, this);
 
 			return subs.concat(matches);

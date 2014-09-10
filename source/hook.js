@@ -39,7 +39,7 @@
 //   - close mouth
 // ```
 
-Struck.Hook = function () {
+Struck.Hook = (function () {
   var defaults = {
     prefix: 'on',
     pre: 'before',
@@ -81,4 +81,4 @@ Struck.Hook = function () {
   }
 
   return Hook;
-}();
+})();
