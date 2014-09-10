@@ -107,17 +107,18 @@ Struck.Intercom = (function () {
 	}
 
 	// #####Intercom.on
-	Intercom.prototype.on = function(names, callback, context) {
-		var opts = { single: false, context: context };
-		subscriber(this, names, callback, opts);
+	Intercom.prototype.on = function(names, callback, context, opts) {
+		subscriber(this, names, callback, { 
+			single: firstDef(opts && opts.single, false), 
+			context: context 
+		});
+
 		return this;
 	};
 
 	// #####Intercom.once
 	Intercom.prototype.once = function(names, callback, context) {
-		var opts = { single: true, context: context };
-		subscriber(this, names, callback, opts);
-		return this;
+		return this.on(names, callback, context, { single: true });
 	};
 
 	// #####Intercom.off

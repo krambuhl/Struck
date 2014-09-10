@@ -9,7 +9,6 @@ describe('Struck.Intercom', function () {
     instance = Struck.Intercom.create();
   });
 
-
   it('should define a default subscription object', function () {
     instance.should.have.property('defaultSubscription');
   });

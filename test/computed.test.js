@@ -6,6 +6,17 @@ describe.skip('Struck.Computed', function () {
 
 	beforeEach(function() {
 		count = 0;
+		instance = Struck.BaseObject.extend({
+			first: 'Thomas',
+			last: 'Selleck',
+			fullName: Struck.Computed(['first', 'last'], function() { 
+				return this.get('first') + this.get('last');
+			})
+		}).create();
+	});
+
+	afterEach(function() {
+		instance.destroy();
 	});
 
 	it('should return a wrapped function definition', function(done) {
@@ -13,15 +24,11 @@ describe.skip('Struck.Computed', function () {
 		instance();
 	});
 
-	it('should call function argument when executed', function() {
-
-	});
-
 	it('should accept a single property to track', function() {
 		instance = Struck.BaseObject.extend({
 			name: 'Borg',
 			properName: Struck.Computed('name', function() { 
-				return 'Mr. ' + this.get('name')
+				return 'Mr. ' + this.get('name');
 			})
 		}).create();
 
@@ -53,5 +60,9 @@ describe.skip('Struck.Computed', function () {
 
 		instance.set('first', 'Tom');
 		instance.get('fullName').should.equal('Tom Selleck');
+	});
+
+	it('should listen for property changes and self-update', function() {
+
 	});
 });

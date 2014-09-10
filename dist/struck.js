@@ -429,11 +429,13 @@ Struck.EventObject = (function () {
 	// we then keep a secondary object of events
 	// to remove when the object is deconstructed
 	EventObject.prototype.listenTo = function (obj, events, func, context) {
+		var opts = _.chain(arguments).rest(4).first().value();
+		
 		addListener(this, { 
 			obj: obj,
 			events: events,
 			func: func,
-			single: false, 
+			single: firstDef(opts && opts.single, false), 
 			context: firstDef(context, this) 
 		});
 
@@ -442,22 +444,12 @@ Struck.EventObject = (function () {
 
 	// #####listenOnce
 	EventObject.prototype.listenOnce = function (obj, events, func, context) {
-		addListener(this, { 
-			obj: obj,
-			events: events,
-			func: func,
-			single: true, 
-			context: firstDef(context, this) 
-		});
-		
-		return this;
+		return this.listenTo(obj, events, func, firstDef(context, this), { single: true });
 	};
 
 	// #####stopListening
 	// removes an event listener from the
-	// appropriate subsystem.
-	// typeof obj == jquery ? jquery.off
-	// typeof ogj == Struck.EventObjt ? com.off
+	// appropriate subsystem
 	EventObject.prototype.stopListening = function (obj, events, func) {
 		removeListener(this, obj, events, func);
 		return this;
@@ -598,17 +590,18 @@ Struck.Intercom = (function () {
 	}
 
 	// #####Intercom.on
-	Intercom.prototype.on = function(names, callback, context) {
-		var opts = { single: false, context: context };
-		subscriber(this, names, callback, opts);
+	Intercom.prototype.on = function(names, callback, context, opts) {
+		subscriber(this, names, callback, { 
+			single: firstDef(opts && opts.single, false), 
+			context: context 
+		});
+
 		return this;
 	};
 
 	// #####Intercom.once
 	Intercom.prototype.once = function(names, callback, context) {
-		var opts = { single: true, context: context };
-		subscriber(this, names, callback, opts);
-		return this;
+		return this.on(names, callback, context, { single: true });
 	};
 
 	// #####Intercom.off
