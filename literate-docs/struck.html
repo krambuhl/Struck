@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>struck.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>struck.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/*jshint undef:false */</span>
+
+(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(root, factory)</span> </span>{
+  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> define === <span class="hljs-string">'function'</span> &amp;&amp; define.amd) {
+    define([<span class="hljs-string">'lodash'</span>, <span class="hljs-string">'jquery'</span>, <span class="hljs-string">'exports'</span>], <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(_, $, exports)</span> </span>{
+      root.Struck = factory(root, exports, _, $);
+    });
+  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> exports !== <span class="hljs-string">'undefined'</span>) {
+    <span class="hljs-keyword">var</span> _ = <span class="hljs-built_in">require</span>(<span class="hljs-string">'lodash'</span>), $ = <span class="hljs-built_in">require</span>(<span class="hljs-string">'jquery'</span>);
+    exports = factory(root, exports, _, $);
+  } <span class="hljs-keyword">else</span> {
+    root.Struck = factory(root, {}, root._, root.jQuery);
+  }
+}(<span class="hljs-keyword">this</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(root, Struck, _, $)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h3 id="utilities">Utilities</h3>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">capitalize</span><span class="hljs-params">(string)</span> </span>{
+	<span class="hljs-keyword">return</span> string.charAt(<span class="hljs-number">0</span>).toUpperCase() + string.slice(<span class="hljs-number">1</span>);
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <h5 id="splitname">splitName</h5>
+<p>split “event1 event2” into an
+array of event names</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">splitName</span><span class="hljs-params">(context, names)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>get result of name if defined as a function</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> result = _.isFunction(names) ? names.call(context) : names;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>split by spaces if result isn’t an array
+always returns an array</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">return</span> _.isArray(result) ? result : result.split(<span class="hljs-string">" "</span>);
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <h5 id="result">result</h5>
+<p>returns get result of an expression</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">result</span><span class="hljs-params">(expr)</span> </span>{
+	<span class="hljs-keyword">return</span> _.isFunction(expr) ? expr() : expr;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">firstDef</span><span class="hljs-params">()</span> </span>{
+	<span class="hljs-keyword">return</span> _.find(<span class="hljs-built_in">arguments</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(arg)</span> </span>{ 
+		<span class="hljs-keyword">return</span> !_.isUndefined(arg);
+	});
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <h2 id="hook">Hook</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>wraps function calls with hook logic,
+used to wrap method calls in an Struck
+Object.  The object’s hook function will be
+called before and after the function call
+by default </p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p><strong>Example:</strong></p>
+<pre><code class="lang-javascript">var HookedObj = Struck.EventObject.extend({
+  initialize: function () {
+
+    this.com.on(&#39;beforeSayHello&#39;, function() {
+      console.log(&#39;open mouth&#39;);
+    });
+  },
+
+  sayHello: Struck.hook(function () {
+    console.log(&#39;say hello&#39;);
+  })
+})
+
+var myHookedObject = HookedObj.create({
+  onSayHello: function() {
+/    console.log(&#39;hello complete);
+  },
+  afterSayHello: function () {
+    console.log(&#39;close mouth&#39;);
+  }
+});
+
+myHookedObject.sayHello();
+
+output:
+  - open mouth
+  - say hello
+  - hello complete
+  - close mouth
+</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+Struck.hook = (<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+  <span class="hljs-keyword">var</span> defaults = {
+    prefix: <span class="hljs-string">'on'</span>,
+    pre: <span class="hljs-string">'before'</span>,
+    post: <span class="hljs-string">'after'</span>,
+    method: <span class="hljs-string">'hook'</span>
+  };
+
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fire</span><span class="hljs-params">(self, method, hname, prefix)</span> </span>{
+    <span class="hljs-keyword">if</span> (self[method]) {
+      self[method].call(self, hname, prefix);
+    }
+  }
+
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Hook</span><span class="hljs-params">(name, func, opts)</span> </span>{
+    <span class="hljs-keyword">var</span> options = _.extend({}, defaults, !_.isFunction(func) ? func : opts);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>define function to called as a method of
+Struck Object, the <code>this</code> context is assumed
+to refer to the struck object.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">var</span> result;
+
+      <span class="hljs-keyword">if</span> (options.pre) {
+        fire(<span class="hljs-keyword">this</span>, options.method, name, options.pre);
+      }
+
+      <span class="hljs-keyword">if</span> (_.isFunction(func)) {
+        result = func.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);
+      }
+
+      fire(<span class="hljs-keyword">this</span>, options.method, name, options.prefix);
+
+      <span class="hljs-keyword">if</span> (options.post) {
+        _.defer(fire, <span class="hljs-keyword">this</span>, options.method, name, options.post);
+      }
+
+      <span class="hljs-keyword">return</span> result;
+    };
+  }
+
+  <span class="hljs-keyword">return</span> Hook;
+})();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <h3 id="extend">Extend</h3>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p><em>Pulled from Backbone.js 1.1.2 source</em></p>
+<p>Helper function to correctly set up the prototype chain,
+for subclasses. Similar to goog.inherits, but uses a hash
+of prototype properties and class properties to be extended.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+Struck.extend = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(protoProps, staticProps)</span> </span>{
+  <span class="hljs-keyword">var</span> parent = <span class="hljs-keyword">this</span>;
+  <span class="hljs-keyword">var</span> child;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>The constructor function for the new subclass is either defined
+by you (the “constructor” property in your extend definition),
+or defaulted by us to simply call the parent’s constructor.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">if</span> (protoProps &amp;&amp; _.has(protoProps, <span class="hljs-string">'constructor'</span>)) {
+    child = protoProps.constructor;
+  } <span class="hljs-keyword">else</span> {
+    child = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> parent.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>); };
+  }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Add static properties to the constructor function, if supplied.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  _.extend(child, parent, staticProps);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Set the prototype chain to inherit from parent,
+without calling parent’s constructor function.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">var</span> Surrogate = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">this</span>.constructor = child; };
+  Surrogate.prototype = parent.prototype;
+  child.prototype = <span class="hljs-keyword">new</span> Surrogate();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>Add prototype properties (instance properties)
+to the subclass, if supplied.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">if</span> (protoProps) {
+    _.extend(child.prototype, protoProps);
+  }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>Set a convenience property in case the
+parent’s prototype is needed later.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  child.__super__ = parent.prototype;
+
+  <span class="hljs-keyword">return</span> child;
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <h2 id="baseobject">BaseObject</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>function for enabling common architectures</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>Struck.BaseObject = (<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <h4 id="baseobject-constructor">BaseObject Constructor</h4>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>constructor is run when object is created
+runs base initiation by default</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p><strong>Warning: overwriting the BaseObject
+Constructor will disable internal processes.</strong>
+In cases where overwriting the constructor
+is required call the prototype to preserve
+functionality:</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p><code>Struck.BaseObject.prototype.constructor.apply(this, arguments);</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">BaseObject</span><span class="hljs-params">(options)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>run base initiation and provide
+hooks that extended objects can use</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">this</span>.coreConstructor(options);
+		<span class="hljs-keyword">this</span>.initialize();
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <h5 id="initialize">initialize</h5>
+<p>overwritable function that gets called
+when constructing new objects</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	BaseObject.prototype.initialize = Struck.hook(<span class="hljs-string">'initialize'</span>, _.noop);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <h5 id="coreconstructor">coreConstructor</h5>
+<p>when the object is created</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	BaseObject.prototype.coreConstructor = Struck.hook(<span class="hljs-string">'coreConstructor'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(options)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p>assign UID to view object</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">this</span>.uid = _.uniqueId(<span class="hljs-string">'uid'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>add options object to instance</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">this</span>.options = _.extend({}, options);
+	});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <h5 id="destroy">destroy</h5>
+<p>overwritable function that gets called
+when destroying object</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	BaseObject.prototype.destroy = Struck.hook(<span class="hljs-string">'destroy'</span>, _.noop);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <h5 id="hook">hook</h5>
+<p>interface for providing method callbacks
+like <code>onRender</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	BaseObject.prototype.hook = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(name, mod)</span> </span>{
+		<span class="hljs-keyword">var</span> args = _.rest(<span class="hljs-built_in">arguments</span>, <span class="hljs-number">2</span>),
+			prefix = firstDef(mod, <span class="hljs-string">'on'</span>),
+			methodHook = prefix + capitalize(name);
+
+		<span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>[methodHook]) {
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>[methodHook].apply(<span class="hljs-keyword">this</span>, args);
+		}
+	};
+
+	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">reduceProps</span><span class="hljs-params">(self, props)</span> </span>{
+		<span class="hljs-keyword">return</span> _.reduce(props, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(memo, prop)</span> </span>{
+			memo[prop] = self.get(prop);
+			<span class="hljs-keyword">return</span> memo;
+		}, {});
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <h5 id="get">get</h5>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	BaseObject.prototype.get = Struck.hook(<span class="hljs-string">'get'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(prop)</span> </span>{
+		<span class="hljs-keyword">var</span> args = _.toArray(<span class="hljs-built_in">arguments</span>);
+		<span class="hljs-keyword">if</span> (_.isArray(prop)) {
+			<span class="hljs-keyword">return</span> reduceProps(<span class="hljs-keyword">this</span>, prop);
+		} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (args.length &gt; <span class="hljs-number">1</span>) {
+			<span class="hljs-keyword">return</span> reduceProps(<span class="hljs-keyword">this</span>, args);
+		}
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>[prop];
+	});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <h5 id="set">set</h5>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	BaseObject.prototype.set = Struck.hook(<span class="hljs-string">'set'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(prop, val)</span> </span>{
+		prop = result(prop);
+		<span class="hljs-keyword">if</span> (_.isObject(prop)) {
+			_.each(prop, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(value, property)</span> </span>{
+				<span class="hljs-keyword">this</span>.set(property, value);
+			}, <span class="hljs-keyword">this</span>);
+		}
+		<span class="hljs-keyword">this</span>[prop] = result(val);
+	});
+
+	BaseObject.extend = Struck.extend;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <h3 id="create">create</h3>
+<p>prefered method of creating new objects
+over using the <code>new</code> style</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	BaseObject.create = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(props, opts)</span> </span>{
+		<span class="hljs-keyword">var</span> Creator = <span class="hljs-keyword">this</span>.extend(props);
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Creator(_.extend({}, props, opts));
+	};
+
+
+	<span class="hljs-keyword">return</span> BaseObject;
+})();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <h2 id="eventobject">EventObject</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <p><code>Struck.EventObject</code> normalizes an event API
+for adding event listeners and listening to
+objects externally.  Using the listen methods
+automates undelgating events of view removal.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>Struck.EventObject = (<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+<span class="hljs-pi">	'use strict'</span>;
+
+	<span class="hljs-keyword">var</span> EventObject = Struck.BaseObject.extend();
+
+	EventObject.prototype.coreConstructor = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>all event objects need an intercom for
+emiting and listening to events</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">this</span>.com = Struck.Intercom.create();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <p>call super after defining com which
+is used for base hooks</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		Struck.BaseObject.prototype.coreConstructor.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);
+
+		<span class="hljs-keyword">this</span>._events = [];
+	};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <h5 id="hook">hook</h5>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <p>trigger intercom events for hook</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	EventObject.prototype.hook = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(name, mod)</span> </span>{
+		<span class="hljs-keyword">var</span> postfix = <span class="hljs-string">''</span>;
+		
+		<span class="hljs-keyword">if</span> (mod !== <span class="hljs-literal">undefined</span> &amp;&amp; mod !== <span class="hljs-string">'on'</span>) {
+			postfix = <span class="hljs-string">':'</span> + mod;
+		}
+
+		Struck.BaseObject.prototype.hook.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);
+		<span class="hljs-keyword">this</span>.com.emit(name + postfix, <span class="hljs-built_in">arguments</span>);
+	};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <h5 id="listento">listenTo</h5>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-41">&#182;</a>
+              </div>
+              <p>Registers a event listener to the
+appropriate subsystem. Delegates jquery
+objects to the jq event system and struck
+objects to the instance’s intercom
+we then keep a secondary object of events
+to remove when the object is deconstructed</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	EventObject.prototype.listenTo = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(obj, events, func, context)</span> </span>{
+		<span class="hljs-keyword">var</span> opts = _.chain(<span class="hljs-built_in">arguments</span>).rest(<span class="hljs-number">4</span>).first().value();
+
+		addListener(<span class="hljs-keyword">this</span>, { 
+			obj: obj,
+			events: events,
+			func: func,
+			single: firstDef(opts &amp;&amp; opts.single, <span class="hljs-literal">false</span>), 
+			context: firstDef(context, <span class="hljs-keyword">this</span>) 
+		});
+
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+	};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-42">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-42">&#182;</a>
+              </div>
+              <h5 id="listenonce">listenOnce</h5>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	EventObject.prototype.listenOnce = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(obj, events, func, context)</span> </span>{
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.listenTo(obj, events, func, firstDef(context, <span class="hljs-keyword">this</span>), { single: <span class="hljs-literal">true</span> });
+	};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-43">&#182;</a>
+              </div>
+              <h5 id="stoplistening">stopListening</h5>
+<p>removes an event listener from the
+appropriate subsystem</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	EventObject.prototype.stopListening = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(obj, events, func)</span> </span>{
+		removeListener(<span class="hljs-keyword">this</span>, obj, events, func);
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+	};
+
+	EventObject.prototype.trigger = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(events)</span> </span>{
+		<span class="hljs-keyword">this</span>.com.emit.apply(<span class="hljs-keyword">this</span>.com, [events].concat(_.rest(<span class="hljs-built_in">arguments</span>, <span class="hljs-number">1</span>)));
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+	};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-44">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-44">&#182;</a>
+              </div>
+              <h5 id="destroy">destroy</h5>
+<p>when an object is removed, the destroy function
+should be called to remove attached event listeners</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	EventObject.prototype.destroy = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{		
+		Struck.BaseObject.prototype.destroy.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-45">&#182;</a>
+              </div>
+              <p>remove all event listeners listeners</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">this</span>.stopListening();
+
+		_.defer(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(self)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-46">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-46">&#182;</a>
+              </div>
+              <p>destroy com interface</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			self.com.destroy();
+			<span class="hljs-keyword">delete</span> self.com;
+		}, <span class="hljs-keyword">this</span>);
+
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+	};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-47">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-47">&#182;</a>
+              </div>
+              <h3 id="private-functions">Private Functions</h3>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getEvents</span><span class="hljs-params">(events)</span> </span>{
+		events = result(events);
+		
+		<span class="hljs-keyword">if</span> (events &amp;&amp; !_.isArray(events)) {
+			events = events.split(<span class="hljs-string">' '</span>);
+		}
+
+		<span class="hljs-keyword">return</span> events;
+	}
+
+	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">addListener</span><span class="hljs-params">(self, opts)</span> </span>{
+		<span class="hljs-keyword">var</span> obj = opts.obj,
+			events = getEvents(opts.events),
+			func = opts.func;
+
+		<span class="hljs-keyword">var</span> callback = !opts.single ? func : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+			func.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);
+			removeListener(self, obj, opts.events, callback);
+		};
+
+		_.each(events, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ev)</span> </span>{
+			self._events.push({
+				events: ev,
+				func: callback,
+				obj: obj
+			});
+
+			<span class="hljs-keyword">if</span> (obj <span class="hljs-keyword">instanceof</span> jQuery) {
+				obj[opts.single ? <span class="hljs-string">'one'</span> : <span class="hljs-string">'on'</span>](ev, callback);
+			} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (obj <span class="hljs-keyword">instanceof</span> Struck.EventObject) {
+				obj.com[opts.single ? <span class="hljs-string">'once'</span> : <span class="hljs-string">'on'</span>].call(obj.com, ev, callback, opts.context);
+			}
+		});
+	}
+
+	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">removeListener</span><span class="hljs-params">(self, obj, events, func)</span> </span>{
+		events = getEvents(events);
+
+		<span class="hljs-keyword">var</span> rejects = [],
+			passes = [];
+
+		<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">pushResults</span><span class="hljs-params">(rejected, ev)</span> </span>{
+			<span class="hljs-keyword">if</span> (rejected) { 
+				rejects.push(ev);
+			} <span class="hljs-keyword">else</span> { 
+				passes.push(ev);
+			}
+		}
+
+		_.each(self._events, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ev)</span> </span>{
+			_.each(events, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(name)</span> </span>{
+				<span class="hljs-keyword">if</span> (func) {
+					pushResults(ev.obj === obj &amp;&amp; ev.events === name &amp;&amp; ev.func === func, ev);
+				} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (events) {
+					pushResults(ev.obj === obj &amp;&amp; ev.events === name, ev);
+				}
+			});
+		});
+
+		<span class="hljs-keyword">if</span> (obj &amp;&amp; !events &amp;&amp; !func) {
+			_.each(self._events, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ev)</span> </span>{
+				pushResults(ev.obj === obj, ev);
+			});
+		} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!events) { 
+			rejects = self._events; 
+		}
+
+		self._events = passes;
+
+		_.each(rejects, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(reject)</span> </span>{
+			<span class="hljs-keyword">if</span> (reject.obj <span class="hljs-keyword">instanceof</span> jQuery) {
+				reject.obj.off(reject.events, reject.func);
+			} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (reject.obj <span class="hljs-keyword">instanceof</span> Struck.EventObject) {
+				reject.obj.com.off(reject.events, rejects.func);
+			}
+		});
+	}
+
+
+
+	<span class="hljs-keyword">return</span> EventObject;
+})();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-48">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-48">&#182;</a>
+              </div>
+              <h2 id="intercom">Intercom</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-49">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-49">&#182;</a>
+              </div>
+              <p>A standalone function for an event subscriber
+system to be used in other modules</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>Struck.Intercom = (<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-50">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-50">&#182;</a>
+              </div>
+              <p>setup default subscription object
+used to clone and extend in <code>subscribe</code> function</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> defaultSubscription = {
+		single: <span class="hljs-literal">false</span>,
+		name: <span class="hljs-string">'all'</span>,
+		callback: _.noop,
+		context: root
+	};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-51">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-51">&#182;</a>
+              </div>
+              <p>get keys from default subscription object
+useful for iteration and filtering</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> subscriptionKeys = _.keys(defaultSubscription);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-52">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-52">&#182;</a>
+              </div>
+              <h5 id="constructor">Constructor</h5>
+<p>set up default subscriptio object’s context to the
+intercom instance and create subscription collection</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> Intercom = Struck.BaseObject.extend();
+
+	Intercom.prototype.coreConstructor = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+		Struck.BaseObject.prototype.coreConstructor.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);
+		<span class="hljs-keyword">this</span>.defaultSubscription = _.extend({}, defaultSubscription, { context: <span class="hljs-keyword">this</span> });
+		<span class="hljs-keyword">this</span>.subscriptions = [];
+	};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-53">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-53">&#182;</a>
+              </div>
+              <h5 id="intercom-on">Intercom.on</h5>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	Intercom.prototype.on = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(names, callback, context, opts)</span> </span>{
+		subscriber(<span class="hljs-keyword">this</span>, names, callback, { 
+			single: firstDef(opts &amp;&amp; opts.single, <span class="hljs-literal">false</span>), 
+			context: context 
+		});
+
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+	};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-54">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-54">&#182;</a>
+              </div>
+              <h5 id="intercom-once">Intercom.once</h5>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	Intercom.prototype.once = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(names, callback, context)</span> </span>{
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.on(names, callback, context, { single: <span class="hljs-literal">true</span> });
+	};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-55">&#182;</a>
+              </div>
+              <h5 id="intercom-off">Intercom.off</h5>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	Intercom.prototype.off = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(names, callback)</span> </span>{
+		unsubscriber(<span class="hljs-keyword">this</span>, names, callback);
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+	};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-56">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-56">&#182;</a>
+              </div>
+              <h5 id="intercom-emit">Intercom.emit</h5>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	Intercom.prototype.emit = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(names)</span> </span>{
+		<span class="hljs-keyword">var</span> args = _.rest(<span class="hljs-built_in">arguments</span>, <span class="hljs-number">1</span>);
+		<span class="hljs-keyword">var</span> filteredSubs = _.reduce(splitName(<span class="hljs-keyword">this</span>, names), <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(subs, name)</span> </span>{
+			<span class="hljs-keyword">var</span> matches = _.filter(<span class="hljs-keyword">this</span>.subscriptions, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(subscriber)</span> </span>{
+				<span class="hljs-keyword">return</span> subscriber.name === name;
+			}, <span class="hljs-keyword">this</span>);
+
+			<span class="hljs-keyword">return</span> subs.concat(matches);
+		}, [], <span class="hljs-keyword">this</span>);
+
+		filteredSubs = _.unique(filteredSubs);
+
+		_.each(filteredSubs, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(sub)</span> </span>{
+			trigger(<span class="hljs-keyword">this</span>, sub, args);
+		}, <span class="hljs-keyword">this</span>);
+
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+	};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-57">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-57">&#182;</a>
+              </div>
+              <h3 id="private-functions">Private Functions</h3>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-58">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-58">&#182;</a>
+              </div>
+              <h5 id="subscriber">subscriber</h5>
+<p>splits and delegates subscriptions from on/once calls</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">subscriber</span><span class="hljs-params">(com, names, func, opts)</span> </span>{
+		_.each(splitName(com, names), <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(name)</span> </span>{
+			subscribe(com, name, func, {
+				single: opts.single,
+				context: opts.context
+			});
+		});
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-59">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-59">&#182;</a>
+              </div>
+              <h5 id="subscribe">subscribe</h5>
+<p>build subscription object from
+name and function, additional
+options are optional…</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">subscribe</span><span class="hljs-params">(com, name, func, opts)</span> </span>{
+		<span class="hljs-keyword">if</span> (!name &amp;&amp; !func) { <span class="hljs-keyword">return</span>; }
+
+		<span class="hljs-keyword">var</span> subOptions = {
+			name: name,
+			callback: func
+		};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-60">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-60">&#182;</a>
+              </div>
+              <p>add useful options to subOptions</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		_.each(subscriptionKeys, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(key)</span> </span>{
+			<span class="hljs-keyword">if</span> (opts[key]) {
+				subOptions[key] = opts[key];
+			}
+		});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-61">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-61">&#182;</a>
+              </div>
+              <p>create a new subscription from the default object
+and overwrite properties with subOptions,
+then adds subscription to collection</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> subscription = _.extend({}, defaultSubscription, subOptions);
+		com.subscriptions.push(subscription);
+	}
+
+	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">unsubscriber</span><span class="hljs-params">(com, names, func)</span> </span>{
+		<span class="hljs-keyword">if</span> (names === <span class="hljs-literal">undefined</span>) {
+			unsubscribe(com);
+			<span class="hljs-keyword">return</span>;
+		}
+
+		_.each(splitName(com, names), <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(name)</span> </span>{
+			unsubscribe(com, name, func);
+		});
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-62">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-62">&#182;</a>
+              </div>
+              <h5 id="unsubscribe">unsubscribe</h5>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">unsubscribe</span><span class="hljs-params">(com, name, func)</span> </span>{
+		<span class="hljs-keyword">var</span> filter = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(sub)</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-63">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-63">&#182;</a>
+              </div>
+              <p>com, name, func:
+.. remove specific subscriber function</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span> (func) {
+				<span class="hljs-keyword">return</span> sub.name === name &amp;&amp; sub.callback === func;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-64">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-64">&#182;</a>
+              </div>
+              <p>com, name:
+.. remove all subscribers by name</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (name) {
+				<span class="hljs-keyword">return</span> sub.name === name;
+			}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-65">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-65">&#182;</a>
+              </div>
+              <p>remove all subscriptions if no arguments provided</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+		};
+
+		com.subscriptions = _.reject(com.subscriptions, filter);
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-66">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-66">&#182;</a>
+              </div>
+              <h5 id="trigger">trigger</h5>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">trigger</span><span class="hljs-params">(com, sub, args)</span> </span>{
+		sub.callback.apply(sub.context, args);
+
+		<span class="hljs-keyword">if</span> (sub.single) {
+			unsubscribe(com, sub.name, sub.callback);
+		}
+	}
+
+	<span class="hljs-keyword">return</span> Intercom;
+})();
+
+	<span class="hljs-keyword">return</span> Struck;
+}));</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

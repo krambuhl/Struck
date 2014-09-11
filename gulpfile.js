@@ -1,9 +1,6 @@
 //gulp
 var gulp = require('gulp');
 
-// npm package
-var pkg = require('./package.json');
-
 // npm tools
 var path  = require('path');
 
@@ -22,7 +19,7 @@ var dir = {
   source: './source',
   dist: './dist',
   test: './test',
-  docs: './docs'
+  docs: './literate-docs'
 };
 
 

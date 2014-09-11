@@ -11,8 +11,8 @@ Struck.View = function () {
   // rendering, dom caching, and event listening.
   var View = Struck.EventObject.extend();
 
-  View.prototype.baseInitiation = function () {
-    Struck.EventObject.prototype.baseInitiation.apply(this, arguments);
+  View.prototype.coreConstructor = function () {
+    Struck.EventObject.prototype.coreConstructor.apply(this, arguments);
 
     var self = this;
     // extend selected instance opitions to object
@@ -40,7 +40,9 @@ Struck.View = function () {
   View.prototype.setElement = function(el) {
     this.$el = $(el).eq(0);
     this.el = this.$el[0];
-    this.$ = function(el) { return this.$el.find(el); };
+    this.$ = function(el) { 
+      return this.$el.find(el); 
+    };
   };
 
   // `render` function that runs
@@ -65,15 +67,6 @@ Struck.View = function () {
       result[name] = view.$(ui[name]);
       return result;
     }, {});
-    
-    // a ui object of:
-    // `{ header: '.header' }`
-    // results with an object like:
-    // `view.ui = {
-    //    header: $('.header')  
-    // }`
-    // then
-    // `view.ui.header.on('click', func)`
   }
 
   return View;

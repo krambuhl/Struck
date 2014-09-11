@@ -19,18 +19,18 @@ Struck.BaseObject = (function () {
 	function BaseObject(options) {
 		// run base initiation and provide
 		// hooks that extended objects can use
-		this.baseInitiation(options);
+		this.coreConstructor(options);
 		this.initialize();
 	}
 
 	// #####initialize
 	// overwritable function that gets called
 	// when constructing new objects
-	BaseObject.prototype.initialize = Struck.Hook('initialize', _.noop);
+	BaseObject.prototype.initialize = Struck.hook('initialize', _.noop);
 
-	// #####baseInitiation
+	// #####coreConstructor
 	// when the object is created
-	BaseObject.prototype.baseInitiation = Struck.Hook('baseInitiation', function(options) {
+	BaseObject.prototype.coreConstructor = Struck.hook('coreConstructor', function(options) {
 		// assign UID to view object
 		this.uid = _.uniqueId('uid');
 
@@ -41,7 +41,7 @@ Struck.BaseObject = (function () {
 	// #####destroy
 	// overwritable function that gets called
 	// when destroying object
-	BaseObject.prototype.destroy = Struck.Hook('destroy', _.noop);
+	BaseObject.prototype.destroy = Struck.hook('destroy', _.noop);
 
 	// #####hook
 	// interface for providing method callbacks
@@ -64,7 +64,7 @@ Struck.BaseObject = (function () {
 	}
 
 	// #####get
-	BaseObject.prototype.get = Struck.Hook('get', function(prop) {
+	BaseObject.prototype.get = Struck.hook('get', function(prop) {
 		var args = _.toArray(arguments);
 		if (_.isArray(prop)) {
 			return reduceProps(this, prop);
@@ -75,7 +75,7 @@ Struck.BaseObject = (function () {
 	});
 
 	// #####set
-	BaseObject.prototype.set = Struck.Hook('set', function(prop, val) {
+	BaseObject.prototype.set = Struck.hook('set', function(prop, val) {
 		prop = result(prop);
 		if (_.isObject(prop)) {
 			_.each(prop, function(value, property) {

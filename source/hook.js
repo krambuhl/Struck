@@ -16,7 +16,7 @@
 //     });
 //   },
 //
-//   sayHello: Struck.Hook(function () {
+//   sayHello: Struck.hook(function () {
 //     console.log('say hello');
 //   })
 // })
@@ -39,7 +39,7 @@
 //   - close mouth
 // ```
 
-Struck.Hook = (function () {
+Struck.hook = (function () {
   var defaults = {
     prefix: 'on',
     pre: 'before',

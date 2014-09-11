@@ -19,14 +19,56 @@ Struck.Intercom = (function () {
 	// #####Constructor
 	// set up default subscriptio object's context to the
 	// intercom instance and create subscription collection
-	var Intercom = Struck.BaseObject.extend({
-		baseInitiation: function () {
-			Struck.BaseObject.prototype.baseInitiation.apply(this, arguments);
-			this.defaultSubscription = _.extend({}, defaultSubscription, { context: this });
-			this.subscriptions = [];
-		}
-	});
+	var Intercom = Struck.BaseObject.extend();
 
+	Intercom.prototype.coreConstructor = function () {
+		Struck.BaseObject.prototype.coreConstructor.apply(this, arguments);
+		this.defaultSubscription = _.extend({}, defaultSubscription, { context: this });
+		this.subscriptions = [];
+	};
+
+	// #####Intercom.on
+	Intercom.prototype.on = function(names, callback, context, opts) {
+		subscriber(this, names, callback, { 
+			single: firstDef(opts && opts.single, false), 
+			context: context 
+		});
+
+		return this;
+	};
+
+	// #####Intercom.once
+	Intercom.prototype.once = function(names, callback, context) {
+		return this.on(names, callback, context, { single: true });
+	};
+
+	// #####Intercom.off
+	Intercom.prototype.off = function(names, callback) {
+		unsubscriber(this, names, callback);
+		return this;
+	};
+
+	// #####Intercom.emit
+	Intercom.prototype.emit = function (names) {
+		var args = _.rest(arguments, 1);
+		var filteredSubs = _.reduce(splitName(this, names), function (subs, name) {
+			var matches = _.filter(this.subscriptions, function (subscriber) {
+				return subscriber.name === name;
+			}, this);
+
+			return subs.concat(matches);
+		}, [], this);
+
+		filteredSubs = _.unique(filteredSubs);
+
+		_.each(filteredSubs, function(sub) {
+			trigger(this, sub, args);
+		}, this);
+
+		return this;
+	};
+
+	// ###Private Functions
 
 	// #####subscriber
 	// splits and delegates subscriptions from on/once calls
@@ -107,47 +149,6 @@ Struck.Intercom = (function () {
 			unsubscribe(com, sub.name, sub.callback);
 		}
 	}
-
-	// #####Intercom.on
-	Intercom.prototype.on = function(names, callback, context, opts) {
-		subscriber(this, names, callback, { 
-			single: firstDef(opts && opts.single, false), 
-			context: context 
-		});
-
-		return this;
-	};
-
-	// #####Intercom.once
-	Intercom.prototype.once = function(names, callback, context) {
-		return this.on(names, callback, context, { single: true });
-	};
-
-	// #####Intercom.off
-	Intercom.prototype.off = function(names, callback) {
-		unsubscriber(this, names, callback);
-		return this;
-	};
-
-	// #####Intercom.emit
-	Intercom.prototype.emit = function (names) {
-		var args = _.rest(arguments, 1);
-		var filteredSubs = _.reduce(splitName(this, names), function (subs, name) {
-			var matches = _.filter(this.subscriptions, function (subscriber) {
-				return subscriber.name === name;
-			}, this);
-
-			return subs.concat(matches);
-		}, [], this);
-
-		filteredSubs = _.unique(filteredSubs);
-
-		_.each(filteredSubs, function(sub) {
-			trigger(this, sub, args);
-		}, this);
-
-		return this;
-	};
 
 	return Intercom;
 })();

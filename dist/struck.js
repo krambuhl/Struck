@@ -60,7 +60,7 @@ function firstDef() {
 //     });
 //   },
 //
-//   sayHello: Struck.Hook(function () {
+//   sayHello: Struck.hook(function () {
 //     console.log('say hello');
 //   })
 // })
@@ -83,7 +83,7 @@ function firstDef() {
 //   - close mouth
 // ```
 
-Struck.Hook = (function () {
+Struck.hook = (function () {
   var defaults = {
     prefix: 'on',
     pre: 'before',
@@ -191,18 +191,18 @@ Struck.BaseObject = (function () {
 	function BaseObject(options) {
 		// run base initiation and provide
 		// hooks that extended objects can use
-		this.baseInitiation(options);
+		this.coreConstructor(options);
 		this.initialize();
 	}
 
 	// #####initialize
 	// overwritable function that gets called
 	// when constructing new objects
-	BaseObject.prototype.initialize = Struck.Hook('initialize', _.noop);
+	BaseObject.prototype.initialize = Struck.hook('initialize', _.noop);
 
-	// #####baseInitiation
+	// #####coreConstructor
 	// when the object is created
-	BaseObject.prototype.baseInitiation = Struck.Hook('baseInitiation', function(options) {
+	BaseObject.prototype.coreConstructor = Struck.hook('coreConstructor', function(options) {
 		// assign UID to view object
 		this.uid = _.uniqueId('uid');
 
@@ -213,7 +213,7 @@ Struck.BaseObject = (function () {
 	// #####destroy
 	// overwritable function that gets called
 	// when destroying object
-	BaseObject.prototype.destroy = Struck.Hook('destroy', _.noop);
+	BaseObject.prototype.destroy = Struck.hook('destroy', _.noop);
 
 	// #####hook
 	// interface for providing method callbacks
@@ -236,7 +236,7 @@ Struck.BaseObject = (function () {
 	}
 
 	// #####get
-	BaseObject.prototype.get = Struck.Hook('get', function(prop) {
+	BaseObject.prototype.get = Struck.hook('get', function(prop) {
 		var args = _.toArray(arguments);
 		if (_.isArray(prop)) {
 			return reduceProps(this, prop);
@@ -247,7 +247,7 @@ Struck.BaseObject = (function () {
 	});
 
 	// #####set
-	BaseObject.prototype.set = Struck.Hook('set', function(prop, val) {
+	BaseObject.prototype.set = Struck.hook('set', function(prop, val) {
 		prop = result(prop);
 		if (_.isObject(prop)) {
 			_.each(prop, function(value, property) {
@@ -280,39 +280,104 @@ Struck.BaseObject = (function () {
 Struck.EventObject = (function () {
 	'use strict';
 
-	var EventObject = Struck.BaseObject.extend({
-		baseInitiation: function () {
-			// all event objects need an intercom for
-			// emiting and listening to events
-			this.com = Struck.Intercom.create();
+	var EventObject = Struck.BaseObject.extend();
 
-			// call super after defining com which
-			// is used for base hooks
-			Struck.BaseObject.prototype.baseInitiation.apply(this, arguments);
+	EventObject.prototype.coreConstructor = function () {
+		// all event objects need an intercom for
+		// emiting and listening to events
+		this.com = Struck.Intercom.create();
 
-			this._events = [];
-		}
-	});
+		// call super after defining com which
+		// is used for base hooks
+		Struck.BaseObject.prototype.coreConstructor.apply(this, arguments);
+
+		this._events = [];
+	};
 
 	// #####hook
 
 	// trigger intercom events for hook
 	EventObject.prototype.hook = function (name, mod) {
-		var postfix = mod !== undefined && mod !== 'on' ? ':' + mod : '';
+		var postfix = '';
+		
+		if (mod !== undefined && mod !== 'on') {
+			postfix = ':' + mod;
+		}
+
 		Struck.BaseObject.prototype.hook.apply(this, arguments);
 		this.com.emit(name + postfix, arguments);
 	};
 
+	// #####listenTo
+
+	// Registers a event listener to the
+	// appropriate subsystem. Delegates jquery
+	// objects to the jq event system and struck
+	// objects to the instance's intercom
+	// we then keep a secondary object of events
+	// to remove when the object is deconstructed
+	EventObject.prototype.listenTo = function (obj, events, func, context) {
+		var opts = _.chain(arguments).rest(4).first().value();
+
+		addListener(this, { 
+			obj: obj,
+			events: events,
+			func: func,
+			single: firstDef(opts && opts.single, false), 
+			context: firstDef(context, this) 
+		});
+
+		return this;
+	};
+
+	// #####listenOnce
+	EventObject.prototype.listenOnce = function (obj, events, func, context) {
+		return this.listenTo(obj, events, func, firstDef(context, this), { single: true });
+	};
+
+	// #####stopListening
+	// removes an event listener from the
+	// appropriate subsystem
+	EventObject.prototype.stopListening = function (obj, events, func) {
+		removeListener(this, obj, events, func);
+		return this;
+	};
+
+	EventObject.prototype.trigger = function(events) {
+		this.com.emit.apply(this.com, [events].concat(_.rest(arguments, 1)));
+		return this;
+	};
+
+	// #####destroy
+	// when an object is removed, the destroy function
+	// should be called to remove attached event listeners
+	EventObject.prototype.destroy = function () {		
+		Struck.BaseObject.prototype.destroy.apply(this, arguments);
+
+		// remove all event listeners listeners
+		this.stopListening();
+
+		_.defer(function(self) { 
+			// destroy com interface
+			self.com.destroy();
+			delete self.com;
+		}, this);
+
+		return this;
+	};
+	
+
+	// ###Private Functions
 
 	function getEvents(events) {
 		events = result(events);
+		
 		if (events && !_.isArray(events)) {
 			events = events.split(' ');
 		}
 
 		return events;
 	}
-
 
 	function addListener(self, opts) {
 		var obj = opts.obj,
@@ -382,63 +447,7 @@ Struck.EventObject = (function () {
 		});
 	}
 
-	// #####listenTo
 
-	// Registers a event listener to the
-	// appropriate subsystem. Delegates jquery
-	// objects to the jq event system and struck
-	// objects to the instance's intercom
-	// we then keep a secondary object of events
-	// to remove when the object is deconstructed
-	EventObject.prototype.listenTo = function (obj, events, func, context) {
-		var opts = _.chain(arguments).rest(4).first().value();
-		
-		addListener(this, { 
-			obj: obj,
-			events: events,
-			func: func,
-			single: firstDef(opts && opts.single, false), 
-			context: firstDef(context, this) 
-		});
-
-		return this;
-	};
-
-	// #####listenOnce
-	EventObject.prototype.listenOnce = function (obj, events, func, context) {
-		return this.listenTo(obj, events, func, firstDef(context, this), { single: true });
-	};
-
-	// #####stopListening
-	// removes an event listener from the
-	// appropriate subsystem
-	EventObject.prototype.stopListening = function (obj, events, func) {
-		removeListener(this, obj, events, func);
-		return this;
-	};
-
-	EventObject.prototype.trigger = function(events) {
-		this.com.emit.apply(this.com, [events].concat(_.rest(arguments, 1)));
-		return this;
-	};
-
-	// #####destroy
-	// when an object is removed, the destroy function
-	// should be called to remove attached event listeners
-	EventObject.prototype.destroy = function () {		
-		Struck.BaseObject.prototype.destroy.apply(this, arguments);
-
-		// remove all event listeners listeners
-		this.stopListening();
-
-		_.defer(function(self) { 
-			// destroy com interface
-			self.com.destroy();
-			delete self.com;
-		}, this);
-
-		return this;
-	};
 
 	return EventObject;
 })();
@@ -464,14 +473,56 @@ Struck.Intercom = (function () {
 	// #####Constructor
 	// set up default subscriptio object's context to the
 	// intercom instance and create subscription collection
-	var Intercom = Struck.BaseObject.extend({
-		baseInitiation: function () {
-			Struck.BaseObject.prototype.baseInitiation.apply(this, arguments);
-			this.defaultSubscription = _.extend({}, defaultSubscription, { context: this });
-			this.subscriptions = [];
-		}
-	});
+	var Intercom = Struck.BaseObject.extend();
 
+	Intercom.prototype.coreConstructor = function () {
+		Struck.BaseObject.prototype.coreConstructor.apply(this, arguments);
+		this.defaultSubscription = _.extend({}, defaultSubscription, { context: this });
+		this.subscriptions = [];
+	};
+
+	// #####Intercom.on
+	Intercom.prototype.on = function(names, callback, context, opts) {
+		subscriber(this, names, callback, { 
+			single: firstDef(opts && opts.single, false), 
+			context: context 
+		});
+
+		return this;
+	};
+
+	// #####Intercom.once
+	Intercom.prototype.once = function(names, callback, context) {
+		return this.on(names, callback, context, { single: true });
+	};
+
+	// #####Intercom.off
+	Intercom.prototype.off = function(names, callback) {
+		unsubscriber(this, names, callback);
+		return this;
+	};
+
+	// #####Intercom.emit
+	Intercom.prototype.emit = function (names) {
+		var args = _.rest(arguments, 1);
+		var filteredSubs = _.reduce(splitName(this, names), function (subs, name) {
+			var matches = _.filter(this.subscriptions, function (subscriber) {
+				return subscriber.name === name;
+			}, this);
+
+			return subs.concat(matches);
+		}, [], this);
+
+		filteredSubs = _.unique(filteredSubs);
+
+		_.each(filteredSubs, function(sub) {
+			trigger(this, sub, args);
+		}, this);
+
+		return this;
+	};
+
+	// ###Private Functions
 
 	// #####subscriber
 	// splits and delegates subscriptions from on/once calls
@@ -552,47 +603,6 @@ Struck.Intercom = (function () {
 			unsubscribe(com, sub.name, sub.callback);
 		}
 	}
-
-	// #####Intercom.on
-	Intercom.prototype.on = function(names, callback, context, opts) {
-		subscriber(this, names, callback, { 
-			single: firstDef(opts && opts.single, false), 
-			context: context 
-		});
-
-		return this;
-	};
-
-	// #####Intercom.once
-	Intercom.prototype.once = function(names, callback, context) {
-		return this.on(names, callback, context, { single: true });
-	};
-
-	// #####Intercom.off
-	Intercom.prototype.off = function(names, callback) {
-		unsubscriber(this, names, callback);
-		return this;
-	};
-
-	// #####Intercom.emit
-	Intercom.prototype.emit = function (names) {
-		var args = _.rest(arguments, 1);
-		var filteredSubs = _.reduce(splitName(this, names), function (subs, name) {
-			var matches = _.filter(this.subscriptions, function (subscriber) {
-				return subscriber.name === name;
-			}, this);
-
-			return subs.concat(matches);
-		}, [], this);
-
-		filteredSubs = _.unique(filteredSubs);
-
-		_.each(filteredSubs, function(sub) {
-			trigger(this, sub, args);
-		}, this);
-
-		return this;
-	};
 
 	return Intercom;
 })();

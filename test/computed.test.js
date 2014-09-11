@@ -1,4 +1,4 @@
-describe.skip('Struck.Computed', function () {	
+describe('Struck.Computed', function () {	
 	var count = 0;
 	var counter = function() { count++; };
 	var noop = function() {};
@@ -9,7 +9,7 @@ describe.skip('Struck.Computed', function () {
 		instance = Struck.BaseObject.extend({
 			first: 'Thomas',
 			last: 'Selleck',
-			fullName: Struck.Computed(['first', 'last'], function() { 
+			fullName: Struck.Computed('first', 'last', function() { 
 				return this.get('first') + this.get('last');
 			})
 		}).create();
@@ -19,12 +19,12 @@ describe.skip('Struck.Computed', function () {
 		instance.destroy();
 	});
 
-	it('should return a wrapped function definition', function(done) {
+	it.skip('should return a wrapped function definit.skipion', function(done) {
 		instance = Struck.Computed(done);
 		instance();
 	});
 
-	it('should accept a single property to track', function() {
+	it.skip('should accept a single property to track', function() {
 		instance = Struck.BaseObject.extend({
 			name: 'Borg',
 			properName: Struck.Computed('name', function() { 
@@ -36,7 +36,7 @@ describe.skip('Struck.Computed', function () {
 		instance.get('properName').should.equal('Mr. Roboto');
 	});
 
-	it('should accept an array of properties to track', function() {
+	it.skip('should accept an array of properties to track', function() {
 		instance = Struck.BaseObject.extend({
 			first: 'Thomas',
 			last: 'Selleck',
@@ -49,7 +49,7 @@ describe.skip('Struck.Computed', function () {
 		instance.get('fullName').should.equal('Tom Selleck');
 	});
 
-	it('should accept multiple argments of properties to track', function() {
+	it.skip('should accept multiple argments of properties to track', function() {
 		instance = Struck.BaseObject.extend({
 			first: 'Thomas',
 			last: 'Selleck',
@@ -62,7 +62,7 @@ describe.skip('Struck.Computed', function () {
 		instance.get('fullName').should.equal('Tom Selleck');
 	});
 
-	it('should listen for property changes and self-update', function() {
+	it.skip('should listen for property changes and self-update', function() {
 
 	});
 });
