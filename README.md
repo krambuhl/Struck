@@ -5,4 +5,4 @@
 Struck
 ======
 
-Simple application components.
+Simple application components.  
