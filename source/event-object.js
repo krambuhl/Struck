@@ -93,22 +93,10 @@ Struck.EventObject = (function () {
     return this;
   };
   
-
-  // ###Private Functions
-
-  function getEvents(events) {
-    events = result(events);
-    
-    if (events && !_.isArray(events)) {
-      events = events.split(' ');
-    }
-
-    return events;
-  }
-
+  
   function addListener(self, opts) {
     var obj = opts.obj,
-      events = getEvents(opts.events),
+      events = splitName(opts.events),
       func = opts.func;
 
     var callback = !opts.single ? func : function() {
@@ -132,7 +120,7 @@ Struck.EventObject = (function () {
   }
 
   function removeListener(self, obj, events, func) {
-    events = getEvents(events);
+    events = splitName(events);
 
     var rejects = [],
       passes = [];

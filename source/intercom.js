@@ -51,7 +51,7 @@ Struck.Intercom = (function () {
   // #####Intercom.emit
   Intercom.prototype.emit = function (names) {
     var args = _.rest(arguments, 1);
-    var filteredSubs = _.reduce(splitName(this, names), function (subs, name) {
+    var filteredSubs = _.reduce(splitName(names, this), function (subs, name) {
       var matches = _.filter(this.subscriptions, function (subscriber) {
         return subscriber.name === name;
       }, this);
@@ -73,7 +73,7 @@ Struck.Intercom = (function () {
   // #####subscriber
   // splits and delegates subscriptions from on/once calls
   function subscriber(com, names, func, opts) {
-    _.each(splitName(com, names), function (name) {
+    _.each(splitName(names, com), function (name) {
       subscribe(com, name, func, {
         single: opts.single,
         context: opts.context
@@ -113,7 +113,7 @@ Struck.Intercom = (function () {
       return;
     }
 
-    _.each(splitName(com, names), function (name) {
+    _.each(splitName(names, com), function (name) {
       unsubscribe(com, name, func);
     });
   }

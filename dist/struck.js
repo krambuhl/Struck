@@ -12,35 +12,34 @@
     root.Struck = factory(root, {}, root._, root.jQuery);
   }
 }(this, function(root, Struck, _, $) {
-
 // ###Utilities
 
 function capitalize(string) {
-	return string.charAt(0).toUpperCase() + string.slice(1);
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 // #####splitName
 // split "event1 event2" into an
 // array of event names
-function splitName(context, names) {	
-	// get result of name if defined as a function
-	var result = _.isFunction(names) ? names.call(context) : names;
+function splitName(names, context) {
+  // get result of name if defined as a function
+  var events = result(names, context);
 
-	// split by spaces if result isn't an array
-	// always returns an array
-	return _.isArray(result) ? result : result.split(" ");
+  // split by spaces if result isn't an array
+  // always returns an array
+  return _.isArray(events) ? events : events && events.split(' ');
 }
 
 // #####result
 // returns get result of an expression
-function result(expr) {
-	return _.isFunction(expr) ? expr() : expr;
+function result(expr, context) {
+  return _.isFunction(expr) ? expr.apply(context) : expr;
 }
 
 function firstDef() {
-	return _.find(arguments, function(arg) { 
-		return !_.isUndefined(arg);
-	});
+  return _.find(arguments, function(arg) { 
+    return !_.isUndefined(arg);
+  });
 }
 // ##Hook
 
@@ -127,6 +126,35 @@ Struck.hook = (function () {
   return Hook;
 })();
 
+Struck.computed = (function () {
+  function Computed() {
+  	var self = this;
+
+    self.props = splitName(_.flatten(_.initial(arguments)));
+    self.func = _.last(arguments);
+    
+    setup = _.once(setupListeners);
+
+    return function() {
+    	_.bind(setup, undefined, self, this)();
+
+    	if (!self.cached) {
+				self.cached = self.func.apply(this);
+    	}
+    	return self.cached;
+		};
+  }
+
+  function setupListeners(comp, obj) {
+  	_.each(comp.props, function(property) {
+  		obj.listenTo('set', function() {
+  			comp.cached = comp.func.apply(obj);
+  		});
+  	});
+  }
+
+  return Computed;
+})();
 // ###Extend
 
 // _Pulled from Backbone.js 1.1.2 source_
@@ -175,100 +203,100 @@ Struck.extend = function(protoProps, staticProps) {
 // function for enabling common architectures
 Struck.BaseObject = (function () {
 
-	// ####BaseObject Constructor
+  // ####BaseObject Constructor
 
-	// constructor is run when object is created
-	// runs base initiation by default
+  // constructor is run when object is created
+  // runs base initiation by default
 
-	// __Warning: overwriting the BaseObject
-	// Constructor will disable internal processes.__
-	// In cases where overwriting the constructor
-	// is required call the prototype to preserve
-	// functionality:
+  // __Warning: overwriting the BaseObject
+  // Constructor will disable internal processes.__
+  // In cases where overwriting the constructor
+  // is required call the prototype to preserve
+  // functionality:
 
-	// `Struck.BaseObject.prototype.constructor.apply(this, arguments);`
+  // `Struck.BaseObject.prototype.constructor.apply(this, arguments);`
 
-	function BaseObject(options) {
-		// run base initiation and provide
-		// hooks that extended objects can use
-		this.coreConstructor(options);
-		this.initialize();
-	}
+  function BaseObject(options) {
+    // run base initiation and provide
+    // hooks that extended objects can use
+    this.coreConstructor(options);
+    this.initialize();
+  }
 
-	// #####initialize
-	// overwritable function that gets called
-	// when constructing new objects
-	BaseObject.prototype.initialize = Struck.hook('initialize', _.noop);
+  // #####coreConstructor
+  // when the object is created
+  BaseObject.prototype.coreConstructor = Struck.hook('coreConstructor', function(options) {
+    // assign UID to view object
+    this.uid = _.uniqueId('uid');
 
-	// #####coreConstructor
-	// when the object is created
-	BaseObject.prototype.coreConstructor = Struck.hook('coreConstructor', function(options) {
-		// assign UID to view object
-		this.uid = _.uniqueId('uid');
+    // add options object to instance
+    this.options = _.extend({}, options);
+  });
 
-		// add options object to instance
-		this.options = _.extend({}, options);
-	});
+  // #####initialize
+  // overwritable function that gets called
+  // when constructing new objects
+  BaseObject.prototype.initialize = Struck.hook('initialize', _.noop);
 
-	// #####destroy
-	// overwritable function that gets called
-	// when destroying object
-	BaseObject.prototype.destroy = Struck.hook('destroy', _.noop);
+  // #####destroy
+  // overwritable function that gets called
+  // when destroying object
+  BaseObject.prototype.destroy = Struck.hook('destroy', _.noop);
 
-	// #####hook
-	// interface for providing method callbacks
-	// like `onRender`
-	BaseObject.prototype.hook = function(name, mod) {
-		var args = _.rest(arguments, 2),
-			prefix = firstDef(mod, 'on'),
-			methodHook = prefix + capitalize(name);
+  // #####hook
+  // interface for providing method callbacks
+  // like `onRender`
+  BaseObject.prototype.hook = function(name, mod) {
+    var args = _.rest(arguments, 2),
+      prefix = firstDef(mod, 'on'),
+      methodHook = prefix + capitalize(name);
 
-		if (this[methodHook]) {
-			return this[methodHook].apply(this, args);
-		}
-	};
+    if (this[methodHook]) {
+      return this[methodHook].apply(this, args);
+    }
+  };
 
-	function reduceProps(self, props) {
-		return _.reduce(props, function(memo, prop) {
-			memo[prop] = self.get(prop);
-			return memo;
-		}, {});
-	}
+  function reduceProps(self, props) {
+    return _.reduce(props, function(memo, prop) {
+      memo[prop] = self.get(prop);
+      return memo;
+    }, {});
+  }
 
-	// #####get
-	BaseObject.prototype.get = Struck.hook('get', function(prop) {
-		var args = _.toArray(arguments);
-		if (_.isArray(prop)) {
-			return reduceProps(this, prop);
-		} else if (args.length > 1) {
-			return reduceProps(this, args);
-		}
-		return this[prop];
-	});
+  // #####get
+  BaseObject.prototype.get = Struck.hook('get', function(prop) {
+    var args = _.toArray(arguments);
+    if (_.isArray(prop)) {
+      return reduceProps(this, prop);
+    } else if (args.length > 1) {
+      return reduceProps(this, args);
+    }
+    return result(this[prop], this);
+  });
 
-	// #####set
-	BaseObject.prototype.set = Struck.hook('set', function(prop, val) {
-		prop = result(prop);
-		if (_.isObject(prop)) {
-			_.each(prop, function(value, property) {
-				this.set(property, value);
-			}, this);
-		}
-		this[prop] = result(val);
-	});
+  // #####set
+  BaseObject.prototype.set = Struck.hook('set', function(prop, val) {
+    prop = result(prop);
+    if (_.isObject(prop)) {
+      _.each(prop, function(value, property) {
+        this.set(property, value);
+      }, this);
+    }
+    this[prop] = result(val, this);
+  });
 
-	BaseObject.extend = Struck.extend;
+  BaseObject.extend = Struck.extend;
 
-	// ###create
-	// prefered method of creating new objects
-	// over using the `new` style
-	BaseObject.create = function(props, opts) {
-		var Creator = this.extend(props);
-		return new Creator(_.extend({}, props, opts));
-	};
+  // ###create
+  // prefered method of creating new objects
+  // over using the `new` style
+  BaseObject.create = function(props, opts) {
+    var Creator = this.extend(props);
+    return new Creator(_.extend({}, props, opts));
+  };
 
 
-	return BaseObject;
+  return BaseObject;
 })();
 
 // ##EventObject
@@ -278,178 +306,166 @@ Struck.BaseObject = (function () {
 // objects externally.  Using the listen methods
 // automates undelgating events of view removal.
 Struck.EventObject = (function () {
-	'use strict';
+  'use strict';
 
-	var EventObject = Struck.BaseObject.extend();
+  var EventObject = Struck.BaseObject.extend();
 
-	EventObject.prototype.coreConstructor = function () {
-		// all event objects need an intercom for
-		// emiting and listening to events
-		this.com = Struck.Intercom.create();
+  EventObject.prototype.coreConstructor = function () {
+    // all event objects need an intercom for
+    // emiting and listening to events
+    this.com = Struck.Intercom.create();
 
-		// call super after defining com which
-		// is used for base hooks
-		Struck.BaseObject.prototype.coreConstructor.apply(this, arguments);
+    // call super after defining com which
+    // is used for base hooks
+    Struck.BaseObject.prototype.coreConstructor.apply(this, arguments);
 
-		this._events = [];
-	};
+    this._events = [];
+  };
 
-	// #####hook
+  // #####hook
 
-	// trigger intercom events for hook
-	EventObject.prototype.hook = function (name, mod) {
-		var postfix = '';
-		
-		if (mod !== undefined && mod !== 'on') {
-			postfix = ':' + mod;
-		}
+  // trigger intercom events for hook
+  EventObject.prototype.hook = function (name, mod) {
+    var postfix = '';
+    
+    if (mod !== undefined && mod !== 'on') {
+      postfix = ':' + mod;
+    }
 
-		Struck.BaseObject.prototype.hook.apply(this, arguments);
-		this.com.emit(name + postfix, arguments);
-	};
+    Struck.BaseObject.prototype.hook.apply(this, arguments);
+    this.com.emit(name + postfix, arguments);
+  };
 
-	// #####listenTo
+  // #####listenTo
 
-	// Registers a event listener to the
-	// appropriate subsystem. Delegates jquery
-	// objects to the jq event system and struck
-	// objects to the instance's intercom
-	// we then keep a secondary object of events
-	// to remove when the object is deconstructed
-	EventObject.prototype.listenTo = function (obj, events, func, context) {
-		var opts = _.chain(arguments).rest(4).first().value();
+  // Registers a event listener to the
+  // appropriate subsystem. Delegates jquery
+  // objects to the jq event system and struck
+  // objects to the instance's intercom
+  // we then keep a secondary object of events
+  // to remove when the object is deconstructed
+  EventObject.prototype.listenTo = function (obj, events, func, context) {
+    var opts = _.chain(arguments).rest(4).first().value();
 
-		addListener(this, { 
-			obj: obj,
-			events: events,
-			func: func,
-			single: firstDef(opts && opts.single, false), 
-			context: firstDef(context, this) 
-		});
+    addListener(this, { 
+      obj: obj,
+      events: events,
+      func: func,
+      single: firstDef(opts && opts.single, false), 
+      context: firstDef(context, this) 
+    });
 
-		return this;
-	};
+    return this;
+  };
 
-	// #####listenOnce
-	EventObject.prototype.listenOnce = function (obj, events, func, context) {
-		return this.listenTo(obj, events, func, firstDef(context, this), { single: true });
-	};
+  // #####listenOnce
+  EventObject.prototype.listenOnce = function (obj, events, func, context) {
+    return this.listenTo(obj, events, func, firstDef(context, this), { single: true });
+  };
 
-	// #####stopListening
-	// removes an event listener from the
-	// appropriate subsystem
-	EventObject.prototype.stopListening = function (obj, events, func) {
-		removeListener(this, obj, events, func);
-		return this;
-	};
+  // #####stopListening
+  // removes an event listener from the
+  // appropriate subsystem
+  EventObject.prototype.stopListening = function (obj, events, func) {
+    removeListener(this, obj, events, func);
+    return this;
+  };
 
-	EventObject.prototype.trigger = function(events) {
-		this.com.emit.apply(this.com, [events].concat(_.rest(arguments, 1)));
-		return this;
-	};
+  EventObject.prototype.trigger = function(events) {
+    this.com.emit.apply(this.com, [events].concat(_.rest(arguments, 1)));
+    return this;
+  };
 
-	// #####destroy
-	// when an object is removed, the destroy function
-	// should be called to remove attached event listeners
-	EventObject.prototype.destroy = function () {		
-		Struck.BaseObject.prototype.destroy.apply(this, arguments);
+  // #####destroy
+  // when an object is removed, the destroy function
+  // should be called to remove attached event listeners
+  EventObject.prototype.destroy = function () {   
+    Struck.BaseObject.prototype.destroy.apply(this, arguments);
 
-		// remove all event listeners listeners
-		this.stopListening();
+    // remove all event listeners listeners
+    this.stopListening();
 
-		_.defer(function(self) { 
-			// destroy com interface
-			self.com.destroy();
-			delete self.com;
-		}, this);
+    _.defer(function(self) { 
+      // destroy com interface
+      self.com.destroy();
+      delete self.com;
+    }, this);
 
-		return this;
-	};
-	
+    return this;
+  };
+  
+  
+  function addListener(self, opts) {
+    var obj = opts.obj,
+      events = splitName(opts.events),
+      func = opts.func;
 
-	// ###Private Functions
+    var callback = !opts.single ? func : function() {
+      func.apply(this, arguments);
+      removeListener(self, obj, opts.events, callback);
+    };
 
-	function getEvents(events) {
-		events = result(events);
-		
-		if (events && !_.isArray(events)) {
-			events = events.split(' ');
-		}
+    _.each(events, function(ev) {
+      self._events.push({
+        events: ev,
+        func: callback,
+        obj: obj
+      });
 
-		return events;
-	}
+      if (obj instanceof jQuery) {
+        obj[opts.single ? 'one' : 'on'](ev, callback);
+      } else if (obj instanceof Struck.EventObject) {
+        obj.com[opts.single ? 'once' : 'on'].call(obj.com, ev, callback, opts.context);
+      }
+    });
+  }
 
-	function addListener(self, opts) {
-		var obj = opts.obj,
-			events = getEvents(opts.events),
-			func = opts.func;
+  function removeListener(self, obj, events, func) {
+    events = splitName(events);
 
-		var callback = !opts.single ? func : function() {
-			func.apply(this, arguments);
-			removeListener(self, obj, opts.events, callback);
-		};
+    var rejects = [],
+      passes = [];
 
-		_.each(events, function(ev) {
-			self._events.push({
-				events: ev,
-				func: callback,
-				obj: obj
-			});
+    function pushResults(rejected, ev) {
+      if (rejected) { 
+        rejects.push(ev);
+      } else { 
+        passes.push(ev);
+      }
+    }
 
-			if (obj instanceof jQuery) {
-				obj[opts.single ? 'one' : 'on'](ev, callback);
-			} else if (obj instanceof Struck.EventObject) {
-				obj.com[opts.single ? 'once' : 'on'].call(obj.com, ev, callback, opts.context);
-			}
-		});
-	}
+    _.each(self._events, function(ev) {
+      _.each(events, function(name) {
+        if (func) {
+          pushResults(ev.obj === obj && ev.events === name && ev.func === func, ev);
+        } else if (events) {
+          pushResults(ev.obj === obj && ev.events === name, ev);
+        }
+      });
+    });
 
-	function removeListener(self, obj, events, func) {
-		events = getEvents(events);
+    if (obj && !events && !func) {
+      _.each(self._events, function(ev) {
+        pushResults(ev.obj === obj, ev);
+      });
+    } else if (!events) { 
+      rejects = self._events; 
+    }
 
-		var rejects = [],
-			passes = [];
+    self._events = passes;
 
-		function pushResults(rejected, ev) {
-			if (rejected) { 
-				rejects.push(ev);
-			} else { 
-				passes.push(ev);
-			}
-		}
-
-		_.each(self._events, function(ev) {
-			_.each(events, function(name) {
-				if (func) {
-					pushResults(ev.obj === obj && ev.events === name && ev.func === func, ev);
-				} else if (events) {
-					pushResults(ev.obj === obj && ev.events === name, ev);
-				}
-			});
-		});
-
-		if (obj && !events && !func) {
-			_.each(self._events, function(ev) {
-				pushResults(ev.obj === obj, ev);
-			});
-		} else if (!events) { 
-			rejects = self._events; 
-		}
-
-		self._events = passes;
-
-		_.each(rejects, function(reject) {
-			if (reject.obj instanceof jQuery) {
-				reject.obj.off(reject.events, reject.func);
-			} else if (reject.obj instanceof Struck.EventObject) {
-				reject.obj.com.off(reject.events, rejects.func);
-			}
-		});
-	}
+    _.each(rejects, function(reject) {
+      if (reject.obj instanceof jQuery) {
+        reject.obj.off(reject.events, reject.func);
+      } else if (reject.obj instanceof Struck.EventObject) {
+        reject.obj.com.off(reject.events, rejects.func);
+      }
+    });
+  }
 
 
 
-	return EventObject;
+  return EventObject;
 })();
 
 // ##Intercom
@@ -457,155 +473,155 @@ Struck.EventObject = (function () {
 // A standalone function for an event subscriber
 // system to be used in other modules
 Struck.Intercom = (function () {
-	// setup default subscription object
-	// used to clone and extend in `subscribe` function
-	var defaultSubscription = {
-		single: false,
-		name: 'all',
-		callback: _.noop,
-		context: root
-	};
+  // setup default subscription object
+  // used to clone and extend in `subscribe` function
+  var defaultSubscription = {
+    single: false,
+    name: 'all',
+    callback: _.noop,
+    context: root
+  };
 
-	// get keys from default subscription object
-	// useful for iteration and filtering
-	var subscriptionKeys = _.keys(defaultSubscription);
+  // get keys from default subscription object
+  // useful for iteration and filtering
+  var subscriptionKeys = _.keys(defaultSubscription);
 
-	// #####Constructor
-	// set up default subscriptio object's context to the
-	// intercom instance and create subscription collection
-	var Intercom = Struck.BaseObject.extend();
+  // #####Constructor
+  // set up default subscriptio object's context to the
+  // intercom instance and create subscription collection
+  var Intercom = Struck.BaseObject.extend();
 
-	Intercom.prototype.coreConstructor = function () {
-		Struck.BaseObject.prototype.coreConstructor.apply(this, arguments);
-		this.defaultSubscription = _.extend({}, defaultSubscription, { context: this });
-		this.subscriptions = [];
-	};
+  Intercom.prototype.coreConstructor = function () {
+    Struck.BaseObject.prototype.coreConstructor.apply(this, arguments);
+    this.defaultSubscription = _.extend({}, defaultSubscription, { context: this });
+    this.subscriptions = [];
+  };
 
-	// #####Intercom.on
-	Intercom.prototype.on = function(names, callback, context, opts) {
-		subscriber(this, names, callback, { 
-			single: firstDef(opts && opts.single, false), 
-			context: context 
-		});
+  // #####Intercom.on
+  Intercom.prototype.on = function(names, callback, context, opts) {
+    subscriber(this, names, callback, { 
+      single: firstDef(opts && opts.single, false), 
+      context: context 
+    });
 
-		return this;
-	};
+    return this;
+  };
 
-	// #####Intercom.once
-	Intercom.prototype.once = function(names, callback, context) {
-		return this.on(names, callback, context, { single: true });
-	};
+  // #####Intercom.once
+  Intercom.prototype.once = function(names, callback, context) {
+    return this.on(names, callback, context, { single: true });
+  };
 
-	// #####Intercom.off
-	Intercom.prototype.off = function(names, callback) {
-		unsubscriber(this, names, callback);
-		return this;
-	};
+  // #####Intercom.off
+  Intercom.prototype.off = function(names, callback) {
+    unsubscriber(this, names, callback);
+    return this;
+  };
 
-	// #####Intercom.emit
-	Intercom.prototype.emit = function (names) {
-		var args = _.rest(arguments, 1);
-		var filteredSubs = _.reduce(splitName(this, names), function (subs, name) {
-			var matches = _.filter(this.subscriptions, function (subscriber) {
-				return subscriber.name === name;
-			}, this);
+  // #####Intercom.emit
+  Intercom.prototype.emit = function (names) {
+    var args = _.rest(arguments, 1);
+    var filteredSubs = _.reduce(splitName(names, this), function (subs, name) {
+      var matches = _.filter(this.subscriptions, function (subscriber) {
+        return subscriber.name === name;
+      }, this);
 
-			return subs.concat(matches);
-		}, [], this);
+      return subs.concat(matches);
+    }, [], this);
 
-		filteredSubs = _.unique(filteredSubs);
+    filteredSubs = _.unique(filteredSubs);
 
-		_.each(filteredSubs, function(sub) {
-			trigger(this, sub, args);
-		}, this);
+    _.each(filteredSubs, function(sub) {
+      trigger(this, sub, args);
+    }, this);
 
-		return this;
-	};
+    return this;
+  };
 
-	// ###Private Functions
+  // ###Private Functions
 
-	// #####subscriber
-	// splits and delegates subscriptions from on/once calls
-	function subscriber(com, names, func, opts) {
-		_.each(splitName(com, names), function (name) {
-			subscribe(com, name, func, {
-				single: opts.single,
-				context: opts.context
-			});
-		});
-	}
+  // #####subscriber
+  // splits and delegates subscriptions from on/once calls
+  function subscriber(com, names, func, opts) {
+    _.each(splitName(names, com), function (name) {
+      subscribe(com, name, func, {
+        single: opts.single,
+        context: opts.context
+      });
+    });
+  }
 
-	// #####subscribe
-	// build subscription object from
-	// name and function, additional
-	// options are optional...
-	function subscribe(com, name, func, opts) {
-		if (!name && !func) { return; }
+  // #####subscribe
+  // build subscription object from
+  // name and function, additional
+  // options are optional...
+  function subscribe(com, name, func, opts) {
+    if (!name && !func) { return; }
 
-		var subOptions = {
-			name: name,
-			callback: func
-		};
+    var subOptions = {
+      name: name,
+      callback: func
+    };
 
-		// add useful options to subOptions
-		_.each(subscriptionKeys, function (key) {
-			if (opts[key]) {
-				subOptions[key] = opts[key];
-			}
-		});
+    // add useful options to subOptions
+    _.each(subscriptionKeys, function (key) {
+      if (opts[key]) {
+        subOptions[key] = opts[key];
+      }
+    });
 
-		// create a new subscription from the default object
-		// and overwrite properties with subOptions,
-		// then adds subscription to collection
-		var subscription = _.extend({}, defaultSubscription, subOptions);
-		com.subscriptions.push(subscription);
-	}
+    // create a new subscription from the default object
+    // and overwrite properties with subOptions,
+    // then adds subscription to collection
+    var subscription = _.extend({}, defaultSubscription, subOptions);
+    com.subscriptions.push(subscription);
+  }
 
-	function unsubscriber(com, names, func) {
-		if (names === undefined) {
-			unsubscribe(com);
-			return;
-		}
+  function unsubscriber(com, names, func) {
+    if (names === undefined) {
+      unsubscribe(com);
+      return;
+    }
 
-		_.each(splitName(com, names), function (name) {
-			unsubscribe(com, name, func);
-		});
-	}
+    _.each(splitName(names, com), function (name) {
+      unsubscribe(com, name, func);
+    });
+  }
 
-	// #####unsubscribe
-	//
-	function unsubscribe(com, name, func) {
-		var filter = function (sub) {
-			// com, name, func:
-			// .. remove specific subscriber function
-			if (func) {
-				return sub.name === name && sub.callback === func;
+  // #####unsubscribe
+  //
+  function unsubscribe(com, name, func) {
+    var filter = function (sub) {
+      // com, name, func:
+      // .. remove specific subscriber function
+      if (func) {
+        return sub.name === name && sub.callback === func;
 
-			// com, name:
-			// .. remove all subscribers by name
-			} else if (name) {
-				return sub.name === name;
-			}
+      // com, name:
+      // .. remove all subscribers by name
+      } else if (name) {
+        return sub.name === name;
+      }
 
-			// remove all subscriptions if no arguments provided
-			return true;
-		};
+      // remove all subscriptions if no arguments provided
+      return true;
+    };
 
-		com.subscriptions = _.reject(com.subscriptions, filter);
-	}
+    com.subscriptions = _.reject(com.subscriptions, filter);
+  }
 
-	// #####trigger
-	//
-	function trigger(com, sub, args) {
-		sub.callback.apply(sub.context, args);
+  // #####trigger
+  //
+  function trigger(com, sub, args) {
+    sub.callback.apply(sub.context, args);
 
-		if (sub.single) {
-			unsubscribe(com, sub.name, sub.callback);
-		}
-	}
+    if (sub.single) {
+      unsubscribe(com, sub.name, sub.callback);
+    }
+  }
 
-	return Intercom;
+  return Intercom;
 })();
 
-	return Struck;
+  return Struck;
 }));

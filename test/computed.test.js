@@ -1,4 +1,4 @@
-describe('Struck.Computed', function () {	
+describe('Struck.computed', function () {	
 	var count = 0;
 	var counter = function() { count++; };
 	var noop = function() {};
@@ -6,28 +6,35 @@ describe('Struck.Computed', function () {
 
 	beforeEach(function() {
 		count = 0;
-		instance = Struck.BaseObject.extend({
-			first: 'Thomas',
-			last: 'Selleck',
-			fullName: Struck.Computed('first', 'last', function() { 
-				return this.get('first') + this.get('last');
+	});
+
+	it('should return a property', function() {
+		instance = Struck.EventObject.extend({
+			name: 'Borg',
+			properName: new Struck.computed('name', function() { 
+				return 'Mr. ' + this.get('name');
 			})
 		}).create();
+		instance.get('properName').should.equal('Mr. Borg');
 	});
 
-	afterEach(function() {
-		instance.destroy();
-	});
+	it('should listen for property changes and self-update', function() {
+		instance = Struck.EventObject.extend({
+			name: 'Borg',
+			properName: new Struck.computed('name', function() { 
+				return 'Mr. ' + this.get('name');
+			})
+		}).create();
 
-	it.skip('should return a wrapped function definit.skipion', function(done) {
-		instance = Struck.Computed(done);
-		instance();
+		instance.get('properName').should.equal('Mr. Borg');
+		instance.set('name', 'Roboto');
+		instance.get('properName').should.equal('Mr. Roboto');
 	});
 
 	it.skip('should accept a single property to track', function() {
-		instance = Struck.BaseObject.extend({
+		instance = Struck.EventObject.extend({
 			name: 'Borg',
-			properName: Struck.Computed('name', function() { 
+			properName: Struck.computed('name', function() { 
 				return 'Mr. ' + this.get('name');
 			})
 		}).create();
@@ -37,10 +44,10 @@ describe('Struck.Computed', function () {
 	});
 
 	it.skip('should accept an array of properties to track', function() {
-		instance = Struck.BaseObject.extend({
+		instance = Struck.EventObject.extend({
 			first: 'Thomas',
 			last: 'Selleck',
-			fullName: Struck.Computed(['first', 'last'], function() { 
+			fullName: Struck.computed(['first', 'last'], function() { 
 				return this.get('first') + this.get('last');
 			})
 		}).create();
@@ -50,10 +57,10 @@ describe('Struck.Computed', function () {
 	});
 
 	it.skip('should accept multiple argments of properties to track', function() {
-		instance = Struck.BaseObject.extend({
+		instance = Struck.EventObject.extend({
 			first: 'Thomas',
 			last: 'Selleck',
-			fullName: Struck.Computed('first', 'last', function() { 
+			fullName: Struck.computed('first', 'last', function() { 
 				return this.get('first') + this.get('last');
 			})
 		}).create();
@@ -62,11 +69,20 @@ describe('Struck.Computed', function () {
 		instance.get('fullName').should.equal('Tom Selleck');
 	});
 
-	it.skip('should listen for property changes and self-update', function() {
-
-	});
-
 	it.skip('should accept computed properties to track', function() {
+		instance = Struck.EventObject.extend({
+			first: 'Thomas',
+			last: 'Selleck',
+			fullName: Struck.computed('first', 'last', function() { 
+				return [this.get('first'), this.get('last')].join();
+			}),
+			formalName: Struck.computed('fullName', function() { 
+				return ['Mr', this.get('fullName')].join();
+			})
+		}).create();
 
+		instance.set('first', 'Tom');
+		instance.get('fullName').should.equal('Tom Selleck');
+		instance.get('formalName').should.equal('Tom Selleck');
 	});
 });

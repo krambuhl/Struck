@@ -7,19 +7,19 @@ function capitalize(string) {
 // #####splitName
 // split "event1 event2" into an
 // array of event names
-function splitName(context, names) {  
+function splitName(names, context) {
   // get result of name if defined as a function
-  var result = _.isFunction(names) ? names.call(context) : names;
+  var events = result(names, context);
 
   // split by spaces if result isn't an array
   // always returns an array
-  return _.isArray(result) ? result : result.split(" ");
+  return _.isArray(events) ? events : events && events.split(' ');
 }
 
 // #####result
 // returns get result of an expression
-function result(expr) {
-  return _.isFunction(expr) ? expr() : expr;
+function result(expr, context) {
+  return _.isFunction(expr) ? expr.apply(context) : expr;
 }
 
 function firstDef() {
