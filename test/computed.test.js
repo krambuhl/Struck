@@ -65,4 +65,8 @@ describe('Struck.Computed', function () {
 	it.skip('should listen for property changes and self-update', function() {
 
 	});
+
+	it.skip('should accept computed properties to track', function() {
+
+	});
 });
