@@ -273,7 +273,7 @@ Struck.computed = (<span class="hljs-function"><span class="hljs-keyword">functi
     self.props = splitName(_.flatten(_.initial(<span class="hljs-built_in">arguments</span>)));
     self.func = _.last(<span class="hljs-built_in">arguments</span>);
     
-    setup = _.once(setupListeners);
+    <span class="hljs-keyword">var</span> setup = _.once(setupListeners);
 
     <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
     	_.bind(setup, <span class="hljs-literal">undefined</span>, self, <span class="hljs-keyword">this</span>)();
@@ -281,13 +281,14 @@ Struck.computed = (<span class="hljs-function"><span class="hljs-keyword">functi
     	<span class="hljs-keyword">if</span> (!self.cached) {
 				self.cached = self.func.apply(<span class="hljs-keyword">this</span>);
     	}
+
     	<span class="hljs-keyword">return</span> self.cached;
 		};
   }
 
   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setupListeners</span><span class="hljs-params">(comp, obj)</span> </span>{
   	_.each(comp.props, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(property)</span> </span>{
-  		obj.listenTo(<span class="hljs-string">'set'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+  		obj.listenTo(<span class="hljs-string">'set:'</span> + property, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
   			comp.cached = comp.func.apply(obj);
   		});
   	});
