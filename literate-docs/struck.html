@@ -289,6 +289,8 @@ Struck.computed = (<span class="hljs-function"><span class="hljs-keyword">functi
   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setupListeners</span><span class="hljs-params">(comp, obj)</span> </span>{
   	_.each(comp.props, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(property)</span> </span>{
   		obj.listenTo(<span class="hljs-string">'set:'</span> + property, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+  			<span class="hljs-built_in">console</span>.log(obj);
+
   			comp.cached = comp.func.apply(obj);
   		});
   	});

@@ -1,4 +1,4 @@
-describe('Struck.computed', function () {	
+describe.skip('Struck.computed', function () {	
 	var count = 0;
 	var counter = function() { count++; };
 	var noop = function() {};
