@@ -1,5 +1,3 @@
-/*jshint undef:false */
-
 (function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     define(['lodash', 'jquery', 'exports'], function(_, $, exports) {
@@ -222,13 +220,13 @@ Struck.BaseObject = (function () {
   function BaseObject(options) {
     // run base initiation and provide
     // hooks that extended objects can use
-    this.coreConstructor(options);
+    this.baseConstructor(options);
     this.initialize();
   }
 
-  // #####coreConstructor
+  // #####baseConstructor
   // when the object is created
-  BaseObject.prototype.coreConstructor = Struck.hook('coreConstructor', function(options) {
+  BaseObject.prototype.baseConstructor = Struck.hook('baseConstructor', function(options) {
     // assign UID to view object
     this.uid = _.uniqueId('uid');
 
@@ -313,14 +311,14 @@ Struck.EventObject = (function () {
 
   var EventObject = Struck.BaseObject.extend();
 
-  EventObject.prototype.coreConstructor = function () {
+  EventObject.prototype.baseConstructor = function () {
     // all event objects need an intercom for
     // emiting and listening to events
     this.com = Struck.Intercom.create();
 
     // call super after defining com which
     // is used for base hooks
-    Struck.BaseObject.prototype.coreConstructor.apply(this, arguments);
+    Struck.BaseObject.prototype.baseConstructor.apply(this, arguments);
 
     this._events = [];
   };
@@ -494,8 +492,8 @@ Struck.Intercom = (function () {
   // intercom instance and create subscription collection
   var Intercom = Struck.BaseObject.extend();
 
-  Intercom.prototype.coreConstructor = function () {
-    Struck.BaseObject.prototype.coreConstructor.apply(this, arguments);
+  Intercom.prototype.baseConstructor = function () {
+    Struck.BaseObject.prototype.baseConstructor.apply(this, arguments);
     this.defaultSubscription = _.extend({}, defaultSubscription, { context: this });
     this.subscriptions = [];
   };

@@ -30,9 +30,7 @@
               
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/*jshint undef:false */</span>
-
-(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(root, factory)</span> </span>{
+            <div class="content"><div class='highlight'><pre>(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(root, factory)</span> </span>{
   <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> define === <span class="hljs-string">'function'</span> &amp;&amp; define.amd) {
     define([<span class="hljs-string">'lodash'</span>, <span class="hljs-string">'jquery'</span>, <span class="hljs-string">'exports'</span>], <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(_, $, exports)</span> </span>{
       root.Struck = factory(root, exports, _, $);
@@ -526,7 +524,7 @@ hooks that extended objects can use</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.coreConstructor(options);
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.baseConstructor(options);
     <span class="hljs-keyword">this</span>.initialize();
   }</pre></div></div>
             
@@ -539,12 +537,12 @@ hooks that extended objects can use</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-25">&#182;</a>
               </div>
-              <h5 id="coreconstructor">coreConstructor</h5>
+              <h5 id="baseconstructor">baseConstructor</h5>
 <p>when the object is created</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  BaseObject.prototype.coreConstructor = Struck.hook(<span class="hljs-string">'coreConstructor'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(options)</span> </span>{</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  BaseObject.prototype.baseConstructor = Struck.hook(<span class="hljs-string">'baseConstructor'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(options)</span> </span>{</pre></div></div>
             
         </li>
         
@@ -749,7 +747,7 @@ automates undelgating events of view removal.</p>
 
   <span class="hljs-keyword">var</span> EventObject = Struck.BaseObject.extend();
 
-  EventObject.prototype.coreConstructor = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{</pre></div></div>
+  EventObject.prototype.baseConstructor = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{</pre></div></div>
             
         </li>
         
@@ -781,7 +779,7 @@ is used for base hooks</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    Struck.BaseObject.prototype.coreConstructor.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);
+            <div class="content"><div class='highlight'><pre>    Struck.BaseObject.prototype.baseConstructor.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);
 
     <span class="hljs-keyword">this</span>._events = [];
   };</pre></div></div>
@@ -1122,8 +1120,8 @@ intercom instance and create subscription collection</p>
             
             <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">var</span> Intercom = Struck.BaseObject.extend();
 
-  Intercom.prototype.coreConstructor = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
-    Struck.BaseObject.prototype.coreConstructor.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);
+  Intercom.prototype.baseConstructor = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+    Struck.BaseObject.prototype.baseConstructor.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);
     <span class="hljs-keyword">this</span>.defaultSubscription = _.extend({}, defaultSubscription, { context: <span class="hljs-keyword">this</span> });
     <span class="hljs-keyword">this</span>.subscriptions = [];
   };</pre></div></div>
