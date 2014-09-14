@@ -9,14 +9,14 @@ Struck.EventObject = (function () {
 
   var EventObject = Struck.BaseObject.extend();
 
-  EventObject.prototype.coreConstructor = function () {
+  EventObject.prototype.baseConstructor = function () {
     // all event objects need an intercom for
     // emiting and listening to events
     this.com = Struck.Intercom.create();
 
     // call super after defining com which
     // is used for base hooks
-    Struck.BaseObject.prototype.coreConstructor.apply(this, arguments);
+    Struck.BaseObject.prototype.baseConstructor.apply(this, arguments);
 
     this._events = [];
   };

@@ -6,3 +6,16 @@ Struck
 ======
 
 Simple application components.  
+
+Objects
+---
+
+- ``Struck.BaseObject``
+- ``Struck.Intercom``
+- ``Struck.EventObject``
+
+Static Methods
+---
+
+- ``Struck.hook``
+- ``Struck.computed`` (future)
