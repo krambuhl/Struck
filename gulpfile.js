@@ -1,78 +1,53 @@
 //gulp
 var gulp = require('gulp');
 
-// npm package
-var pkg = require('./package.json');
-
 // npm tools
-var fs = require('fs');
 var path  = require('path');
-var slice = require('sliced');
 
 // gulp general plugins
-var plumber = require('gulp-plumber');
 var rename = require('gulp-rename');
-var refresh = require('gulp-livereload');
-var source = require('vinyl-source-stream');
-var concatMaps = require('gulp-concat-sourcemap');
-var streamify = require('gulp-streamify');
 var concat = require('gulp-concat');
-var prettify = require('gulp-prettify');
-
-// css tasks
-var sass = require('gulp-sass');
-var autoprefix = require('gulp-autoprefixer');
-var cmq = require('gulp-combine-media-queries');
-var minify = require('gulp-clean-css');
-
-// js tasks
 var uglify = require('gulp-uglify');
-
-// browserify
-var watchify = require('watchify');
+var sourcemaps = require('gulp-sourcemaps');
 
 // docs & tests
 var docco = require('gulp-docco');
-var wrapDocco = require('gulp-wrap-docco');
+var mocha = require('gulp-mocha-phantomjs');
 
 // project directories
-var sourceDir = './source';
-var destDir = './dist';
-var testsDir = './tests';
-
-// assets directories
-var app = 'app';
-
-// filetype globs
-var docGlob = '**/*.{js,css,sass,scss,json,md,html,hbs,handlebars}';
+var dir = {
+  source: './source',
+  dist: './dist',
+  test: './test',
+  docs: './literate-docs'
+};
 
 
-// helper functions
+// __build__ task:
+// - concat files
+gulp.task('build', function() {
+  var files = [
+    'build/_export',
+    'utilities',
+    'hook',
+    'computed',
+    'extend',
+    'base-object',
+    'event-object',
+    'intercom',
+    // 'model',
+    // 'view',
+    'build/_after'
+  ].map(function (file) { return path.join(dir.source, file + '.js'); });
 
-
-// dir() builds a path from fragments
-function dir() { return slice(arguments).join('/'); }
-
-
-
-// __app__ task:
-// - watchify
-//   - watch app directory
-//   - browserify
-//     + output: 'app-bundle.js'
-
-gulp.task('app', function() {
-  return gulp.src([
-    dir(sourceDir, 'struck.js'),
-    dir(sourceDir, 'events.js'),
-    dir(sourceDir, 'extend.js'),
-    dir(sourceDir, 'view.js')
-  ])
-    .pipe(concatMaps('struck.js', {
-      sourcesContent: false,
-      sourceRoot: '../'
-    }))
-    .pipe(gulp.dest(destDir));
+  return gulp.src(files)
+    .pipe(sourcemaps.init())
+    .pipe(concat('struck.js'))
+    .pipe(gulp.dest(dir.dist))
+    .pipe(uglify())
+    .pipe(rename('struck.min.js'))
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest(dir.dist));
 });
 
 
@@ -81,26 +56,24 @@ gulp.task('app', function() {
 //
 // - docco (side by side documentation)
 //   + output: various files to './docs'
-gulp.task('docs', function() {
-  return gulp.src(dir(destDir, 'struck.js'))
+gulp.task('docs', ['build'], function() {
+  return gulp.src(path.join(dir.dist, 'struck.js'))
     .pipe(docco())
-    .pipe(gulp.dest('./docs'));
+    .pipe(gulp.dest(dir.docs));
 });
 
+
+// __test__ task:
+gulp.task('test', ['build'], function () {
+  return gulp.src(path.join(dir.test, 'tests.html'))
+    .pipe(mocha({ reporter: 'spec' }));
+});
 
 
 // __watch__ task:
 gulp.task('watch', function () {
-  // run `app` task on js file changes in './source/app'
-  gulp.watch(dir(sourceDir, '**/*.js'), ['app']);
-
-  // run `docs` task on any file changes
-  gulp.watch([
-    dir(sourceDir, docGlob),
-    dir(testsDir, docGlob),
-    'gulpfile.js',
-    'README.md'
-  ], ['docs']);
+  gulp.watch(path.join(dir.source, '**/*.js'), ['compile']);
+  gulp.watch(path.join(dir.test, '**/*'), ['test']);
 });
 
 // gulp.task('bump', function () {
@@ -109,6 +82,11 @@ gulp.task('watch', function () {
 //     .pipe(gulp.dest('./'));
 // });
 
+// gulp.task('release', ['build', 'bump'], function() {
+//   gulp.src(path.join(dir.dist));
+// });
 
-gulp.task('compile', ['app', 'docs']);
-gulp.task('default', ['compile', 'watch']);
+gulp.task('compile', ['build', 'docs']);
+gulp.task('develop', ['compile', 'test', 'watch']);
+
+gulp.task('default', ['develop']);
