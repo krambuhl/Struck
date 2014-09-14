@@ -1,7 +1,5 @@
 .DS_Store
 .sass-cache
-.coveralls.yml
 node_modules
 bower_components
-docs
 coverage
