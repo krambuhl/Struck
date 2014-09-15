@@ -2,6 +2,7 @@
   "name": "struck",
   "version": "0.5.1",
   "author": "Evan Krambuhl <thekrambuhl@gmail.com>",
+  "description": "Simple event-driven, extendable objects.",
   "keywords": [
     "Object",
     "extend",
