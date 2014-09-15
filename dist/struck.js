@@ -147,8 +147,6 @@ Struck.computed = (function () {
   function setupListeners(comp, obj) {
   	_.each(comp.props, function(property) {
   		obj.listenTo('set:' + property, function() {
-  			console.log(obj);
-
   			comp.cached = comp.func.apply(obj);
   		});
   	});
@@ -389,7 +387,6 @@ Struck.EventObject = (function () {
     _.defer(function(self) { 
       // destroy com interface
       self.com.destroy();
-      delete self.com;
     }, this);
 
     return this;
@@ -445,7 +442,7 @@ Struck.EventObject = (function () {
       });
     });
 
-    if (obj && !events && !func) {
+    if (!events && !func && obj) {
       _.each(self._events, function(ev) {
         pushResults(ev.obj === obj, ev);
       });

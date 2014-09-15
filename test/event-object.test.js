@@ -21,15 +21,4 @@ describe('Struck.EventObject', function () {
       instance.hook('test', 'after');
     });
   });
-
-  describe('destroy()', function () {
-    it('should destroy intercom before being destroyed', function(done) {
-      instance.destroy();
-
-      _.defer(function() {
-        (instance.com === undefined).should.equal(true);
-        done();
-      });
-    });
-  });
 });

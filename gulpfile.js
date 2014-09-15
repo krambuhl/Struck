@@ -30,13 +30,11 @@ gulp.task('build', function() {
     'build/_export',
     'utilities',
     'hook',
-    'computed',
+    // 'computed',
     'extend',
     'base-object',
     'event-object',
     'intercom',
-    // 'model',
-    // 'view',
     'build/_after'
   ].map(function (file) { return path.join(dir.source, file + '.js'); });
 
