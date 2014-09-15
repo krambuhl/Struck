@@ -287,8 +287,6 @@ Struck.computed = (<span class="hljs-function"><span class="hljs-keyword">functi
   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setupListeners</span><span class="hljs-params">(comp, obj)</span> </span>{
   	_.each(comp.props, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(property)</span> </span>{
   		obj.listenTo(<span class="hljs-string">'set:'</span> + property, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
-  			<span class="hljs-built_in">console</span>.log(obj);
-
   			comp.cached = comp.func.apply(obj);
   		});
   	});
@@ -957,7 +955,6 @@ should be called to remove attached event listeners</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>      self.com.destroy();
-      <span class="hljs-keyword">delete</span> self.com;
     }, <span class="hljs-keyword">this</span>);
 
     <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
@@ -1013,7 +1010,7 @@ should be called to remove attached event listeners</p>
       });
     });
 
-    <span class="hljs-keyword">if</span> (obj &amp;&amp; !events &amp;&amp; !func) {
+    <span class="hljs-keyword">if</span> (!events &amp;&amp; !func &amp;&amp; obj) {
       _.each(self._events, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ev)</span> </span>{
         pushResults(ev.obj === obj, ev);
       });
