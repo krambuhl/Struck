@@ -1,0 +1,27 @@
+{
+  "name": "struct",
+  "version": "0.5.1",
+  "description": "Simple event-driven, extendable objects",
+  "homepage": "https://github.com/krambuhl/Struck",
+  "authors": [
+    "Evan Krambuhl <thekrambuhl@gmail.com>"
+  ],
+  "keywords": [
+    "Object",
+    "extend",
+    "event-object",
+    "base-object"
+  ],
+  "main": "dist/struck.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test"
+  ],
+  "dependencies": {
+    "jquery": "~2",
+    "lodash": "~2"
+  }
+}

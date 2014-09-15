@@ -87,7 +87,6 @@ Struck.EventObject = (function () {
     _.defer(function(self) { 
       // destroy com interface
       self.com.destroy();
-      delete self.com;
     }, this);
 
     return this;
@@ -143,7 +142,7 @@ Struck.EventObject = (function () {
       });
     });
 
-    if (obj && !events && !func) {
+    if (!events && !func && obj) {
       _.each(self._events, function(ev) {
         pushResults(ev.obj === obj, ev);
       });

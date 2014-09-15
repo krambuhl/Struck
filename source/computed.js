@@ -21,8 +21,6 @@ Struck.computed = (function () {
   function setupListeners(comp, obj) {
   	_.each(comp.props, function(property) {
   		obj.listenTo('set:' + property, function() {
-  			console.log(obj);
-
   			comp.cached = comp.func.apply(obj);
   		});
   	});
