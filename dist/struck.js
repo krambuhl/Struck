@@ -207,6 +207,8 @@ Struck.BaseObject = (function () {
 
     // add options object to instance
     this.options = _.extend({}, options);
+
+    return this;
   });
 
   // #####initialize
@@ -230,6 +232,8 @@ Struck.BaseObject = (function () {
     if (this[methodHook]) {
       return this[methodHook].apply(this, args);
     }
+
+    return this;
   };
 
   function reduceProps(self, props) {
@@ -259,6 +263,8 @@ Struck.BaseObject = (function () {
       }, this);
     }
     this[prop] = result(val, this);
+
+    return this;
   });
 
   BaseObject.extend = Struck.extend;
@@ -295,7 +301,9 @@ Struck.EventObject = (function () {
     // is used for base hooks
     Struck.BaseObject.prototype.initializeObject.apply(this, arguments);
 
-    this._events = [];
+    this.listenedEvents = [];
+
+    return this;
   };
 
   // #####hook
@@ -310,6 +318,8 @@ Struck.EventObject = (function () {
 
     Struck.BaseObject.prototype.hook.apply(this, arguments);
     this.com.emit.apply(this.com, [name + postfix].concat(args));
+
+    return this;
   };
 
   // #####listenTo
@@ -381,7 +391,7 @@ Struck.EventObject = (function () {
     };
 
     _.each(events, function(ev) {
-      self._events.push({
+      self.listenedEvents.push({
         events: ev,
         func: callback,
         obj: obj
@@ -409,7 +419,7 @@ Struck.EventObject = (function () {
       }
     }
 
-    _.each(self._events, function(ev) {
+    _.each(self.listenedEvents, function(ev) {
       _.each(events, function(name) {
         if (func) {
           pushResults(ev.obj === obj && ev.events === name && ev.func === func, ev);
@@ -420,14 +430,14 @@ Struck.EventObject = (function () {
     });
 
     if (!events && !func && obj) {
-      _.each(self._events, function(ev) {
+      _.each(self.listenedEvents, function(ev) {
         pushResults(ev.obj === obj, ev);
       });
     } else if (!events) { 
-      rejects = self._events; 
+      rejects = self.listenedEvents; 
     }
 
-    self._events = passes;
+    self.listenedEvents = passes;
 
     _.each(rejects, function(reject) {
       if (reject.obj instanceof jQuery) {
@@ -470,6 +480,8 @@ Struck.Intercom = (function () {
     Struck.BaseObject.prototype.initializeObject.apply(this, arguments);
     this.defaultSubscription = _.extend({}, defaultSubscription, { context: this });
     this.subscriptions = [];
+
+    return this;
   };
 
   // #####Intercom.on

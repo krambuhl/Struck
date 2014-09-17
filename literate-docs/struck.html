@@ -547,6 +547,8 @@ hooks that extended objects can use</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.options = _.extend({}, options);
+
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
   });</pre></div></div>
             
         </li>
@@ -606,6 +608,8 @@ like <code>onRender</code></p>
     <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>[methodHook]) {
       <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>[methodHook].apply(<span class="hljs-keyword">this</span>, args);
     }
+
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
   };
 
   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">reduceProps</span><span class="hljs-params">(self, props)</span> </span>{
@@ -659,6 +663,8 @@ like <code>onRender</code></p>
       }, <span class="hljs-keyword">this</span>);
     }
     <span class="hljs-keyword">this</span>[prop] = result(val, <span class="hljs-keyword">this</span>);
+
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
   });
 
   BaseObject.extend = Struck.extend;</pre></div></div>
@@ -755,7 +761,9 @@ is used for base hooks</p>
             
             <div class="content"><div class='highlight'><pre>    Struck.BaseObject.prototype.initializeObject.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);
 
-    <span class="hljs-keyword">this</span>._events = [];
+    <span class="hljs-keyword">this</span>.listenedEvents = [];
+
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
   };</pre></div></div>
             
         </li>
@@ -793,6 +801,8 @@ is used for base hooks</p>
 
     Struck.BaseObject.prototype.hook.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);
     <span class="hljs-keyword">this</span>.com.emit.apply(<span class="hljs-keyword">this</span>.com, [name + postfix].concat(args));
+
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
   };</pre></div></div>
             
         </li>
@@ -948,7 +958,7 @@ should be called to remove attached event listeners</p>
     };
 
     _.each(events, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ev)</span> </span>{
-      self._events.push({
+      self.listenedEvents.push({
         events: ev,
         func: callback,
         obj: obj
@@ -976,7 +986,7 @@ should be called to remove attached event listeners</p>
       }
     }
 
-    _.each(self._events, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ev)</span> </span>{
+    _.each(self.listenedEvents, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ev)</span> </span>{
       _.each(events, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(name)</span> </span>{
         <span class="hljs-keyword">if</span> (func) {
           pushResults(ev.obj === obj &amp;&amp; ev.events === name &amp;&amp; ev.func === func, ev);
@@ -987,14 +997,14 @@ should be called to remove attached event listeners</p>
     });
 
     <span class="hljs-keyword">if</span> (!events &amp;&amp; !func &amp;&amp; obj) {
-      _.each(self._events, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ev)</span> </span>{
+      _.each(self.listenedEvents, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ev)</span> </span>{
         pushResults(ev.obj === obj, ev);
       });
     } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!events) { 
-      rejects = self._events; 
+      rejects = self.listenedEvents; 
     }
 
-    self._events = passes;
+    self.listenedEvents = passes;
 
     _.each(rejects, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(reject)</span> </span>{
       <span class="hljs-keyword">if</span> (reject.obj <span class="hljs-keyword">instanceof</span> jQuery) {
@@ -1097,6 +1107,8 @@ intercom instance and create subscription collection</p>
     Struck.BaseObject.prototype.initializeObject.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);
     <span class="hljs-keyword">this</span>.defaultSubscription = _.extend({}, defaultSubscription, { context: <span class="hljs-keyword">this</span> });
     <span class="hljs-keyword">this</span>.subscriptions = [];
+
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
   };</pre></div></div>
             
         </li>
