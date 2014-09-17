@@ -19,13 +19,13 @@ Struck.BaseObject = (function () {
   function BaseObject(options) {
     // run base initiation and provide
     // hooks that extended objects can use
-    this.baseConstructor(options);
+    this.initializeObject(options);
     this.initialize();
   }
 
-  // #####baseConstructor
+  // #####initializeObject
   // when the object is created
-  BaseObject.prototype.baseConstructor = Struck.hook('baseConstructor', function(options) {
+  BaseObject.prototype.initializeObject = Struck.hook('initializeObject', function(options) {
     // assign UID to view object
     this.uid = _.uniqueId('uid');
 

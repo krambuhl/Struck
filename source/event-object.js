@@ -9,14 +9,14 @@ Struck.EventObject = (function () {
 
   var EventObject = Struck.BaseObject.extend();
 
-  EventObject.prototype.baseConstructor = function () {
+  EventObject.prototype.initializeObject = function () {
     // all event objects need an intercom for
     // emiting and listening to events
     this.com = Struck.Intercom.create();
 
     // call super after defining com which
     // is used for base hooks
-    Struck.BaseObject.prototype.baseConstructor.apply(this, arguments);
+    Struck.BaseObject.prototype.initializeObject.apply(this, arguments);
 
     this._events = [];
   };
@@ -24,7 +24,7 @@ Struck.EventObject = (function () {
   // #####hook
 
   // trigger intercom events for hook
-  EventObject.prototype.hook = function (name, mod) {
+  EventObject.prototype.hook = function (name, mod, args) {
     var postfix = '';
     
     if (mod !== undefined && mod !== 'on') {
@@ -32,7 +32,7 @@ Struck.EventObject = (function () {
     }
 
     Struck.BaseObject.prototype.hook.apply(this, arguments);
-    this.com.emit(name + postfix, arguments);
+    this.com.emit.apply(this.com, [name + postfix].concat(args));
   };
 
   // #####listenTo

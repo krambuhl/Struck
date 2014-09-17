@@ -47,33 +47,40 @@ Struck.hook = (function () {
     method: 'hook'
   };
 
-  function fire(self, method, hname, prefix) {
+  function fire(self, method, opts) {
     if (self[method]) {
-      self[method].call(self, hname, prefix);
+      self[method].call(self, opts.name, opts.prefix, opts.args);
     }
   }
 
   function Hook(name, func, opts) {
     var options = _.extend({}, defaults, !_.isFunction(func) ? func : opts);
+    var fireDefaults = {
+      name: name,
+      prefix: options.prefix
+    };
 
     // define function to called as a method of
     // Struck Object, the `this` context is assumed
     // to refer to the struck object.
     return function() {
-      var result;
+      var args = _.toArray(arguments),
+        result;
+
+      var fireOptions = _.extend({}, fireDefaults, { args: args });
 
       if (options.pre) {
-        fire(this, options.method, name, options.pre);
+        fire(this, options.method, _.extend({}, fireOptions, { prefix: options.pre }));
       }
 
       if (_.isFunction(func)) {
         result = func.apply(this, arguments);
       }
 
-      fire(this, options.method, name, options.prefix);
+      fire(this, options.method, fireOptions);
 
       if (options.post) {
-        _.defer(fire, this, options.method, name, options.post);
+        _.defer(fire, this, options.method, _.extend({}, fireOptions, { prefix: options.post }));
       }
 
       return result;
