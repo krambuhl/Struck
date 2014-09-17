@@ -1,6 +1,6 @@
 {
   "name": "struct",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "description": "Simple event-driven, extendable objects",
   "homepage": "https://github.com/krambuhl/Struck",
   "authors": [
