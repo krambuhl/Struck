@@ -21,8 +21,8 @@ Struck.Intercom = (function () {
   // intercom instance and create subscription collection
   var Intercom = Struck.BaseObject.extend();
 
-  Intercom.prototype.baseConstructor = function () {
-    Struck.BaseObject.prototype.baseConstructor.apply(this, arguments);
+  Intercom.prototype.initializeObject = function () {
+    Struck.BaseObject.prototype.initializeObject.apply(this, arguments);
     this.defaultSubscription = _.extend({}, defaultSubscription, { context: this });
     this.subscriptions = [];
   };

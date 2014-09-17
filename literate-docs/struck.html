@@ -216,14 +216,18 @@ Struck.hook = (<span class="hljs-function"><span class="hljs-keyword">function</
     method: <span class="hljs-string">'hook'</span>
   };
 
-  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fire</span><span class="hljs-params">(self, method, hname, prefix)</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fire</span><span class="hljs-params">(self, method, opts)</span> </span>{
     <span class="hljs-keyword">if</span> (self[method]) {
-      self[method].call(self, hname, prefix);
+      self[method].call(self, opts.name, opts.prefix, opts.args);
     }
   }
 
   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Hook</span><span class="hljs-params">(name, func, opts)</span> </span>{
-    <span class="hljs-keyword">var</span> options = _.extend({}, defaults, !_.isFunction(func) ? func : opts);</pre></div></div>
+    <span class="hljs-keyword">var</span> options = _.extend({}, defaults, !_.isFunction(func) ? func : opts);
+    <span class="hljs-keyword">var</span> fireDefaults = {
+      name: name,
+      prefix: options.prefix
+    };</pre></div></div>
             
         </li>
         
@@ -241,20 +245,23 @@ to refer to the struck object.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
-      <span class="hljs-keyword">var</span> result;
+      <span class="hljs-keyword">var</span> args = _.toArray(<span class="hljs-built_in">arguments</span>),
+        result;
+
+      <span class="hljs-keyword">var</span> fireOptions = _.extend({}, fireDefaults, { args: args });
 
       <span class="hljs-keyword">if</span> (options.pre) {
-        fire(<span class="hljs-keyword">this</span>, options.method, name, options.pre);
+        fire(<span class="hljs-keyword">this</span>, options.method, _.extend({}, fireOptions, { prefix: options.pre }));
       }
 
       <span class="hljs-keyword">if</span> (_.isFunction(func)) {
         result = func.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);
       }
 
-      fire(<span class="hljs-keyword">this</span>, options.method, name, options.prefix);
+      fire(<span class="hljs-keyword">this</span>, options.method, fireOptions);
 
       <span class="hljs-keyword">if</span> (options.post) {
-        _.defer(fire, <span class="hljs-keyword">this</span>, options.method, name, options.post);
+        _.defer(fire, <span class="hljs-keyword">this</span>, options.method, _.extend({}, fireOptions, { prefix: options.post }));
       }
 
       <span class="hljs-keyword">return</span> result;
@@ -262,37 +269,6 @@ to refer to the struck object.</p>
   }
 
   <span class="hljs-keyword">return</span> Hook;
-})();
-
-Struck.computed = (<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
-  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Computed</span><span class="hljs-params">()</span> </span>{
-  	<span class="hljs-keyword">var</span> self = <span class="hljs-keyword">this</span>;
-
-    self.props = splitName(_.flatten(_.initial(<span class="hljs-built_in">arguments</span>)));
-    self.func = _.last(<span class="hljs-built_in">arguments</span>);
-    
-    <span class="hljs-keyword">var</span> setup = _.once(setupListeners);
-
-    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
-    	_.bind(setup, <span class="hljs-literal">undefined</span>, self, <span class="hljs-keyword">this</span>)();
-
-    	<span class="hljs-keyword">if</span> (!self.cached) {
-				self.cached = self.func.apply(<span class="hljs-keyword">this</span>);
-    	}
-
-    	<span class="hljs-keyword">return</span> self.cached;
-		};
-  }
-
-  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setupListeners</span><span class="hljs-params">(comp, obj)</span> </span>{
-  	_.each(comp.props, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(property)</span> </span>{
-  		obj.listenTo(<span class="hljs-string">'set:'</span> + property, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
-  			comp.cached = comp.func.apply(obj);
-  		});
-  	});
-  }
-
-  <span class="hljs-keyword">return</span> Computed;
 })();</pre></div></div>
             
         </li>
@@ -522,7 +498,7 @@ hooks that extended objects can use</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.baseConstructor(options);
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.initializeObject(options);
     <span class="hljs-keyword">this</span>.initialize();
   }</pre></div></div>
             
@@ -535,12 +511,12 @@ hooks that extended objects can use</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-25">&#182;</a>
               </div>
-              <h5 id="baseconstructor">baseConstructor</h5>
+              <h5 id="initializeobject">initializeObject</h5>
 <p>when the object is created</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  BaseObject.prototype.baseConstructor = Struck.hook(<span class="hljs-string">'baseConstructor'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(options)</span> </span>{</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  BaseObject.prototype.initializeObject = Struck.hook(<span class="hljs-string">'initializeObject'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(options)</span> </span>{</pre></div></div>
             
         </li>
         
@@ -745,7 +721,7 @@ automates undelgating events of view removal.</p>
 
   <span class="hljs-keyword">var</span> EventObject = Struck.BaseObject.extend();
 
-  EventObject.prototype.baseConstructor = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{</pre></div></div>
+  EventObject.prototype.initializeObject = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{</pre></div></div>
             
         </li>
         
@@ -777,7 +753,7 @@ is used for base hooks</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    Struck.BaseObject.prototype.baseConstructor.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);
+            <div class="content"><div class='highlight'><pre>    Struck.BaseObject.prototype.initializeObject.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);
 
     <span class="hljs-keyword">this</span>._events = [];
   };</pre></div></div>
@@ -808,7 +784,7 @@ is used for base hooks</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  EventObject.prototype.hook = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(name, mod)</span> </span>{
+            <div class="content"><div class='highlight'><pre>  EventObject.prototype.hook = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(name, mod, args)</span> </span>{
     <span class="hljs-keyword">var</span> postfix = <span class="hljs-string">''</span>;
     
     <span class="hljs-keyword">if</span> (mod !== <span class="hljs-literal">undefined</span> &amp;&amp; mod !== <span class="hljs-string">'on'</span>) {
@@ -816,7 +792,7 @@ is used for base hooks</p>
     }
 
     Struck.BaseObject.prototype.hook.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);
-    <span class="hljs-keyword">this</span>.com.emit(name + postfix, <span class="hljs-built_in">arguments</span>);
+    <span class="hljs-keyword">this</span>.com.emit.apply(<span class="hljs-keyword">this</span>.com, [name + postfix].concat(args));
   };</pre></div></div>
             
         </li>
@@ -1117,8 +1093,8 @@ intercom instance and create subscription collection</p>
             
             <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">var</span> Intercom = Struck.BaseObject.extend();
 
-  Intercom.prototype.baseConstructor = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
-    Struck.BaseObject.prototype.baseConstructor.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);
+  Intercom.prototype.initializeObject = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+    Struck.BaseObject.prototype.initializeObject.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);
     <span class="hljs-keyword">this</span>.defaultSubscription = _.extend({}, defaultSubscription, { context: <span class="hljs-keyword">this</span> });
     <span class="hljs-keyword">this</span>.subscriptions = [];
   };</pre></div></div>

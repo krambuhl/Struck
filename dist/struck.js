@@ -88,33 +88,40 @@ Struck.hook = (function () {
     method: 'hook'
   };
 
-  function fire(self, method, hname, prefix) {
+  function fire(self, method, opts) {
     if (self[method]) {
-      self[method].call(self, hname, prefix);
+      self[method].call(self, opts.name, opts.prefix, opts.args);
     }
   }
 
   function Hook(name, func, opts) {
     var options = _.extend({}, defaults, !_.isFunction(func) ? func : opts);
+    var fireDefaults = {
+      name: name,
+      prefix: options.prefix
+    };
 
     // define function to called as a method of
     // Struck Object, the `this` context is assumed
     // to refer to the struck object.
     return function() {
-      var result;
+      var args = _.toArray(arguments),
+        result;
+
+      var fireOptions = _.extend({}, fireDefaults, { args: args });
 
       if (options.pre) {
-        fire(this, options.method, name, options.pre);
+        fire(this, options.method, _.extend({}, fireOptions, { prefix: options.pre }));
       }
 
       if (_.isFunction(func)) {
         result = func.apply(this, arguments);
       }
 
-      fire(this, options.method, name, options.prefix);
+      fire(this, options.method, fireOptions);
 
       if (options.post) {
-        _.defer(fire, this, options.method, name, options.post);
+        _.defer(fire, this, options.method, _.extend({}, fireOptions, { prefix: options.post }));
       }
 
       return result;
@@ -124,36 +131,6 @@ Struck.hook = (function () {
   return Hook;
 })();
 
-Struck.computed = (function () {
-  function Computed() {
-  	var self = this;
-
-    self.props = splitName(_.flatten(_.initial(arguments)));
-    self.func = _.last(arguments);
-    
-    var setup = _.once(setupListeners);
-
-    return function() {
-    	_.bind(setup, undefined, self, this)();
-
-    	if (!self.cached) {
-				self.cached = self.func.apply(this);
-    	}
-
-    	return self.cached;
-		};
-  }
-
-  function setupListeners(comp, obj) {
-  	_.each(comp.props, function(property) {
-  		obj.listenTo('set:' + property, function() {
-  			comp.cached = comp.func.apply(obj);
-  		});
-  	});
-  }
-
-  return Computed;
-})();
 // ###Extend
 
 // _Pulled from Backbone.js 1.1.2 source_
@@ -218,13 +195,13 @@ Struck.BaseObject = (function () {
   function BaseObject(options) {
     // run base initiation and provide
     // hooks that extended objects can use
-    this.baseConstructor(options);
+    this.initializeObject(options);
     this.initialize();
   }
 
-  // #####baseConstructor
+  // #####initializeObject
   // when the object is created
-  BaseObject.prototype.baseConstructor = Struck.hook('baseConstructor', function(options) {
+  BaseObject.prototype.initializeObject = Struck.hook('initializeObject', function(options) {
     // assign UID to view object
     this.uid = _.uniqueId('uid');
 
@@ -309,14 +286,14 @@ Struck.EventObject = (function () {
 
   var EventObject = Struck.BaseObject.extend();
 
-  EventObject.prototype.baseConstructor = function () {
+  EventObject.prototype.initializeObject = function () {
     // all event objects need an intercom for
     // emiting and listening to events
     this.com = Struck.Intercom.create();
 
     // call super after defining com which
     // is used for base hooks
-    Struck.BaseObject.prototype.baseConstructor.apply(this, arguments);
+    Struck.BaseObject.prototype.initializeObject.apply(this, arguments);
 
     this._events = [];
   };
@@ -324,7 +301,7 @@ Struck.EventObject = (function () {
   // #####hook
 
   // trigger intercom events for hook
-  EventObject.prototype.hook = function (name, mod) {
+  EventObject.prototype.hook = function (name, mod, args) {
     var postfix = '';
     
     if (mod !== undefined && mod !== 'on') {
@@ -332,7 +309,7 @@ Struck.EventObject = (function () {
     }
 
     Struck.BaseObject.prototype.hook.apply(this, arguments);
-    this.com.emit(name + postfix, arguments);
+    this.com.emit.apply(this.com, [name + postfix].concat(args));
   };
 
   // #####listenTo
@@ -489,8 +466,8 @@ Struck.Intercom = (function () {
   // intercom instance and create subscription collection
   var Intercom = Struck.BaseObject.extend();
 
-  Intercom.prototype.baseConstructor = function () {
-    Struck.BaseObject.prototype.baseConstructor.apply(this, arguments);
+  Intercom.prototype.initializeObject = function () {
+    Struck.BaseObject.prototype.initializeObject.apply(this, arguments);
     this.defaultSubscription = _.extend({}, defaultSubscription, { context: this });
     this.subscriptions = [];
   };
