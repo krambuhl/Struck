@@ -398,7 +398,7 @@ Struck.EventObject = (function () {
       });
 
       if (obj instanceof jQuery) {
-        obj[opts.single ? 'one' : 'on'](ev, callback);
+        obj[opts.single ? 'one' : 'on'](ev, { self: opts.context }, callback);
       } else if (obj instanceof Struck.EventObject) {
         obj.com[opts.single ? 'once' : 'on'].call(obj.com, ev, callback, opts.context);
       }

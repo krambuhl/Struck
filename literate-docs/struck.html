@@ -965,7 +965,7 @@ should be called to remove attached event listeners</p>
       });
 
       <span class="hljs-keyword">if</span> (obj <span class="hljs-keyword">instanceof</span> jQuery) {
-        obj[opts.single ? <span class="hljs-string">'one'</span> : <span class="hljs-string">'on'</span>](ev, callback);
+        obj[opts.single ? <span class="hljs-string">'one'</span> : <span class="hljs-string">'on'</span>](ev, { self: opts.context }, callback);
       } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (obj <span class="hljs-keyword">instanceof</span> Struck.EventObject) {
         obj.com[opts.single ? <span class="hljs-string">'once'</span> : <span class="hljs-string">'on'</span>].call(obj.com, ev, callback, opts.context);
       }
