@@ -31,6 +31,8 @@ Struck.BaseObject = (function () {
 
     // add options object to instance
     this.options = _.extend({}, options);
+
+    return this;
   });
 
   // #####initialize
@@ -54,6 +56,8 @@ Struck.BaseObject = (function () {
     if (this[methodHook]) {
       return this[methodHook].apply(this, args);
     }
+
+    return this;
   };
 
   function reduceProps(self, props) {
@@ -83,6 +87,8 @@ Struck.BaseObject = (function () {
       }, this);
     }
     this[prop] = result(val, this);
+
+    return this;
   });
 
   BaseObject.extend = Struck.extend;
