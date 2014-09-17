@@ -49,7 +49,7 @@ Struck.BaseObject = (function () {
   // interface for providing method callbacks
   // like `onRender`
   BaseObject.prototype.hook = function(name, mod) {
-    var args = _.rest(arguments, 2),
+    var args = _.isUndefined(mod) ? _.rest(arguments) : _.rest(arguments, 2),
       prefix = firstDef(mod, 'on'),
       methodHook = prefix + capitalize(name);
 
