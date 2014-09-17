@@ -25,6 +25,8 @@ Struck.Intercom = (function () {
     Struck.BaseObject.prototype.initializeObject.apply(this, arguments);
     this.defaultSubscription = _.extend({}, defaultSubscription, { context: this });
     this.subscriptions = [];
+
+    return this;
   };
 
   // #####Intercom.on
