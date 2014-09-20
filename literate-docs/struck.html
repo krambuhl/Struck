@@ -685,8 +685,8 @@ over using the <code>new</code> style</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>  BaseObject.create = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(props, opts)</span> </span>{
-    <span class="hljs-keyword">var</span> Creator = <span class="hljs-keyword">this</span>.extend(props);
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Creator(_.extend({}, props, opts));
+    <span class="hljs-keyword">var</span> Creator = (!_.isUndefined(props)) ? <span class="hljs-keyword">this</span>.extend(props) : <span class="hljs-keyword">this</span>;
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Creator(_.extend({}, opts));
   };
 
 

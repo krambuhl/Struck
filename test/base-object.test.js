@@ -40,9 +40,13 @@ describe('Struck.BaseObject', function () {
       obj.should.be.an.instanceOf(Struck.BaseObject);
     });
 
-    it('should extend `opts` into instance', function () {
+    it('should extend `props` into instance', function () {
       var obj = Struck.BaseObject.create({ test: 'data' });
-      obj.should.have.property('options');
+      obj.should.have.property('test', 'data');
+    });
+
+    it('should extend `opts` into instance', function () {
+      var obj = Struck.BaseObject.create(undefined, { test: 'data' });
       obj.options.should.have.property('test', 'data');
     });
 
