@@ -97,8 +97,8 @@ Struck.BaseObject = (function () {
   // prefered method of creating new objects
   // over using the `new` style
   BaseObject.create = function(props, opts) {
-    var Creator = this.extend(props);
-    return new Creator(_.extend({}, props, opts));
+    var Creator = (!_.isUndefined(props)) ? this.extend(props) : this;
+    return new Creator(_.extend({}, opts));
   };
 
 
