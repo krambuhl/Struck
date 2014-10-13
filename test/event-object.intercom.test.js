@@ -56,6 +56,20 @@ describe('Struck.EventObject [Intercom]', function () {
       instance.set('test', 'test');
       count.should.equal(1);
     });
+
+    it('should exec callback with object as function context', function(done) {
+      Struck.EventObject.create({
+        initialize: function() {
+          var evobj = this;
+          this.listenTo(instance, 'set', function() {
+            this.should.equal(evobj);
+            done();
+          });
+        }
+      });
+
+      instance.set('test', 'test');
+    });
   });
   
   describe('listenOnce()', function () {

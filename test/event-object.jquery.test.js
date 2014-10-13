@@ -58,6 +58,20 @@ describe('Struck.EventObject [jQuery]', function () {
       instance.trigger('click');
       count.should.equal(1);
     });
+
+    it('should exec callback with object as function context', function(done) {
+      Struck.EventObject.create({
+        initialize: function() {
+          var evobj = this;
+          this.listenTo(instance, 'click', function() {
+            this.should.equal(evobj);
+            done();
+          });
+        }
+      });
+
+      instance.trigger('click');
+    });
   });
   
   describe('listenOnce()', function () { 

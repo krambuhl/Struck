@@ -63,13 +63,13 @@ Struck.EventObject = (function () {
 
   // #####listenOnce
   EventObject.prototype.listenOnce = function (obj, events, func, context) {
-    return this.listenTo(obj, events, func, firstDef(context, this), { single: true });
+    return this.listenTo(obj, events, func, context, { single: true });
   };
 
   // #####stopListening
   // removes an event listener from the
   // appropriate subsystem
-  EventObject.prototype.stopListening = function (obj, events, func) {
+  EventObject.prototype.stopListening = function (obj, events, func, context) {
     removeListener(this, obj, events, func);
     return this;
   };
@@ -111,18 +111,19 @@ Struck.EventObject = (function () {
       self.listenedEvents.push({
         events: ev,
         func: callback,
-        obj: obj
+        obj: obj,
+        context: opts.context
       });
 
       if (obj instanceof jQuery) {
-        obj[opts.single ? 'one' : 'on'](ev, { self: opts.context }, callback);
+        obj[opts.single ? 'one' : 'on'](ev, _.bind(callback, opts.context));
       } else if (obj instanceof Struck.EventObject) {
         obj.com[opts.single ? 'once' : 'on'].call(obj.com, ev, callback, opts.context);
       }
     });
   }
 
-  function removeListener(self, obj, events, func) {
+  function removeListener(self, obj, events, func, context) {
     events = splitName(events);
 
     var rejects = [],
@@ -156,9 +157,11 @@ Struck.EventObject = (function () {
 
     self.listenedEvents = passes;
 
+    console.log(rejects);
+
     _.each(rejects, function(reject) {
       if (reject.obj instanceof jQuery) {
-        reject.obj.off(reject.events, reject.func);
+        reject.obj.off(reject.events, _.bind(reject.func, firstDef(context, reject.context)));
       } else if (reject.obj instanceof Struck.EventObject) {
         reject.obj.com.off(reject.events, rejects.func);
       }

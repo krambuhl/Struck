@@ -864,7 +864,7 @@ to remove when the object is deconstructed</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>  EventObject.prototype.listenOnce = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(obj, events, func, context)</span> </span>{
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.listenTo(obj, events, func, firstDef(context, <span class="hljs-keyword">this</span>), { single: <span class="hljs-literal">true</span> });
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.listenTo(obj, events, func, context, { single: <span class="hljs-literal">true</span> });
   };</pre></div></div>
             
         </li>
@@ -882,7 +882,7 @@ appropriate subsystem</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  EventObject.prototype.stopListening = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(obj, events, func)</span> </span>{
+            <div class="content"><div class='highlight'><pre>  EventObject.prototype.stopListening = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(obj, events, func, context)</span> </span>{
     removeListener(<span class="hljs-keyword">this</span>, obj, events, func);
     <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
   };
@@ -961,18 +961,19 @@ should be called to remove attached event listeners</p>
       self.listenedEvents.push({
         events: ev,
         func: callback,
-        obj: obj
+        obj: obj,
+        context: opts.context
       });
 
       <span class="hljs-keyword">if</span> (obj <span class="hljs-keyword">instanceof</span> jQuery) {
-        obj[opts.single ? <span class="hljs-string">'one'</span> : <span class="hljs-string">'on'</span>](ev, { self: opts.context }, callback);
+        obj[opts.single ? <span class="hljs-string">'one'</span> : <span class="hljs-string">'on'</span>](ev, _.bind(callback, opts.context));
       } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (obj <span class="hljs-keyword">instanceof</span> Struck.EventObject) {
         obj.com[opts.single ? <span class="hljs-string">'once'</span> : <span class="hljs-string">'on'</span>].call(obj.com, ev, callback, opts.context);
       }
     });
   }
 
-  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">removeListener</span><span class="hljs-params">(self, obj, events, func)</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">removeListener</span><span class="hljs-params">(self, obj, events, func, context)</span> </span>{
     events = splitName(events);
 
     <span class="hljs-keyword">var</span> rejects = [],
@@ -1006,9 +1007,11 @@ should be called to remove attached event listeners</p>
 
     self.listenedEvents = passes;
 
+    <span class="hljs-built_in">console</span>.log(rejects);
+
     _.each(rejects, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(reject)</span> </span>{
       <span class="hljs-keyword">if</span> (reject.obj <span class="hljs-keyword">instanceof</span> jQuery) {
-        reject.obj.off(reject.events, reject.func);
+        reject.obj.off(reject.events, _.bind(reject.func, firstDef(context, reject.context)));
       } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (reject.obj <span class="hljs-keyword">instanceof</span> Struck.EventObject) {
         reject.obj.com.off(reject.events, rejects.func);
       }
